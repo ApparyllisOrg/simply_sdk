@@ -1,5 +1,5 @@
 class Connection {
-  String currentHost = "localhost:3000";
+  String currentHost = "http://localhost:3000";
 
   void setCurrentHost(String host) {
     assert(host != null);
