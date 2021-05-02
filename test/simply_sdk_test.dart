@@ -76,5 +76,63 @@ void main() {
     expect(getResult.data["number"], newNum);
 
     await getResult.delete();
+
+    var postDeleteResult =
+        await API().database().collection("unitTest").document(result.id);
+
+    expect(postDeleteResult.exists, false);
+  });
+
+  test('get test with query order by number', () async {
+    var results =
+        await API().database().collection("unitTest").orderBy("number").get();
+    var lastNumber = -9999;
+    for (var result in results) {
+      print(result.data);
+      bool largerOrEqual = result.data["number"] >= lastNumber;
+      lastNumber = result.data["number"];
+      expect(largerOrEqual, true);
+    }
+  });
+
+  test('get test with query order by number, limit to first 10', () async {
+    var results = await API()
+        .database()
+        .collection("unitTest")
+        .orderBy("number")
+        .limit(10)
+        .get();
+    var lastNumber = -9999;
+    for (var result in results) {
+      print(result.data);
+      bool largerOrEqual = result.data["number"] >= lastNumber;
+      lastNumber = result.data["number"];
+      expect(largerOrEqual, true);
+    }
+
+    bool lessOrEqualTo10Results = results.length <= 10;
+    expect(lessOrEqualTo10Results, true);
+  });
+
+  test(
+      'get test with query order by number, limit to first 5 after starting at pos 5',
+      () async {
+    var results = await API()
+        .database()
+        .collection("unitTest")
+        .orderBy("number")
+        .limit(5)
+        .start(5)
+        .get();
+    var lastNumber = -9999;
+    for (var result in results) {
+      print(result.data);
+      bool largerOrEqual = result.data["number"] >= lastNumber;
+      lastNumber = result.data["number"];
+      expect(largerOrEqual, true);
+    }
+
+    bool lessOrEqualTo5Results = results.length <= 5;
+    expect(lessOrEqualTo5Results, true);
   });
 }

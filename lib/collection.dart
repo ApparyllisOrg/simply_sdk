@@ -38,12 +38,32 @@ class Query {
 class Collection {
   final String id;
 
+  String _orderby;
+  int _limit;
+  int _start;
+  int _end;
+
   Collection(this.id);
 
   Map<String, Query> query = {};
 
   Collection where(Map<String, Query> addQuery) {
     query.addAll(addQuery);
+    return this;
+  }
+
+  Collection orderBy(String newValue) {
+    _orderby = newValue;
+    return this;
+  }
+
+  Collection limit(int newValue) {
+    _limit = newValue;
+    return this;
+  }
+
+  Collection start(int newValue) {
+    _start = newValue;
     return this;
   }
 
@@ -83,13 +103,28 @@ class Collection {
     return stringifiedQueries;
   }
 
+  String _getOrderBy() {
+    if (_orderby != null) return "&orderBy=$_orderby";
+    return "";
+  }
+
+  String _getLimit() {
+    if (_limit != null) return "&limit=$_limit";
+    return "";
+  }
+
+  String _getStart() {
+    if (_start != null) return "&start=$_start";
+    return "";
+  }
+
   Future<List<Document>> get() {
     return Future(() async {
       assert(API().auth().isAuthenticated());
       List<Document> documents = [];
       var url = Uri.parse(API().connection().collectionGet() +
           "?" +
-          "target=$id&query=" +
+          "target=$id${_getOrderBy()}${_getLimit()}${_getStart()}&query=" +
           jsonEncode(_getQueryString()));
 
       var response =
