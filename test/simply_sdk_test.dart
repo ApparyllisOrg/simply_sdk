@@ -1,12 +1,20 @@
 import 'dart:math';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:simply_sdk/collection.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 
 void main() {
   test('Set auth token', () async {
-    API().auth().setLastAuthToken("unitTest");
+    API().auth().setLastAuthToken(
+        "eyJhbGciOiJSUzI1NiIsImtpZCI6IjRlOWRmNWE0ZjI4YWQwMjUwNjRkNjY1NTNiY2I5YjMzOTY4NWVmOTQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZnJvbnRpbWUtN2FhY2UiLCJhdWQiOiJmcm9udGltZS03YWFjZSIsImF1dGhfdGltZSI6MTYxOTk3NDY4NSwidXNlcl9pZCI6InpkaEU4TFNZaGVQOWRHemR3S3p5OGVvSnJUdTEiLCJzdWIiOiJ6ZGhFOExTWWhlUDlkR3pkd0t6eThlb0pyVHUxIiwiaWF0IjoxNjE5OTc0Njg1LCJleHAiOjE2MTk5NzgyODUsImVtYWlsIjoiZGVtb0BhcHBhcnlsbGlzLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJkZW1vQGFwcGFyeWxsaXMuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.gpWHDbNdXA1chW6l1RGabp_2WdaFIDDsGPvq7hnpEI1LTvzhA1UjEOUlin4XwybZwCFKw6z5JulusyMQEd4bx4sUlOUUGn8CVtSRoxn8JrU_Z5vnPChfC1PWQUUDNiFIJnTyDUbumtqal723stK2EXfcWrGFEgAyWz4LaNJUtrdbWNiPXuXin0KR-Xb4HwZ3gwbP6z-6dvG3w5cmOdYjyUPHXoY_ryz83-_JTejV4OzN8vg5ZDZiTtA1ubofXqkB4-JyGmqeGlWzZ3xz_CdCdc3PhlK0Gs-ptf24HfMXjfZZtS8JtJ9QsbJpxb5ZOLrJJeDNF5pkYBFaMalppp61vg");
+  });
+  test('Get test', () async {
+    var results = await API().database().collection("unitTest").get();
+    print("Returned ${results.length} results");
   });
   test('Get test', () async {
     var results = await API().database().collection("unitTest").get();

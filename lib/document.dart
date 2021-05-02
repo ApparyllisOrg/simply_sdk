@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:http/http.dart' as http;
 
+import 'helpers.dart';
+
 class Document {
   bool exists;
   Map<String, dynamic> data;
@@ -25,8 +27,7 @@ class Document {
       sendData["id"] = id;
 
       var response = await http.delete(url,
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode(sendData));
+          headers: getHeader(), body: jsonEncode(sendData));
 
       if (response.statusCode == 200) {
         exists = false;
@@ -50,8 +51,7 @@ class Document {
       sendData["content"] = inData;
 
       var response = await http.patch(url,
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode(sendData));
+          headers: getHeader(), body: jsonEncode(sendData));
 
       if (response.statusCode == 200) {
         data.addAll(inData);

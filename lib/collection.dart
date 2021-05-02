@@ -76,8 +76,10 @@ class Collection {
       var url = Uri.parse(
           API().connection().documentGet() + "?" + "target=$id&id=$docId");
 
-      var response =
-          await http.get(url, headers: {"Content-Type": "application/json"});
+      var response = await http.get(
+        url,
+        headers: getHeader(),
+      );
 
       if (response.statusCode == 200) {
         var returnedDocument = jsonDecode(response.body);
@@ -127,8 +129,10 @@ class Collection {
           "target=$id${_getOrderBy()}${_getLimit()}${_getStart()}&query=" +
           jsonEncode(_getQueryString()));
 
-      var response =
-          await http.get(url, headers: {"Content-Type": "application/json"});
+      var response = await http.get(
+        url,
+        headers: getHeader(),
+      );
 
       if (response.statusCode == 200) {
         var returnedDocuments = jsonDecode(response.body);
@@ -151,8 +155,7 @@ class Collection {
       var url = Uri.parse(API().connection().documentAdd());
 
       var response = await http.post(url,
-          body: jsonEncode(postBody),
-          headers: {"Content-Type": "application/json"});
+          body: jsonEncode(postBody), headers: getHeader());
 
       if (response.statusCode == 200) {
         var responseObject = jsonDecode(response.body);
