@@ -47,30 +47,28 @@ class Collection {
     return this;
   }
 
-  String _getQueryString() {
-    Map<String, String> stringifiedQueries = {};
+  Map<String, dynamic> _getQueryString() {
+    Map<String, dynamic> stringifiedQueries = {};
     query.forEach((key, value) {
       assert(value != null);
       var query = {};
       query["method"] = value.getMethod();
       query["value"] = value.getValue();
-      stringifiedQueries[key] = jsonEncode(query);
+      stringifiedQueries[key] = query;
     });
-    return jsonEncode(stringifiedQueries);
+    return stringifiedQueries;
   }
 
   Future<List<Document>> get() {
     return Future(() async {
       assert(API().auth().isAuthenticated());
       List<Document> documents = [];
+      var url = Uri.parse(API().connection().collectionGet() +
+          "?" +
+          "target=$id&query=" +
+          jsonEncode(_getQueryString()));
 
-      Map<String, dynamic> urlQuery = {
-        "target": id,
-        "query": _getQueryString()
-      };
-
-      var url = Uri.parse(
-          API().connection().collectionGet() + "?" + jsonEncode(urlQuery));
+      print(url.toString());
 
       var response =
           await http.get(url, headers: {"Content-Type": "application/json"});
