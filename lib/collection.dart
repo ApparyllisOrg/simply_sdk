@@ -47,6 +47,30 @@ class Collection {
     return this;
   }
 
+  Future<Document> document(String docId) {
+    return Future(() async {
+      assert(API().auth().isAuthenticated());
+
+      Document doc = Document(false, docId, id, {});
+
+      var url = Uri.parse(
+          API().connection().documentGet() + "?" + "target=$id&id=$docId");
+
+      var response =
+          await http.get(url, headers: {"Content-Type": "application/json"});
+
+      if (response.statusCode == 200) {
+        var returnedDocument = jsonDecode(response.body);
+        doc.data = returnedDocument["content"];
+        doc.exists = returnedDocument["exists"];
+      } else {
+        throw ("${response.statusCode.toString()}: ${response.body}");
+      }
+
+      return doc;
+    });
+  }
+
   Map<String, dynamic> _getQueryString() {
     Map<String, dynamic> stringifiedQueries = {};
     query.forEach((key, value) {
@@ -68,15 +92,13 @@ class Collection {
           "target=$id&query=" +
           jsonEncode(_getQueryString()));
 
-      print(url.toString());
-
       var response =
           await http.get(url, headers: {"Content-Type": "application/json"});
 
       if (response.statusCode == 200) {
         var returnedDocuments = jsonDecode(response.body);
         for (var doc in returnedDocuments) {
-          documents.add(Document(true, doc["id"], doc["content"]));
+          documents.add(Document(true, doc["id"], id, doc["content"]));
         }
       } else {
         throw ("${response.statusCode.toString()}: ${response.body}");
@@ -99,7 +121,8 @@ class Collection {
 
       if (response.statusCode == 200) {
         var responseObject = jsonDecode(response.body);
-        return Document(true, responseObject["id"], data);
+
+        return Document(true, responseObject["id"], id, data);
       } else {
         throw ("${response.statusCode.toString()}: ${response.body}");
       }
