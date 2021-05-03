@@ -33,6 +33,13 @@ class Query {
     if (isSmallerThan != null) return isSmallerThan;
     assert(false, "Missing implementation!");
   }
+
+  Map<String, dynamic> getQueryMap() {
+    Map<String, dynamic> query = {};
+    query["method"] = getMethod();
+    query["value"] = getValue();
+    return query;
+  }
 }
 
 class Collection {
@@ -97,10 +104,7 @@ class Collection {
     Map<String, dynamic> stringifiedQueries = {};
     query.forEach((key, value) {
       assert(value != null);
-      var query = {};
-      query["method"] = value.getMethod();
-      query["value"] = value.getValue();
-      stringifiedQueries[key] = query;
+      stringifiedQueries[key] = value.getQueryMap();
     });
     return stringifiedQueries;
   }
