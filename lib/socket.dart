@@ -10,7 +10,7 @@ class Subscription {
   final String queryField;
   final Query query;
   final StreamController controller;
-  List<Document> documents;
+  List<Document> documents = [];
 
   Subscription(this.target, this.queryField, this.query, this.controller);
 }
@@ -38,11 +38,22 @@ class Socket {
   }
 
   void onReceivedData(event) {
-    print(event);
     Map<String, dynamic> data = jsonDecode(event);
     for (Subscription sub in _subscriptions) {
       if (sub.target == data["target"]) {
-        print(data);
+        for (Map<String, dynamic> result in data["results"]) {
+          var docData = sub.documents.firstWhere(
+              (element) => element.id == result["id"],
+              orElse: () => null);
+          if (docData != null) {
+            docData.data = result["content"];
+          } else {
+            Document newDoc =
+                Document(true, result["id"], sub.target, result["content"]);
+            sub.documents.add(newDoc);
+          }
+        }
+        sub.controller.add(sub.documents);
       }
     }
   }

@@ -79,6 +79,7 @@ class Collection {
       assert(API().auth().isAuthenticated());
 
       Document doc = Document(false, docId, id, {});
+      print(docId);
 
       var url = Uri.parse(
           API().connection().documentGet() + "?" + "target=$id&id=$docId");
@@ -93,7 +94,9 @@ class Collection {
         doc.data = returnedDocument["content"];
         doc.exists = returnedDocument["exists"];
       } else {
-        throw ("${response.statusCode.toString()}: ${response.body}");
+        doc.data = {};
+        doc.exists = false;
+        print("${response.statusCode.toString()}: ${response.body}");
       }
 
       return doc;
