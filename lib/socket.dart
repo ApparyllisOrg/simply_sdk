@@ -7,11 +7,12 @@ import 'package:web_socket_channel/io.dart';
 
 class Subscription {
   final String target;
+  final String queryField;
   final Query query;
   final StreamController controller;
   List<Document> documents;
 
-  Subscription(this.target, this.query, this.controller);
+  Subscription(this.target, this.queryField, this.query, this.controller);
 }
 
 class Socket {
@@ -37,6 +38,7 @@ class Socket {
   }
 
   void onReceivedData(event) {
+    print(event);
     Map<String, dynamic> data = jsonDecode(event);
     for (Subscription sub in _subscriptions) {
       if (sub.target == data["target"]) {
@@ -53,9 +55,10 @@ class Socket {
     refreshConnection();
   }
 
-  StreamController subscribeToCollection(String target, Query query) {
+  StreamController subscribeToCollection(
+      String target, String queryField, Query query) {
     StreamController controller = StreamController();
-    Subscription sub = Subscription(target, query, controller);
+    Subscription sub = Subscription(target, queryField, query, controller);
     _subscriptions.add(sub);
     if (isSocketLive()) {
       requestDataListen(sub);
@@ -67,7 +70,7 @@ class Socket {
     assert(_socket != null);
     _socket.sink.add(jsonEncode({
       "target": subscription.target,
-      "query": subscription.query.getQueryMap()
+      "query": {subscription.queryField: subscription.query.getQueryMap()}
     }));
   }
 }
