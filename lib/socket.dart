@@ -5,14 +5,15 @@ import 'package:simply_sdk/collection.dart';
 import 'package:simply_sdk/document.dart';
 import 'package:web_socket_channel/io.dart';
 
+import 'simply_sdk.dart';
+
 class Subscription {
   final String target;
-  final String queryField;
-  final Query query;
+  final Map<String, Query> query;
   final StreamController controller;
   List<Document> documents = [];
 
-  Subscription(this.target, this.queryField, this.query, this.controller);
+  Subscription(this.target, this.query, this.controller);
 }
 
 class Socket {
@@ -56,7 +57,7 @@ class Socket {
 
   void updateCollectionLocally(Subscription sub, Map<String, dynamic> change) {
     String operation = change["operationType"];
-
+    print(change);
     switch (operation) {
       case "update":
         updateDocument(sub, change);
@@ -104,10 +105,10 @@ class Socket {
   }
 
   Future<StreamController> subscribeToCollection(
-      String target, String queryField, Query query) {
+      String target, Map<String, Query> query) {
     return Future(() {
       StreamController controller = StreamController();
-      Subscription sub = Subscription(target, queryField, query, controller);
+      Subscription sub = Subscription(target, query, controller);
       _subscriptions.add(sub);
       if (isSocketLive()) {
         requestDataListen(sub);
@@ -118,9 +119,25 @@ class Socket {
 
   void requestDataListen(Subscription subscription) {
     assert(_socket != null);
+    Map<String, dynamic> queries = {};
+
+    bool hasUid = false;
+
+    subscription.query.forEach((key, value) {
+      assert(value != null);
+      if (key == "uid") hasUid = true;
+      queries[key] = value.getQueryMap();
+    });
+
+    // If we aren't requesting the data of someone else, default to our data
+    if (!hasUid) {
+      queries["uid"] = {"method": "isEqualTo", "value": API().auth().getUid()};
+    }
+
     _socket.sink.add(jsonEncode({
       "target": subscription.target,
-      "query": {subscription.queryField: subscription.query.getQueryMap()}
+      "jwt": API().auth().getToken(),
+      "query": queries
     }));
   }
 }

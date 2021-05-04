@@ -1,16 +1,23 @@
 class Auth {
-  String lastToken;
+  String _lastToken;
+  String _lastUid;
 
-  void setLastAuthToken(String newToken) {
+  void setLastAuthToken(String newToken, String newUid) {
     assert(newToken != null);
     assert(newToken.isNotEmpty);
-    lastToken = newToken;
+    assert(newUid != null);
+    assert(newUid.isNotEmpty);
+
+    _lastToken = newToken;
+    _lastUid = newUid;
   }
 
   void invalidateToken() {
-    lastToken = null;
+    _lastToken = null;
+    _lastUid = null;
   }
 
-  String getToken() => lastToken;
-  bool isAuthenticated() => lastToken != null;
+  String getToken() => _lastToken;
+  String getUid() => _lastUid;
+  bool isAuthenticated() => _lastToken != null;
 }
