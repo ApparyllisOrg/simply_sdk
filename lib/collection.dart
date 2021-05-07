@@ -105,10 +105,16 @@ class Collection {
 
   Map<String, dynamic> _getQueryString() {
     Map<String, dynamic> stringifiedQueries = {};
+    bool hasUid = false;
     query.forEach((key, value) {
       assert(value != null);
+      hasUid |= key == "uid";
       stringifiedQueries[key] = value.getQueryMap();
     });
+    if (!hasUid) {
+      stringifiedQueries["uid"] =
+          Query(isEqualTo: API().auth().getUid()).getQueryMap();
+    }
     return stringifiedQueries;
   }
 

@@ -12,12 +12,23 @@ import 'package:simply_sdk/simply_sdk.dart';
 void main() {
   test('Set auth token', () async {
     API().auth().setLastAuthToken(
-        "eyJhbGciOiJSUzI1NiIsImtpZCI6ImNjM2Y0ZThiMmYxZDAyZjBlYTRiMWJkZGU1NWFkZDhiMDhiYzUzODYiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZnJvbnRpbWUtN2FhY2UiLCJhdWQiOiJmcm9udGltZS03YWFjZSIsImF1dGhfdGltZSI6MTYyMDE1MDYxNCwidXNlcl9pZCI6InpkaEU4TFNZaGVQOWRHemR3S3p5OGVvSnJUdTEiLCJzdWIiOiJ6ZGhFOExTWWhlUDlkR3pkd0t6eThlb0pyVHUxIiwiaWF0IjoxNjIwMTUwNjE0LCJleHAiOjE2MjAxNTQyMTQsImVtYWlsIjoiZGVtb0BhcHBhcnlsbGlzLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJkZW1vQGFwcGFyeWxsaXMuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.MyTF7xivAv1PH7HajPP-II9Y__imxEVBU_kKb4i0MDfo0JVpf96uI1s5FgT79BSnzZluL2d3dN6x_Z816-xf63tIqL3uBm_D_sY7TCrdUZ11jnRNPNOrFkpXn126jo0FAbLzPfC1CDJXAh9kzaWQZQeP2S3JDNcM6QtrnEVxtE4fTcFTDOJSqFNJMubxjFP7f8hKIVe72HZISMAqxuosUHQaccNHp7EykYywm4LySAH8XIv5CBtvVQ8C2QZW9tQbRl9dgq8UXUtMKNu61Kqp1h7MbMj5ZZHIQQtR8OjgRmL7SmZM5poTSi0lIRopU6wGeFfzf-IOtJlNqXj9Iz3J9A",
+        "eyJhbGciOiJSUzI1NiIsImtpZCI6ImNjM2Y0ZThiMmYxZDAyZjBlYTRiMWJkZGU1NWFkZDhiMDhiYzUzODYiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZnJvbnRpbWUtN2FhY2UiLCJhdWQiOiJmcm9udGltZS03YWFjZSIsImF1dGhfdGltZSI6MTYyMDQxOTA0MSwidXNlcl9pZCI6InpkaEU4TFNZaGVQOWRHemR3S3p5OGVvSnJUdTEiLCJzdWIiOiJ6ZGhFOExTWWhlUDlkR3pkd0t6eThlb0pyVHUxIiwiaWF0IjoxNjIwNDE5MDQxLCJleHAiOjE2MjA0MjI2NDEsImVtYWlsIjoiZGVtb0BhcHBhcnlsbGlzLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJkZW1vQGFwcGFyeWxsaXMuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.F_odkOalpWSo_bUCvTVVbiDLqHLR57BVcqi1Pc9DPqVVAIevZxjLueijCXuBAV_kE36FqW1pRBM6rfnrJM3W7dfilAoI4reuNljGavg3UAN9WkSRu-NHIKdFhNn5hc1LRjZxjCVNuQy_6GWiaPtjT0rfAbXPdu5gUochbbaXcS1VLGYtWD216zy3HTXeEnjUe-rG6oks0k195776lrcBBe8soWJ2PBk7x0gplOxvT8jdGyU4yeLNP40I_apknHPci8UlIQx_efqMoc76tNoYxJQ7ZMGRKQT-hQ5_SmgiMImGZs73Kk-wKpTUq7WM2cQH8GVqH_OF1ZYrmU7rDg5KUg",
         "zdhE8LSYheP9dGzdwKzy8eoJrTu1");
   });
   test('Get test', () async {
     var results = await API().database().collection("unitTest").get();
     print("Returned ${results.length} results");
+  });
+
+  // fill up the database
+  test('add 1000 documents', () async {
+    return;
+    for (int i = 0; i < 1000; i++) {
+      API()
+          .database()
+          .collection("unitTest")
+          .add({"number": Random().nextInt(100)});
+    }
   });
   test('get test with query equal 0', () async {
     var results = await API()
@@ -150,9 +161,7 @@ void main() {
     var numCalls = 0;
 
     stream.stream.listen((var documents) {
-      print(documents);
       for (Document result in documents) {
-        print(result.data);
         bool smallerThan50 = result.data["number"] < 50;
         expect(smallerThan50, true);
       }
@@ -163,12 +172,10 @@ void main() {
     stream.onResume = () async {
       await Future.delayed(Duration(seconds: 2));
       var rand = Random().nextInt(49);
-      print(rand);
       var result =
           await API().database().collection("unitTest").add({"number": rand});
 
       var newNum = Random().nextInt(49);
-      print(newNum);
       await result.update({"number": newNum});
       await Future.delayed(Duration(seconds: 1));
       await result.delete();

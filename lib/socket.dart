@@ -57,9 +57,10 @@ class Socket {
 
   void updateCollectionLocally(Subscription sub, Map<String, dynamic> change) {
     String operation = change["operationType"];
-    print(change);
+
     switch (operation) {
       case "update":
+        print(change);
         updateDocument(sub, change);
         return;
       case "insert":
@@ -75,7 +76,7 @@ class Socket {
     Map<String, dynamic> data = jsonDecode(event);
 
     String msg = data["msg"];
-    print(msg);
+
     if (msg == "update") {
       for (Subscription sub in _subscriptions) {
         if (sub.target == data["target"]) {
