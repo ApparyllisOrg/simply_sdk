@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:simply_sdk/batch.dart';
 import 'package:simply_sdk/collection.dart';
 import 'package:simply_sdk/document.dart';
 import 'package:simply_sdk/simply_sdk.dart';
@@ -12,7 +13,7 @@ import 'package:simply_sdk/simply_sdk.dart';
 void main() {
   test('Set auth token', () async {
     API().auth().setLastAuthToken(
-        "eyJhbGciOiJSUzI1NiIsImtpZCI6ImNjM2Y0ZThiMmYxZDAyZjBlYTRiMWJkZGU1NWFkZDhiMDhiYzUzODYiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZnJvbnRpbWUtN2FhY2UiLCJhdWQiOiJmcm9udGltZS03YWFjZSIsImF1dGhfdGltZSI6MTYyMDQxOTA0MSwidXNlcl9pZCI6InpkaEU4TFNZaGVQOWRHemR3S3p5OGVvSnJUdTEiLCJzdWIiOiJ6ZGhFOExTWWhlUDlkR3pkd0t6eThlb0pyVHUxIiwiaWF0IjoxNjIwNDE5MDQxLCJleHAiOjE2MjA0MjI2NDEsImVtYWlsIjoiZGVtb0BhcHBhcnlsbGlzLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJkZW1vQGFwcGFyeWxsaXMuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.F_odkOalpWSo_bUCvTVVbiDLqHLR57BVcqi1Pc9DPqVVAIevZxjLueijCXuBAV_kE36FqW1pRBM6rfnrJM3W7dfilAoI4reuNljGavg3UAN9WkSRu-NHIKdFhNn5hc1LRjZxjCVNuQy_6GWiaPtjT0rfAbXPdu5gUochbbaXcS1VLGYtWD216zy3HTXeEnjUe-rG6oks0k195776lrcBBe8soWJ2PBk7x0gplOxvT8jdGyU4yeLNP40I_apknHPci8UlIQx_efqMoc76tNoYxJQ7ZMGRKQT-hQ5_SmgiMImGZs73Kk-wKpTUq7WM2cQH8GVqH_OF1ZYrmU7rDg5KUg",
+        "eyJhbGciOiJSUzI1NiIsImtpZCI6IjUzNmRhZWFiZjhkZDY1ZDRkZTIxZTgyNGI4OTlhMWYzZGEyZjg5NTgiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZnJvbnRpbWUtN2FhY2UiLCJhdWQiOiJmcm9udGltZS03YWFjZSIsImF1dGhfdGltZSI6MTYyMTAxNzExMCwidXNlcl9pZCI6InpkaEU4TFNZaGVQOWRHemR3S3p5OGVvSnJUdTEiLCJzdWIiOiJ6ZGhFOExTWWhlUDlkR3pkd0t6eThlb0pyVHUxIiwiaWF0IjoxNjIxMDE3MTEwLCJleHAiOjE2MjEwMjA3MTAsImVtYWlsIjoiZGVtb0BhcHBhcnlsbGlzLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJkZW1vQGFwcGFyeWxsaXMuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.EbdvYcsavDIVTDbp6uzUb6rtm55hD7IaU4Ez9WJxQsjEZlz6Him1jiR7Sz05ZQMyGwB2VQJXtD5yg9Bco7u8SGpGZxgZUP2L2APR93_cjCfhJvV27LS--lcJmA7xy2WrHqGgK6ite3H0XKC5bqXe4xMIfVezHfAYUgHON5cEhgwQ2aaI0qw4_52YTjRbRyqV9hETXxLXQlMDHoqnuJWaZhbG7P0RpP5BQ2MTK6nlSHkef4XmM8AirD0gC4KKAxigI0wxPcokxzVw7tw_D8-sfDsPOxWQKYGAYX7oLuFqE2QwiCmb5ADKGBik1iVTNASh0ayBzWhEwoSW7Vw8WoMNXQ",
         "zdhE8LSYheP9dGzdwKzy8eoJrTu1");
   });
   test('Get test', () async {
@@ -195,5 +196,15 @@ void main() {
     expect(numCalls, 4);
 
     stream.close();
+  });
+
+  test('Batch write', () async {
+    Batch batch = API().database().batch("unitTest");
+    var rand = Random().nextInt(100);
+    rand += 1000;
+    batch.add({"number": rand});
+    batch.add({"number": rand});
+    batch.add({"number": rand});
+    await batch.commit();
   });
 }
