@@ -79,6 +79,9 @@ class Socket {
 
     if (msg == "update") {
       for (Subscription sub in _subscriptions) {
+        if (sub.controller.isClosed) {
+          continue;
+        }
         if (sub.target == data["target"]) {
           for (Map<String, dynamic> result in data["results"]) {
             updateCollectionLocally(sub, result);

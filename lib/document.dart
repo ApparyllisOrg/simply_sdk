@@ -49,6 +49,7 @@ class Document {
       sendData["target"] = collectionId;
       sendData["id"] = id;
       sendData["content"] = inData;
+      sendData["updateTime"] = DateTime.now().millisecondsSinceEpoch;
 
       var response = await http.patch(url,
           headers: getHeader(), body: jsonEncode(sendData));

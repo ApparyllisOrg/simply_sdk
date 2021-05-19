@@ -66,7 +66,11 @@ class Batch {
 
     var response = await http.post(url,
         headers: getHeader(),
-        body: jsonEncode({"operations": sendOps, "target": collection}));
+        body: jsonEncode({
+          "operations": sendOps,
+          "target": collection,
+          "updateTime": DateTime.now().millisecondsSinceEpoch
+        }));
 
     if (response.statusCode == 200) {
       // Happy!

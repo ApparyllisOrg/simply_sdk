@@ -163,7 +163,11 @@ class Collection {
   Future<Document> add(Map<String, dynamic> data) {
     return Future(() async {
       assert(API().auth().isAuthenticated());
-      Map<String, dynamic> postBody = {"target": id, "content": data};
+      Map<String, dynamic> postBody = {
+        "target": id,
+        "content": data,
+        "updateTime": DateTime.now().millisecondsSinceEpoch
+      };
 
       var url = Uri.parse(API().connection().documentAdd());
 
