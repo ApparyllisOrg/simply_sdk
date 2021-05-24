@@ -12,5 +12,5 @@ class Connection {
   String documentAdd() => "$currentHost/document/add";
   String documentUpdate() => "$currentHost/document/update";
   String documentDelete() => "$currentHost/document/delete";
-  String batch() => "$currentHost/framework/batch";
+  String batch() => "$currentHost/collection/batch";
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:sembast/sembast.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:http/http.dart' as http;
@@ -39,6 +40,13 @@ class Query {
     query["method"] = getMethod();
     query["value"] = getValue();
     return query;
+  }
+
+  Filter getFilter(String field) {
+    if (isEqualTo != null) return Filter.equals(field, getValue());
+    if (isNotEqualTo != null) return Filter.notEquals(field, getValue());
+    if (isLargerThan != null) return Filter.greaterThan(field, getValue());
+    if (isSmallerThan != null) return Filter.lessThan(field, getValue());
   }
 }
 
