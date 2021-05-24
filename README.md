@@ -1,14 +1,16 @@
 # simply_sdk
 
-A new Flutter package project.
+SDK for the Apparyllis API. (https://github.com/Apparyllis/ApparyllisApi)
 
-## Getting Started
+## Components
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+Main functionality currently consists of:
+* Storing Authentication received from the Firebase SDK
+* Batch writing to the API
+* Streams to listen to changes in the Database from the API
+* Offline persistence (A small version of the online API that doesn't do any security checks and 
+* Offline ressurection (Works with Offline Persistence in that it sends data that was created while offline) (TODO)
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+## Contribution
+
+Should you wish to contribute, please take a look at https://github.com/Apparyllis/ApparyllisApi to see which API you are talking to.  
