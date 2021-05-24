@@ -8,9 +8,11 @@ import 'document.dart';
 class Cache {
   Database db;
 
-  Future<void> clear() async {
-    var store = StoreRef.main();
-    await store.drop(db);
+  Future<void> clear() {
+    return Future(() async {
+      var store = StoreRef.main();
+      await store.drop(db);
+    });
   }
 
   Future<void> initialize() async {
@@ -23,16 +25,19 @@ class Cache {
     db = await dbFactory.openDatabase(dbPath);
   }
 
-  Future<dynamic> insertDocument(
-      String collection, Map<String, dynamic> data) async {
+  Future<String> insertDocument(
+      String collection, String id, Map<String, dynamic> data) async {
     var store = StoreRef.main();
 
     data["collection"] = collection;
+    data["id"] = id;
 
-    return await store.add(
+    await store.add(
       db,
       data,
     );
+
+    return id;
   }
 
   void updateDocument(String collection, String id, Map<String, dynamic> data) {
@@ -48,17 +53,19 @@ class Cache {
         ])));
   }
 
-  void removeDocument(String collection, String id) {
-    var store = StoreRef.main();
-    store.delete(db,
-        finder: Finder(
-            filter: Filter.and([
-          Filter.equals("id", id),
-          Filter.equals("collection", collection)
-        ])));
+  Future<void> removeDocument(String collection, String id) {
+    return Future(() async {
+      var store = StoreRef.main();
+      await store.delete(db,
+          finder: Finder(
+              filter: Filter.and([
+            Filter.equals("id", id),
+            Filter.equals("collection", collection)
+          ])));
+    });
   }
 
-  Future<Document> getDocument(String collection, String id) async {
+  Future<Document> getDocument(String collection, String id) {
     return new Future(() async {
       Document doc = Document(false, id, collection, {});
 
@@ -107,7 +114,8 @@ class Cache {
     var foundDocs = await store.find(db, finder: Finder(filter: filter));
 
     for (var foundDoc in foundDocs) {
-      Document doc = Document(true, foundDoc.key, collection, foundDoc.value);
+      Document doc =
+          Document(true, foundDoc.value["id"], collection, foundDoc.value);
       docs.add(doc);
     }
 

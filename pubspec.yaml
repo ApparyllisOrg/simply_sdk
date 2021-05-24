@@ -16,6 +16,8 @@ dependencies:
   path_provider: ^2.0.1
   web_socket_channel: ^2.0.0
   sembast: ^3.0.2
+  uuid: ^3.0.4
+  mongo_dart: ^0.7.0+2
 
 dev_dependencies:
   flutter_test:
