@@ -82,14 +82,18 @@ class Cache {
         return doc;
       }
 
-      doc.data = data.value;
+      Map<String, dynamic> docData = Map.from(data.value);
+      docData.remove("collection");
+      docData.remove("id");
+      doc.data = docData;
 
       return doc;
     });
   }
 
+  // Todo: Limit, Start, End
   Future<List<Document>> searchForDocuments(
-      String collection, Map<String, Query> queries) async {
+      String collection, Map<String, Query> queries, String orderBy) async {
     List<Document> docs = [];
     var store = StoreRef.main();
 
@@ -111,14 +115,22 @@ class Cache {
       filter = Filter.and(filters);
     }
 
-    var foundDocs = await store.find(db, finder: Finder(filter: filter));
+    var foundDocs = await store.find(db,
+        finder: Finder(
+            filter: filter,
+            sortOrders: orderBy == null ? [] : [SortOrder(orderBy)]));
 
     for (var foundDoc in foundDocs) {
-      Document doc =
-          Document(true, foundDoc.value["id"], collection, foundDoc.value);
+      Map<String, dynamic> data = Map.from(foundDoc.value);
+      data.remove("collection");
+      data.remove("id");
+
+      Document doc = Document(true, foundDoc.value["id"], collection, data);
       docs.add(doc);
     }
 
     return docs;
   }
+
+  // Todo: Listeners to data changes
 }

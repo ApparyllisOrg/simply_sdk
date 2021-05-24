@@ -22,7 +22,8 @@ Future<List<String>> addDocs(int count, int maxRandom) {
       docIds.add(receivedId);
     }
 
-    List<Document> docs = await API().cache().searchForDocuments("test", {});
+    List<Document> docs =
+        await API().cache().searchForDocuments("test", {}, "");
 
     expect(docs.length, count);
     return docIds;
@@ -48,7 +49,7 @@ void main() {
     }
 
     List<Document> afterDocs =
-        await API().cache().searchForDocuments("test", {});
+        await API().cache().searchForDocuments("test", {}, "");
 
     expect(afterDocs.length, 0);
   });
@@ -59,14 +60,17 @@ void main() {
 
     expect(docs.length, 20);
 
-    for (var i = 0; i < docs.length; i++) {
-      print(docs[i]);
-      await API().cache().removeDocument("test", docs[i]);
+    List<Document> afterDocs =
+        await API().cache().searchForDocuments("test", {}, "number");
+
+    int lastNum = -999;
+
+    for (var doc in afterDocs) {
+      print(doc.data);
+      expect(lastNum <= doc.data["number"], true);
+      lastNum = doc.data["number"];
     }
 
-    List<Document> afterDocs =
-        await API().cache().searchForDocuments("test", {});
-
-    expect(afterDocs.length, 0);
+    expect(afterDocs.length, 20);
   });
 }
