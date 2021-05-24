@@ -4,8 +4,6 @@ import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:http/http.dart' as http;
 
-import 'document.dart';
-
 enum OperationType { add, update, delete }
 
 class Operation {

@@ -1,4 +1,5 @@
 class Connection {
+  // Todo: Default to main apparyllis API endpoint in prod and localhost in debug
   String currentHost = "http://localhost:3000";
 
   void setCurrentHost(String host) {
