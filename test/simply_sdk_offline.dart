@@ -73,4 +73,36 @@ void main() {
 
     expect(afterDocs.length, 20);
   });
+
+  test('add 20 documents and query all 20 documents in 2 steps and order by',
+      () async {
+    await API().cache().clear();
+    List<String> docs = await addDocs(20, 50);
+
+    expect(docs.length, 20);
+
+    List<Document> afterDocs = await API()
+        .cache()
+        .searchForDocuments("test", {}, "number", start: 0, end: 10);
+
+    int lastNum = -999;
+
+    for (var doc in afterDocs) {
+      print(doc.data);
+      expect(lastNum <= doc.data["number"], true);
+      lastNum = doc.data["number"];
+    }
+
+    afterDocs = await API()
+        .cache()
+        .searchForDocuments("test", {}, "number", start: 10, end: 20);
+
+    for (var doc in afterDocs) {
+      print(doc.data);
+      expect(lastNum <= doc.data["number"], true);
+      lastNum = doc.data["number"];
+    }
+
+    expect(afterDocs.length, 10);
+  });
 }

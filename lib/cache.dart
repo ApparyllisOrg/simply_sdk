@@ -91,9 +91,9 @@ class Cache {
     });
   }
 
-  // Todo: Limit, Start, End
   Future<List<Document>> searchForDocuments(
-      String collection, Map<String, Query> queries, String orderBy) async {
+      String collection, Map<String, Query> queries, String orderBy,
+      {int start, int end}) async {
     List<Document> docs = [];
     var store = StoreRef.main();
 
@@ -118,7 +118,9 @@ class Cache {
     var foundDocs = await store.find(db,
         finder: Finder(
             filter: filter,
-            sortOrders: orderBy == null ? [] : [SortOrder(orderBy)]));
+            sortOrders: orderBy == null ? [] : [SortOrder(orderBy)],
+            offset: start,
+            limit: end));
 
     for (var foundDoc in foundDocs) {
       Map<String, dynamic> data = Map.from(foundDoc.value);
