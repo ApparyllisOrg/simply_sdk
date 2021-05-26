@@ -1,11 +1,13 @@
 import 'dart:convert';
 
+import 'package:mongo_dart/mongo_dart.dart' as mongo;
 import 'package:sembast/sembast.dart';
 import 'package:simply_sdk/helpers.dart';
-import 'package:simply_sdk/simply_sdk.dart';
+
 import 'package:http/http.dart' as http;
 
 import 'document.dart';
+import 'simply_sdk.dart';
 
 class Query {
   final dynamic isEqualTo;
@@ -92,10 +94,17 @@ class Collection {
       var url = Uri.parse(
           API().connection().documentGet() + "?" + "target=$id&id=$docId");
 
-      var response = await http.get(
-        url,
-        headers: getHeader(),
-      );
+      var response;
+      try {
+        response = await http.get(
+          url,
+          headers: getHeader(),
+        );
+      } catch (e) {}
+
+      if (response == null) {
+        return await API().cache().getDocument(id, docId);
+      }
 
       if (response.statusCode == 200) {
         var returnedDocument = jsonDecode(response.body);
@@ -150,10 +159,19 @@ class Collection {
           "target=$id${_getOrderBy()}${_getLimit()}${_getStart()}&query=" +
           jsonEncode(_getQueryString()));
 
-      var response = await http.get(
-        url,
-        headers: getHeader(),
-      );
+      var response;
+      try {
+        response = await http.get(
+          url,
+          headers: getHeader(),
+        );
+      } catch (e) {}
+
+      if (response == null) {
+        return await API()
+            .cache()
+            .searchForDocuments(id, query, _orderby, start: _start, end: _end);
+      }
 
       if (response.statusCode == 200) {
         var returnedDocuments = jsonDecode(response.body);
@@ -171,22 +189,34 @@ class Collection {
   Future<Document> add(Map<String, dynamic> data) {
     return Future(() async {
       assert(API().auth().isAuthenticated());
+      String docID = mongo.ObjectId(clientMode: true).$oid;
       Map<String, dynamic> postBody = {
         "target": id,
         "content": data,
-        "updateTime": DateTime.now().millisecondsSinceEpoch
+        "updateTime": DateTime.now().millisecondsSinceEpoch,
+        "id": docID
       };
 
       var url = Uri.parse(API().connection().documentAdd());
 
-      var response = await http.post(url,
-          body: jsonEncode(postBody), headers: getHeader());
+      API().cache().insertDocument(id, postBody[id], postBody);
+      var response;
+      try {
+        response = await http.post(url,
+            body: jsonEncode(postBody), headers: getHeader());
+      } catch (e) {}
+
+      if (response == null) {
+        API().cache().queueAdd(id, docID, data);
+        return Document(true, docID, id, data);
+      }
 
       if (response.statusCode == 200) {
-        var responseObject = jsonDecode(response.body);
-
-        return Document(true, responseObject["id"], id, data);
+        return Document(true, docID, id, data);
       } else {
+        if (response.statusCode != 400) {
+          API().cache().queueAdd(id, docID, data);
+        }
         throw ("${response.statusCode.toString()}: ${response.body}");
       }
     });

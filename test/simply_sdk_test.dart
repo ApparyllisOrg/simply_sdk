@@ -4,8 +4,123 @@ import 'package:simply_sdk/batch.dart';
 import 'package:simply_sdk/collection.dart';
 import 'package:simply_sdk/document.dart';
 import 'package:simply_sdk/simply_sdk.dart';
+import 'package:mongo_dart/mongo_dart.dart';
 
 void main() {
+  Future<List<String>> addDocs(int count, int maxRandom) {
+    return Future(() async {
+      List<String> docIds = [];
+
+      for (int i = 0; i < count; i++) {
+        String id = ObjectId(clientMode: true).$oid;
+
+        String receivedId = await API().cache().insertDocument(
+            "test", id, {"number": Random().nextInt(maxRandom)});
+
+        expect(id, receivedId);
+
+        docIds.add(receivedId);
+      }
+
+      List<Document> docs =
+          await API().cache().searchForDocuments("test", {}, "");
+
+      expect(docs.length, count);
+      return docIds;
+    });
+  }
+
+  test('add 20 documents', () async {
+    await API().initialize();
+    await API().cache().clear();
+    await addDocs(20, 50);
+  });
+
+  test('add 20 documents and remove all 20 documents', () async {
+    await API().cache().clear();
+    List<String> docs = await addDocs(20, 50);
+
+    expect(docs.length, 20);
+
+    for (var i = 0; i < docs.length; i++) {
+      print(docs[i]);
+      await API().cache().removeDocument("test", docs[i]);
+    }
+
+    List<Document> afterDocs =
+        await API().cache().searchForDocuments("test", {}, "");
+
+    expect(afterDocs.length, 0);
+  });
+
+  test('add 20 documents and query all 20 documents and order by', () async {
+    await API().cache().clear();
+    List<String> docs = await addDocs(20, 50);
+
+    expect(docs.length, 20);
+
+    List<Document> afterDocs =
+        await API().cache().searchForDocuments("test", {}, "number");
+
+    int lastNum = -999;
+
+    for (var doc in afterDocs) {
+      print(doc.data);
+      expect(lastNum <= doc.data["number"], true);
+      lastNum = doc.data["number"];
+    }
+
+    expect(afterDocs.length, 20);
+  });
+
+  test('add 20 documents and query all 20 documents in 2 steps and order by',
+      () async {
+    await API().cache().clear();
+    List<String> docs = await addDocs(20, 50);
+
+    expect(docs.length, 20);
+
+    List<Document> afterDocs = await API()
+        .cache()
+        .searchForDocuments("test", {}, "number", start: 0, end: 10);
+
+    int lastNum = -999;
+
+    for (var doc in afterDocs) {
+      print(doc.data);
+      expect(lastNum <= doc.data["number"], true);
+      lastNum = doc.data["number"];
+    }
+
+    afterDocs = await API()
+        .cache()
+        .searchForDocuments("test", {}, "number", start: 10, end: 20);
+
+    for (var doc in afterDocs) {
+      print(doc.data);
+      expect(lastNum <= doc.data["number"], true);
+      lastNum = doc.data["number"];
+    }
+
+    expect(afterDocs.length, 10);
+  });
+
+  test('Test offline simple add and get', () async {
+    API().auth().setLastAuthToken(
+        "eyJhbGciOiJSUzI1NiIsImtpZCI6IjUzNmRhZWFiZjhkZDY1ZDRkZTIxZTgyNGI4OTlhMWYzZGEyZjg5NTgiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZnJvbnRpbWUtN2FhY2UiLCJhdWQiOiJmcm9udGltZS03YWFjZSIsImF1dGhfdGltZSI6MTYyMTQ1MTE0NiwidXNlcl9pZCI6InpkaEU4TFNZaGVQOWRHemR3S3p5OGVvSnJUdTEiLCJzdWIiOiJ6ZGhFOExTWWhlUDlkR3pkd0t6eThlb0pyVHUxIiwiaWF0IjoxNjIxNDUxMTQ2LCJleHAiOjE2MjE0NTQ3NDYsImVtYWlsIjoiZGVtb0BhcHBhcnlsbGlzLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJkZW1vQGFwcGFyeWxsaXMuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.ZQBE-i8F5-fsJ4bsL--w0-HWYNMdxleVTLWzjWDv4ME4ZrDnACZrHoY_96Q64_KAn2pWpP4rUAZldsx-fU7vK2quRZaEiPM1fyN_tBW1QS5uF6Ow6EySvXeC2zGT0w4Wf-6gfFnzXkg3mBIawp2xId_qRqbJfkIO4V8b2f-cM5FPQWnjwFk_H17hNycnnfenbOp_XyknlZ5iB_pY-MPGEzZcSeIL_Qd6ybAyCezBRi7uE1CNk3ULtxC0vO7t4wveqqnoPTVC3RNkeyJqVacA2_2EnwD_1m5-DxCAjpS-eLmZgso1rorvSoTM9b0ocXMXvFQseuel7IyjTZD8ExXzwQ",
+        "zdhE8LSYheP9dGzdwKzy8eoJrTu1");
+
+    var doc = await API()
+        .database()
+        .collection("test")
+        .add({"number": Random().nextInt(50)});
+
+    var newDoc = await API().database().collection("test").document(doc.id);
+
+    expect(doc.id, newDoc.id);
+    expect(doc.data, newDoc.data);
+    expect(doc.collectionId, newDoc.collectionId);
+  });
   test('Set auth token', () async {
     await API().initialize();
     API().auth().setLastAuthToken(

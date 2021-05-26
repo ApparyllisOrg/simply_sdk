@@ -20,18 +20,32 @@ class Document {
     return Future(() async {
       assert(API().auth().isAuthenticated());
 
+      API().cache().removeDocument(collectionId, id);
+
       var url = Uri.parse(API().connection().documentDelete());
 
       var sendData = Map.from(data);
       sendData["target"] = collectionId;
       sendData["id"] = id;
 
-      var response = await http.delete(url,
-          headers: getHeader(), body: jsonEncode(sendData));
+      var response;
+      try {
+        response = await http.delete(url,
+            headers: getHeader(), body: jsonEncode(sendData));
+      } catch (e) {}
+
+      if (response == null) {
+        API().cache().queueDelete(collectionId, id);
+        return;
+      }
 
       if (response.statusCode == 200) {
         exists = false;
       } else {
+        if (response.statusCode != 400) {
+          API().cache().queueDelete(collectionId, id);
+        }
+
         throw ("${response.statusCode.toString()}: ${response.body}");
       }
 
@@ -51,12 +65,26 @@ class Document {
       sendData["content"] = inData;
       sendData["updateTime"] = DateTime.now().millisecondsSinceEpoch;
 
-      var response = await http.patch(url,
-          headers: getHeader(), body: jsonEncode(sendData));
+      API().cache().updateDocument(collectionId, id, sendData);
+      var response;
+      try {
+        response = await http.patch(url,
+            headers: getHeader(), body: jsonEncode(sendData));
+      } catch (e) {}
+
+      if (response == null) {
+        API().cache().queueUpdate(collectionId, id, inData);
+        return;
+      }
 
       if (response.statusCode == 200) {
         data.addAll(inData);
       } else {
+        if (response.statusCode != 400) {
+          API().cache().queueUpdate(collectionId, id, inData);
+        }
+
+        if (response.statusCode == 500) {}
         throw ("${response.statusCode.toString()}: ${response.body}");
       }
 

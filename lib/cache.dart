@@ -15,6 +15,45 @@ class Cache {
     });
   }
 
+  void queueDelete(String collection, String id) {
+    var store = StoreRef.main();
+    store.add(db, {
+      "queue": true,
+      "collectionRef": collection,
+      "id": id,
+      "action": "delete",
+      "time": DateTime.now().millisecondsSinceEpoch
+    });
+  }
+
+  void queueUpdate(String collection, String id, Map<String, dynamic> data) {
+    var store = StoreRef.main();
+    store.add(db, {
+      "queue": true,
+      "collectionRef": collection,
+      "id": id,
+      "action": "update",
+      "data": data,
+      "time": DateTime.now().millisecondsSinceEpoch
+    });
+  }
+
+  void queueAdd(
+    String collection,
+    String id,
+    Map<String, dynamic> data,
+  ) {
+    var store = StoreRef.main();
+    store.add(db, {
+      "queue": true,
+      "collectionRef": collection,
+      "id": id,
+      "action": "add",
+      "data": data,
+      "time": DateTime.now().millisecondsSinceEpoch
+    });
+  }
+
   Future<void> initialize() async {
     DatabaseFactory dbFactory = databaseFactoryIo;
 
@@ -86,6 +125,7 @@ class Cache {
       docData.remove("collection");
       docData.remove("id");
       doc.data = docData;
+      doc.exists = true;
 
       return doc;
     });

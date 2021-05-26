@@ -29,13 +29,15 @@ class Socket {
   IOWebSocketChannel getSocket() => _socket;
 
   void createConnection() {
-    _socket = IOWebSocketChannel.connect('ws://localhost:8080');
+    try {
+      _socket = IOWebSocketChannel.connect('ws://localhost:8080');
 
-    _socket.stream.listen(onReceivedData);
+      _socket.stream.listen(onReceivedData).onError((err) => null);
 
-    for (Subscription sub in _subscriptions) {
-      requestDataListen(sub);
-    }
+      for (Subscription sub in _subscriptions) {
+        requestDataListen(sub);
+      }
+    } catch (e) {}
   }
 
   void updateDocument(Subscription sub, Map<String, dynamic> documentData) {
