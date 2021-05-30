@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:sembast/sembast.dart';
 import 'package:simply_sdk/collection.dart';
 import 'package:simply_sdk/document.dart';
 import 'package:web_socket_channel/io.dart';
@@ -118,6 +119,8 @@ class Socket {
       _subscriptions.add(sub);
       if (isSocketLive()) {
         requestDataListen(sub);
+      } else {
+        API().cache().listenForChanges(target, query);
       }
       return controller;
     });

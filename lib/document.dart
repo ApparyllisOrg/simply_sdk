@@ -59,13 +59,13 @@ class Document {
 
       var url = Uri.parse(API().connection().documentUpdate());
 
-      var sendData = {};
+      Map<String, dynamic> sendData = {};
       sendData["target"] = collectionId;
       sendData["id"] = id;
       sendData["content"] = inData;
       sendData["updateTime"] = DateTime.now().millisecondsSinceEpoch;
 
-      API().cache().updateDocument(collectionId, id, sendData);
+      API().cache().updateDocument(collectionId, id, inData);
       var response;
       try {
         response = await http.patch(url,

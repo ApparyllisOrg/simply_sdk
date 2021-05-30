@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:simply_sdk/batch.dart';
@@ -105,10 +106,8 @@ void main() {
     expect(afterDocs.length, 10);
   });
 
-  test('Test offline simple add and get', () async {
-    API().auth().setLastAuthToken(
-        "eyJhbGciOiJSUzI1NiIsImtpZCI6IjUzNmRhZWFiZjhkZDY1ZDRkZTIxZTgyNGI4OTlhMWYzZGEyZjg5NTgiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZnJvbnRpbWUtN2FhY2UiLCJhdWQiOiJmcm9udGltZS03YWFjZSIsImF1dGhfdGltZSI6MTYyMTQ1MTE0NiwidXNlcl9pZCI6InpkaEU4TFNZaGVQOWRHemR3S3p5OGVvSnJUdTEiLCJzdWIiOiJ6ZGhFOExTWWhlUDlkR3pkd0t6eThlb0pyVHUxIiwiaWF0IjoxNjIxNDUxMTQ2LCJleHAiOjE2MjE0NTQ3NDYsImVtYWlsIjoiZGVtb0BhcHBhcnlsbGlzLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJkZW1vQGFwcGFyeWxsaXMuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.ZQBE-i8F5-fsJ4bsL--w0-HWYNMdxleVTLWzjWDv4ME4ZrDnACZrHoY_96Q64_KAn2pWpP4rUAZldsx-fU7vK2quRZaEiPM1fyN_tBW1QS5uF6Ow6EySvXeC2zGT0w4Wf-6gfFnzXkg3mBIawp2xId_qRqbJfkIO4V8b2f-cM5FPQWnjwFk_H17hNycnnfenbOp_XyknlZ5iB_pY-MPGEzZcSeIL_Qd6ybAyCezBRi7uE1CNk3ULtxC0vO7t4wveqqnoPTVC3RNkeyJqVacA2_2EnwD_1m5-DxCAjpS-eLmZgso1rorvSoTM9b0ocXMXvFQseuel7IyjTZD8ExXzwQ",
-        "zdhE8LSYheP9dGzdwKzy8eoJrTu1");
+  test('Test offline simple add, update and get', () async {
+    API().auth().setLastAuthToken("0", "0");
 
     var doc = await API()
         .database()
@@ -117,10 +116,36 @@ void main() {
 
     var newDoc = await API().database().collection("test").document(doc.id);
 
+    Map<String, dynamic> newData = {"number": Random().nextInt(50)};
+
+    newDoc.update(newData);
+
+    var updatedDoc = await API().database().collection("test").document(doc.id);
+
+    expect(updatedDoc.exists, true);
+    expect(newDoc.exists, true);
+    expect(doc.id, newDoc.id);
+    expect(updatedDoc.data, newData);
+    expect(doc.collectionId, newDoc.collectionId);
+  });
+
+  test('Test offline simple add and get', () async {
+    API().auth().setLastAuthToken("0", "0");
+
+    var doc = await API()
+        .database()
+        .collection("test")
+        .add({"number": Random().nextInt(50)});
+
+    var newDoc = await API().database().collection("test").document(doc.id);
+
+    expect(doc.exists, true);
+    expect(newDoc.exists, true);
     expect(doc.id, newDoc.id);
     expect(doc.data, newDoc.data);
     expect(doc.collectionId, newDoc.collectionId);
   });
+
   test('Set auth token', () async {
     await API().initialize();
     API().auth().setLastAuthToken(
@@ -134,7 +159,6 @@ void main() {
 
   // fill up the database
   test('add 1000 documents', () async {
-    return;
     for (int i = 0; i < 1000; i++) {
       API()
           .database()
@@ -178,13 +202,13 @@ void main() {
     print("Returned ${results.length} results");
   });
 
-  test('get test with query not equal to 50', () async {
+  test('get test with query not equal to 0', () async {
     var results = await API()
         .database()
         .collection("unitTest")
-        .where({"number": Query(isNotEqualTo: 50)}).get();
+        .where({"number": Query(isNotEqualTo: 0)}).get();
     for (var result in results) {
-      bool notEqual50 = result.data["number"] != 50;
+      bool notEqual50 = result.data["number"] != 0;
       expect(notEqual50, true);
     }
     print("Returned ${results.length} results");
@@ -240,8 +264,7 @@ void main() {
       expect(largerOrEqual, true);
     }
 
-    bool lessOrEqualTo10Results = results.length <= 10;
-    expect(lessOrEqualTo10Results, true);
+    expect(results.length, 10);
   });
 
   test(
@@ -262,8 +285,7 @@ void main() {
       expect(largerOrEqual, true);
     }
 
-    bool lessOrEqualTo5Results = results.length <= 5;
-    expect(lessOrEqualTo5Results, true);
+    expect(results.length, 5);
   });
 
   test('Subscribe to changes in namespace unitTest', () async {

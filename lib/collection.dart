@@ -153,6 +153,11 @@ class Collection {
   Future<List<Document>> get() {
     return Future(() async {
       assert(API().auth().isAuthenticated());
+
+      if (_end != null || _start != null || _limit != null) {
+        assert(_orderby != null);
+      }
+
       List<Document> documents = [];
       var url = Uri.parse(API().connection().collectionGet() +
           "?" +
@@ -168,9 +173,8 @@ class Collection {
       } catch (e) {}
 
       if (response == null) {
-        return await API()
-            .cache()
-            .searchForDocuments(id, query, _orderby, start: _start, end: _end);
+        return await API().cache().searchForDocuments(id, query, _orderby,
+            start: _start, end: _limit);
       }
 
       if (response.statusCode == 200) {
@@ -199,7 +203,7 @@ class Collection {
 
       var url = Uri.parse(API().connection().documentAdd());
 
-      API().cache().insertDocument(id, postBody[id], postBody);
+      API().cache().insertDocument(id, docID, data);
       var response;
       try {
         response = await http.post(url,

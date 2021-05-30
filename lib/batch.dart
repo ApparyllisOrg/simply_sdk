@@ -53,6 +53,22 @@ class Batch {
     operations.add(Operation(id, OperationType.delete, {}));
   }
 
+  void enqueueToCache() {
+    for (Operation op in operations) {
+      switch (op.type) {
+        case OperationType.add:
+          API().cache().queueAdd(collection, op.id, op.data);
+          continue;
+        case OperationType.update:
+          API().cache().queueUpdate(collection, op.id, op.data);
+          continue;
+        case OperationType.delete:
+          API().cache().queueDelete(collection, op.id);
+          continue;
+      }
+    }
+  }
+
   Future<void> commit() async {
     var url = Uri.parse(API().connection().batch());
 
@@ -62,17 +78,42 @@ class Batch {
       sendOps.add(op.toJson());
     }
 
-    var response = await http.post(url,
-        headers: getHeader(),
-        body: jsonEncode({
-          "operations": sendOps,
-          "target": collection,
-          "updateTime": DateTime.now().millisecondsSinceEpoch
-        }));
+    for (Operation op in operations) {
+      switch (op.type) {
+        case OperationType.add:
+          API().cache().insertDocument(collection, op.id, op.data);
+          continue;
+        case OperationType.update:
+          API().cache().updateDocument(collection, op.id, op.data);
+          continue;
+        case OperationType.delete:
+          API().cache().removeDocument(collection, op.id);
+          continue;
+      }
+    }
+
+    var response;
+    try {
+      response = await http.post(url,
+          headers: getHeader(),
+          body: jsonEncode({
+            "operations": sendOps,
+            "target": collection,
+            "updateTime": DateTime.now().millisecondsSinceEpoch
+          }));
+    } catch (e) {}
+
+    if (response == null) {
+      enqueueToCache();
+      return;
+    }
 
     if (response.statusCode == 200) {
       // Happy!
     } else {
+      if (response.statusCode != 400) {
+        enqueueToCache();
+      }
       throw ("${response.statusCode.toString()}: ${response.body}");
     }
   }

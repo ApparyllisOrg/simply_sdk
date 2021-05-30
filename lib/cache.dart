@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
+import 'package:simply_sdk/socket.dart';
 
 import 'collection.dart';
 import 'document.dart';
@@ -64,16 +67,37 @@ class Cache {
     db = await dbFactory.openDatabase(dbPath);
   }
 
+  void listenForChanges(Subscription sub) {
+    var store = StoreRef.main();
+    var query = store.query(finder: finder);
+    query.onSnapshots(db).listen((event) {
+      for (var change in event) {
+        Map<String, dynamic> value = change.value;
+        if (value.containsKey("ttl")) {
+          sub.documents.removeWhere((element) => element.id == value["id"]);
+        }
+        if (sub.documents.firstWhere((element) => element.id == value["id"],
+                orElse: () {
+              return null;
+            }) !=
+            null) {
+              sub.documents[value["id"]]
+            }
+      }
+    });
+  }
+
   Future<String> insertDocument(
       String collection, String id, Map<String, dynamic> data) async {
     var store = StoreRef.main();
 
-    data["collection"] = collection;
-    data["id"] = id;
+    var dataCopy = Map.from(data);
+    dataCopy["collection"] = collection;
+    dataCopy["id"] = id;
 
     await store.add(
       db,
-      data,
+      dataCopy,
     );
 
     return id;
@@ -82,9 +106,10 @@ class Cache {
   void updateDocument(String collection, String id, Map<String, dynamic> data) {
     var store = StoreRef.main();
 
-    data["collection"] = collection;
+    var dataCopy = Map.from(data);
+    dataCopy["collection"] = collection;
 
-    store.update(db, data,
+    store.update(db, dataCopy,
         finder: Finder(
             filter: Filter.and([
           Filter.equals("id", id),
@@ -122,9 +147,13 @@ class Cache {
       }
 
       Map<String, dynamic> docData = Map.from(data.value);
-      docData.remove("collection");
-      docData.remove("id");
-      doc.data = docData;
+      Map<String, dynamic> sendData = {};
+      docData.forEach((key, value) {
+        if (key != "id" && key != "collection") {
+          sendData[key] = value;
+        }
+      });
+      doc.data = sendData;
       doc.exists = true;
 
       return doc;
@@ -164,15 +193,18 @@ class Cache {
 
     for (var foundDoc in foundDocs) {
       Map<String, dynamic> data = Map.from(foundDoc.value);
-      data.remove("collection");
-      data.remove("id");
 
-      Document doc = Document(true, foundDoc.value["id"], collection, data);
+      Map<String, dynamic> sendData = {};
+      data.forEach((key, value) {
+        if (key != "id" && key != "collection") {
+          sendData[key] = value;
+        }
+      });
+
+      Document doc = Document(true, foundDoc.value["id"], collection, sendData);
       docs.add(doc);
     }
 
     return docs;
   }
-
-  // Todo: Listeners to data changes
 }
