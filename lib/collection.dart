@@ -232,6 +232,7 @@ class Collection {
       } else {
         if (response.statusCode != 400) {
           API().cache().queueAdd(id, docID, data);
+          return Document(true, docID, id, data);
         }
         throw ("${response.statusCode.toString()}: ${response.body}");
       }

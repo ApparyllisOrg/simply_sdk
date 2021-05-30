@@ -119,14 +119,16 @@ void main() {
 
     Map<String, dynamic> newData = {"number": Random().nextInt(50)};
 
-    newDoc.update(newData);
+    await newDoc.update(newData);
 
     var updatedDoc = await API().database().collection("test").document(doc.id);
 
     expect(updatedDoc.exists, true);
     expect(newDoc.exists, true);
     expect(doc.id, newDoc.id);
-    expect(updatedDoc.data, newData);
+    // We can't expect this for the data to be equal because the server returns "lastUpdate", so when we're
+    // not actually offline, this expect would fail.
+    expect(updatedDoc.data["number"], newData["number"]);
     expect(doc.collectionId, newDoc.collectionId);
   });
 
@@ -143,7 +145,9 @@ void main() {
     expect(doc.exists, true);
     expect(newDoc.exists, true);
     expect(doc.id, newDoc.id);
-    expect(doc.data, newDoc.data);
+    // We can't expect this for the data to be equal because the server returns "lastUpdate", so when we're
+    // not actually offline, this expect would fail.
+    expect(doc.data["number"], newDoc.data["number"]);
     expect(doc.collectionId, newDoc.collectionId);
   });
 
@@ -151,7 +155,7 @@ void main() {
     await API().initialize();
     API().auth().setLastAuthToken(
         "eyJhbGciOiJSUzI1NiIsImtpZCI6IjUzNmRhZWFiZjhkZDY1ZDRkZTIxZTgyNGI4OTlhMWYzZGEyZjg5NTgiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZnJvbnRpbWUtN2FhY2UiLCJhdWQiOiJmcm9udGltZS03YWFjZSIsImF1dGhfdGltZSI6MTYyMTQ1MTE0NiwidXNlcl9pZCI6InpkaEU4TFNZaGVQOWRHemR3S3p5OGVvSnJUdTEiLCJzdWIiOiJ6ZGhFOExTWWhlUDlkR3pkd0t6eThlb0pyVHUxIiwiaWF0IjoxNjIxNDUxMTQ2LCJleHAiOjE2MjE0NTQ3NDYsImVtYWlsIjoiZGVtb0BhcHBhcnlsbGlzLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJkZW1vQGFwcGFyeWxsaXMuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.ZQBE-i8F5-fsJ4bsL--w0-HWYNMdxleVTLWzjWDv4ME4ZrDnACZrHoY_96Q64_KAn2pWpP4rUAZldsx-fU7vK2quRZaEiPM1fyN_tBW1QS5uF6Ow6EySvXeC2zGT0w4Wf-6gfFnzXkg3mBIawp2xId_qRqbJfkIO4V8b2f-cM5FPQWnjwFk_H17hNycnnfenbOp_XyknlZ5iB_pY-MPGEzZcSeIL_Qd6ybAyCezBRi7uE1CNk3ULtxC0vO7t4wveqqnoPTVC3RNkeyJqVacA2_2EnwD_1m5-DxCAjpS-eLmZgso1rorvSoTM9b0ocXMXvFQseuel7IyjTZD8ExXzwQ",
-        "zdhE8LSYheP9dGzdwKzy8eoJrTu1");
+        "debug_0");
   });
 
   test("Send enqued changes to server", () async {
@@ -344,9 +348,9 @@ void main() {
     Batch batch = API().database().batch("unitTest");
     var rand = Random().nextInt(100);
     rand += 1000;
-    batch.add({"number": rand});
-    batch.add({"number": rand});
-    batch.add({"number": rand});
+    batch.add(ObjectId(clientMode: true).$oid, {"number": rand});
+    batch.add(ObjectId(clientMode: true).$oid, {"number": rand});
+    batch.add(ObjectId(clientMode: true).$oid, {"number": rand});
     await batch.commit();
   });
 }

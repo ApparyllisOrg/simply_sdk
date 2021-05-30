@@ -41,8 +41,8 @@ class Batch {
     assert(collection != null);
   }
 
-  void add(Map<String, dynamic> data) {
-    operations.add(Operation("N/A", OperationType.add, data));
+  void add(String id, Map<String, dynamic> data) {
+    operations.add(Operation(id, OperationType.add, data));
   }
 
   void update(String id, Map<String, dynamic> data) {
