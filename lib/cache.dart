@@ -69,21 +69,33 @@ class Cache {
 
   void listenForChanges(Subscription sub) {
     var store = StoreRef.main();
-    var query = store.query(finder: finder);
-    query.onSnapshots(db).listen((event) {
+    Filter filter = filterFromQuery(sub.target, sub.query);
+    var query = store.query(finder: Finder(filter: filter));
+    query.onSnapshots(db).listen((event) async {
       for (var change in event) {
-        Map<String, dynamic> value = change.value;
-        if (value.containsKey("ttl")) {
-          sub.documents.removeWhere((element) => element.id == value["id"]);
+        if (await change.ref.exists(db)) {
+          sub.documents
+              .removeWhere((element) => element.id == change.value["id"]);
+          continue;
         }
-        if (sub.documents.firstWhere((element) => element.id == value["id"],
-                orElse: () {
-              return null;
-            }) !=
-            null) {
-              sub.documents[value["id"]]
-            }
+
+        Map<String, dynamic> value = change.value;
+        String id = value["id"];
+
+        Map<String, dynamic> objCopy = Map.from(value);
+        objCopy.remove("id");
+        objCopy.remove("collection");
+
+        var doc = sub.documents
+            .firstWhere((element) => element.id == id, orElse: () => null);
+
+        if (doc != null) {
+          doc.data = objCopy;
+        } else {
+          doc = Document(true, id, sub.target, objCopy);
+        }
       }
+      sub.controller.add(sub.documents);
     });
   }
 
@@ -160,14 +172,8 @@ class Cache {
     });
   }
 
-  Future<List<Document>> searchForDocuments(
-      String collection, Map<String, Query> queries, String orderBy,
-      {int start, int end}) async {
-    List<Document> docs = [];
-    var store = StoreRef.main();
-
+  Filter filterFromQuery(String collection, Map<String, Query> queries) {
     Filter filter;
-
     if (queries.length == 1) {
       var field = queries.keys.first;
       Query query = queries[field];
@@ -183,6 +189,16 @@ class Cache {
 
       filter = Filter.and(filters);
     }
+    return filter;
+  }
+
+  Future<List<Document>> searchForDocuments(
+      String collection, Map<String, Query> queries, String orderBy,
+      {int start, int end}) async {
+    List<Document> docs = [];
+    var store = StoreRef.main();
+
+    Filter filter = filterFromQuery(collection, queries);
 
     var foundDocs = await store.find(db,
         finder: Finder(

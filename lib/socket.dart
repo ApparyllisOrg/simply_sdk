@@ -111,6 +111,11 @@ class Socket {
     refreshConnection();
   }
 
+  void delayStartOfflineListener(Subscription sub) async {
+    await Future.delayed(Duration(milliseconds: 100));
+    sub.controller.onResume.call();
+  }
+
   Future<StreamController> subscribeToCollection(
       String target, Map<String, Query> query) {
     return Future(() {
@@ -120,7 +125,8 @@ class Socket {
       if (isSocketLive()) {
         requestDataListen(sub);
       } else {
-        API().cache().listenForChanges(target, query);
+        API().cache().listenForChanges(sub);
+        delayStartOfflineListener(sub);
       }
       return controller;
     });
