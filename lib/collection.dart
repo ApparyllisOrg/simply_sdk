@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:http/http.dart';
 import 'package:mongo_dart/mongo_dart.dart' as mongo;
 import 'package:sembast/sembast.dart';
 import 'package:simply_sdk/helpers.dart';
@@ -190,25 +191,36 @@ class Collection {
     });
   }
 
-  Future<Document> add(Map<String, dynamic> data) {
+  Future<Response> addImpl(String docID, Map<String, dynamic> data, int time) {
     return Future(() async {
-      assert(API().auth().isAuthenticated());
-      String docID = mongo.ObjectId(clientMode: true).$oid;
+      var url = Uri.parse(API().connection().documentAdd());
+
       Map<String, dynamic> postBody = {
         "target": id,
         "content": data,
-        "updateTime": DateTime.now().millisecondsSinceEpoch,
+        "updateTime": time,
         "id": docID
       };
-
-      var url = Uri.parse(API().connection().documentAdd());
-
-      API().cache().insertDocument(id, docID, data);
       var response;
       try {
         response = await http.post(url,
             body: jsonEncode(postBody), headers: getHeader());
-      } catch (e) {}
+      } catch (e) {
+        print(e);
+      }
+      return response;
+    });
+  }
+
+  Future<Document> add(Map<String, dynamic> data) {
+    return Future(() async {
+      assert(API().auth().isAuthenticated());
+      String docID = mongo.ObjectId(clientMode: true).$oid;
+
+      API().cache().insertDocument(id, docID, data);
+
+      var response =
+          await addImpl(docID, data, DateTime.now().millisecondsSinceEpoch);
 
       if (response == null) {
         API().cache().queueAdd(id, docID, data);

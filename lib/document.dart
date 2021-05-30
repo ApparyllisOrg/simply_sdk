@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:http/http.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:http/http.dart' as http;
 
@@ -16,14 +17,9 @@ class Document {
     assert(collectionId != null);
   }
 
-  Future delete() async {
+  Future<Response> deleteImpl() {
     return Future(() async {
-      assert(API().auth().isAuthenticated());
-
-      API().cache().removeDocument(collectionId, id);
-
       var url = Uri.parse(API().connection().documentDelete());
-
       var sendData = Map.from(data);
       sendData["target"] = collectionId;
       sendData["id"] = id;
@@ -33,6 +29,37 @@ class Document {
         response = await http.delete(url,
             headers: getHeader(), body: jsonEncode(sendData));
       } catch (e) {}
+      return response;
+    });
+  }
+
+  Future<Response> updateImpl(Map<String, dynamic> inData, int time) {
+    return Future(() async {
+      var url = Uri.parse(API().connection().documentUpdate());
+
+      Map<String, dynamic> sendData = {};
+      sendData["target"] = collectionId;
+      sendData["id"] = id;
+      sendData["content"] = inData;
+      sendData["updateTime"] = time;
+
+      var response;
+      try {
+        response = await http.patch(url,
+            headers: getHeader(), body: jsonEncode(sendData));
+      } catch (e) {}
+
+      return response;
+    });
+  }
+
+  Future delete() async {
+    return Future(() async {
+      assert(API().auth().isAuthenticated());
+
+      API().cache().removeDocument(collectionId, id);
+
+      var response = await deleteImpl();
 
       if (response == null) {
         API().cache().queueDelete(collectionId, id);
@@ -57,20 +84,10 @@ class Document {
     return Future(() async {
       assert(API().auth().isAuthenticated());
 
-      var url = Uri.parse(API().connection().documentUpdate());
-
-      Map<String, dynamic> sendData = {};
-      sendData["target"] = collectionId;
-      sendData["id"] = id;
-      sendData["content"] = inData;
-      sendData["updateTime"] = DateTime.now().millisecondsSinceEpoch;
-
       API().cache().updateDocument(collectionId, id, inData);
-      var response;
-      try {
-        response = await http.patch(url,
-            headers: getHeader(), body: jsonEncode(sendData));
-      } catch (e) {}
+
+      var response =
+          await updateImpl(inData, DateTime.now().millisecondsSinceEpoch);
 
       if (response == null) {
         API().cache().queueUpdate(collectionId, id, inData);

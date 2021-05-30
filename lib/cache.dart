@@ -7,9 +7,82 @@ import 'package:simply_sdk/socket.dart';
 
 import 'collection.dart';
 import 'document.dart';
+import 'simply_sdk.dart';
 
 class Cache {
   Database db;
+
+  void removeFromQueue(Map<String, dynamic> item) {
+    var store = StoreRef.main();
+    store.delete(db, finder: Finder(filter: Filter.equals("id", item["id"])));
+  }
+
+  void trySyncToServer() async {
+    await Future.delayed(Duration(milliseconds: 1000));
+    var store = StoreRef.main();
+    var queue = await store
+        .query(finder: Finder(filter: Filter.notNull("queue")))
+        .getSnapshots(db);
+
+    if (queue.isEmpty) {
+      trySyncToServer();
+      return;
+    }
+    try {
+      for (var item in queue) {
+        Map<String, dynamic> data = item.value;
+
+        switch (data["action"]) {
+          case "delete":
+            {
+              var doc = await API()
+                  .database()
+                  .collection(data["collectionRef"])
+                  .document(data["id"]);
+              var response = await doc.deleteImpl();
+              if (response != null) {
+                if (response.statusCode == 400 || response.statusCode == 200) {
+                  print("sent ${data["id"]} to cloud");
+                  removeFromQueue(data);
+                }
+              }
+            }
+            break;
+          case "update":
+            var doc = await API()
+                .database()
+                .collection(data["collectionRef"])
+                .document(data["id"]);
+            var response = await doc.updateImpl(data["data"], data["time"]);
+            if (response != null) {
+              if (response.statusCode == 400 || response.statusCode == 200) {
+                print("sent ${data["id"]} to cloud");
+                removeFromQueue(data);
+              }
+            }
+            break;
+          case "add":
+            var response = await API()
+                .database()
+                .collection(data["collectionRef"])
+                .addImpl(data["id"], data["data"], data["time"]);
+
+            if (response != null) {
+              if (response.statusCode == 400 || response.statusCode == 200) {
+                print("sent ${data["id"]} to cloud");
+                removeFromQueue(data);
+              }
+            }
+            break;
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+
+    await Future.delayed(Duration(milliseconds: 100));
+    trySyncToServer();
+  }
 
   Future<void> clear() {
     return Future(() async {
@@ -65,6 +138,7 @@ class Cache {
     var dbPath = dir.path + "/simply.db";
 
     db = await dbFactory.openDatabase(dbPath);
+    trySyncToServer();
   }
 
   void listenForChanges(Subscription sub) {

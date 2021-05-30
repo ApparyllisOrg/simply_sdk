@@ -1,6 +1,25 @@
+import 'package:flutter/foundation.dart';
+
 class Connection {
-  // Todo: Default to main apparyllis API endpoint in prod and localhost in debug
-  String currentHost = "http://localhost:3000";
+  static const String localHost = "http://localhost:3000";
+  static const String prodHost = "https://api.apparyllis.com:3000";
+
+  String currentHost = "";
+
+  Connection() {
+    if (kDebugMode) {
+      currentHost = localHost;
+    } else {
+      currentHost = prodHost;
+    }
+  }
+
+  void setDebugMode(bool debug) {
+    if (debug)
+      currentHost = localHost;
+    else
+      currentHost = prodHost;
+  }
 
   void setCurrentHost(String host) {
     assert(host != null);
