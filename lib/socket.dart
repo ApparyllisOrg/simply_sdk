@@ -26,6 +26,17 @@ class Socket {
     refreshConnection();
   }
 
+  void reconnect() async {
+    if (_subscriptions.isNotEmpty) {
+      if (!isSocketLive()) {
+        createConnection();
+      }
+    }
+
+    await Future.delayed(Duration(seconds: 1));
+    reconnect();
+  }
+
   bool isSocketLive() => _socket != null && _socket.closeCode != null;
   IOWebSocketChannel getSocket() => _socket;
 
