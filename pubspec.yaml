@@ -20,7 +20,7 @@ dependencies:
   sembast: ^3.0.2
   uuid: ^3.0.4
   mongo_dart: ^0.7.0+2
-  cloud_firestore: ^2.2.0
+  cloud_firestore: ^1.0.1
   sembast_cloud_firestore_type_adapters:
     git:
       url: git://github.com/tekartik/sembast_flutter_more.dart
