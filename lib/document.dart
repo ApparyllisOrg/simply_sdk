@@ -12,6 +12,14 @@ class Document {
   final String collectionId;
   final String id;
 
+  T value<T>(String field, T fallback) {
+    var value = data[field];
+    if (value != null) {
+      return value as T;
+    }
+    return fallback;
+  }
+
   Document(this.exists, this.id, this.collectionId, this.data) {
     assert(id != null);
     assert(collectionId != null);
@@ -46,7 +54,8 @@ class Document {
       var response;
       try {
         response = await http.patch(url,
-            headers: getHeader(), body: jsonEncode(sendData));
+            headers: getHeader(),
+            body: jsonEncode(sendData, toEncodable: customEncode));
       } catch (e) {}
 
       return response;

@@ -108,7 +108,7 @@ class Collection {
       }
 
       if (response.statusCode == 200) {
-        var returnedDocument = jsonDecode(response.body);
+        var returnedDocument = jsonDecode(response.body, reviver: customDecode);
         doc.data = returnedDocument["content"];
         doc.exists = returnedDocument["exists"];
       } else {
@@ -179,7 +179,8 @@ class Collection {
       }
 
       if (response.statusCode == 200) {
-        var returnedDocuments = jsonDecode(response.body);
+        var returnedDocuments =
+            jsonDecode(response.body, reviver: customDecode);
         for (var doc in returnedDocuments) {
           documents.add(Document(true, doc["id"], id, doc["content"]));
         }
@@ -204,7 +205,8 @@ class Collection {
       var response;
       try {
         response = await http.post(url,
-            body: jsonEncode(postBody), headers: getHeader());
+            body: jsonEncode(postBody, toEncodable: customEncode),
+            headers: getHeader());
       } catch (e) {
         print(e);
       }

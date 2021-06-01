@@ -100,7 +100,7 @@ class Batch {
             "operations": sendOps,
             "target": collection,
             "updateTime": DateTime.now().millisecondsSinceEpoch
-          }));
+          }, toEncodable: customEncode));
     } catch (e) {}
 
     if (response == null) {
