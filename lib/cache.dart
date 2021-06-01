@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
+import 'package:sembast_cloud_firestore_type_adapters/type_adapters.dart';
 import 'package:simply_sdk/socket.dart';
 
 import 'collection.dart';
@@ -131,13 +132,15 @@ class Cache {
   }
 
   Future<void> initialize() async {
+    if (db != null) return;
+
     DatabaseFactory dbFactory = databaseFactoryIo;
 
     var dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
     var dbPath = dir.path + "/simply.db";
 
-    db = await dbFactory.openDatabase(dbPath);
+    db = await dbFactory.openDatabase(dbPath, codec: sembastFirestoreCodec);
     trySyncToServer();
   }
 

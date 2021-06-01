@@ -3,6 +3,8 @@ description: A new Flutter package project.
 version: 0.0.1
 author:
 
+publish_to: none
+
 environment:
   sdk: ">=2.7.0 <3.0.0"
   flutter: ">=1.17.0"
@@ -18,6 +20,12 @@ dependencies:
   sembast: ^3.0.2
   uuid: ^3.0.4
   mongo_dart: ^0.7.0+2
+  sembast_cloud_firestore_type_adapters:
+    git:
+      url: git://github.com/tekartik/sembast_flutter_more.dart
+      path: cloud_firestore_type_adapters
+      ref: dart2
+      version: '>=0.1.0'
 
 dev_dependencies:
   flutter_test:

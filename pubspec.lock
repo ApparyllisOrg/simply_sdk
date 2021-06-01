@@ -50,6 +50,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
+  cloud_firestore_platform_interface:
+    dependency: transitive
+    description:
+      name: cloud_firestore_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.0.0"
   collection:
     dependency: transitive
     description:
@@ -317,6 +324,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.2"
+  sembast_cloud_firestore_type_adapters:
+    dependency: "direct main"
+    description:
+      path: cloud_firestore_type_adapters
+      ref: dart2
+      resolved-ref: "2aa36413f9db77dc9f9cbf320af7ae3b48a5cd28"
+      url: "git://github.com/tekartik/sembast_flutter_more.dart"
+    source: git
+    version: "0.1.0"
   sky_engine:
     dependency: transitive
     description: flutter
