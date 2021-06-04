@@ -121,6 +121,13 @@ class Collection {
     });
   }
 
+  Future<void> updateDocument(String docId, Map<String, dynamic> data) {
+    return Future(() async {
+      Document doc = Document(true, docId, id, {});
+      await doc.update(data);
+    });
+  }
+
   Map<String, dynamic> _getQueryString() {
     Map<String, dynamic> stringifiedQueries = {};
     bool hasUid = false;
