@@ -61,6 +61,8 @@ class Collection {
   int _start;
   int _end;
 
+  int getStart() => _start;
+
   Collection(this.id);
 
   Map<String, Query> query = {};
@@ -125,6 +127,13 @@ class Collection {
     return Future(() async {
       Document doc = Document(true, docId, id, {});
       await doc.update(data);
+    });
+  }
+
+  Future<void> deleteDocument(String docId) {
+    return Future(() async {
+      Document doc = Document(true, docId, id, {});
+      await doc.delete();
     });
   }
 
@@ -221,10 +230,11 @@ class Collection {
     });
   }
 
-  Future<Document> add(Map<String, dynamic> data) {
+  Future<Document> add(Map<String, dynamic> data, {String customId}) {
     return Future(() async {
       assert(API().auth().isAuthenticated());
-      String docID = mongo.ObjectId(clientMode: true).$oid;
+      String docID =
+          customId != null ? customId : mongo.ObjectId(clientMode: true).$oid;
 
       API().cache().insertDocument(id, docID, data);
 
