@@ -167,6 +167,16 @@ class Collection {
     return "";
   }
 
+  Future<Document> getOne() {
+    return Future(() async {
+      List<Document> getResult = await get();
+      if (getResult.isNotEmpty) {
+        return getResult.first;
+      }
+      return Document(false, "", id, {});
+    });
+  }
+
   Future<List<Document>> get() {
     return Future(() async {
       assert(API().auth().isAuthenticated());

@@ -7,6 +7,7 @@ class Paginate extends StatefulWidget {
   final Collection collection;
   final Function itemBuilder;
   final Function getLoader;
+  final Function emptyView;
   final int stepSize;
 
   const Paginate(
@@ -14,7 +15,8 @@ class Paginate extends StatefulWidget {
       this.collection,
       this.itemBuilder,
       this.stepSize = 10,
-      this.getLoader})
+      this.getLoader,
+      this.emptyView})
       : super(key: key);
 
   @override
@@ -70,6 +72,14 @@ class PaginateState extends State<Paginate> {
   }
 
   Widget build(BuildContext context) {
+    if (!isLoading && docs.length == 0) {
+      return Container(
+        child: Center(
+          child: Text(widget.emptyView()),
+        ),
+      );
+    }
+
     List<Widget> children = [];
 
     for (int i = 0; i < docs.length; ++i) {
