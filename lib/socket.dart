@@ -20,10 +20,12 @@ class Subscription {
 class Socket {
   IOWebSocketChannel _socket;
   List<Subscription> _subscriptions = [];
+  List<StreamController> pendingSubscriptions = [];
 
   void initialize() {
     createConnection();
     refreshConnection();
+    reconnect();
   }
 
   void reconnect() async {
@@ -31,13 +33,23 @@ class Socket {
       if (!isSocketLive()) {
         createConnection();
       }
+
+      if (isSocketLive()) {
+        if (pendingSubscriptions.isNotEmpty) {
+          StreamController cont = pendingSubscriptions.first;
+          Subscription subscription = _subscriptions
+              .firstWhere((element) => element.controller == cont);
+          requestDataListen(subscription);
+          pendingSubscriptions.removeAt(0);
+        }
+      }
     }
 
     await Future.delayed(Duration(seconds: 1));
     reconnect();
   }
 
-  bool isSocketLive() => _socket != null && _socket.closeCode != null;
+  bool isSocketLive() => _socket != null && _socket.closeCode == null;
   IOWebSocketChannel getSocket() => _socket;
 
   void createConnection() {
@@ -46,7 +58,7 @@ class Socket {
     _socket.stream.listen(onReceivedData).onError((err) => throw (err));
 
     for (Subscription sub in _subscriptions) {
-      requestDataListen(sub);
+      pendingSubscriptions.add(sub.controller);
     }
   }
 
@@ -106,7 +118,7 @@ class Socket {
     if (msg == "hello") {
       for (Subscription sub in _subscriptions) {
         if (sub.target == data["target"]) {
-          sub.controller.onResume.call();
+          sub.controller.onResume?.call();
         }
       }
     }
@@ -133,7 +145,7 @@ class Socket {
       Subscription sub = Subscription(target, query, controller);
       _subscriptions.add(sub);
       if (isSocketLive()) {
-        requestDataListen(sub);
+        pendingSubscriptions.add(sub.controller);
       } else {
         API().cache().listenForChanges(sub);
         delayStartOfflineListener(sub);
@@ -142,8 +154,8 @@ class Socket {
     });
   }
 
-  void requestDataListen(Subscription subscription) {
-    assert(_socket != null);
+  void requestDataListen(Subscription subscription) async {
+    assert(isSocketLive());
     Map<String, dynamic> queries = {};
 
     bool hasUid = false;
