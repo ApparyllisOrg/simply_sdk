@@ -25,7 +25,7 @@ class Paginate extends StatefulWidget {
 
 class PaginateState extends State<Paginate> {
   int currentOffset = 0;
-  bool isLoading = true;
+  bool isLoading = false;
   bool reachedEnd = false;
   Collection _localCollection;
 
@@ -45,7 +45,7 @@ class PaginateState extends State<Paginate> {
       }
     });
 
-    currentOffset = widget.collection.getStart();
+    currentOffset = 0;
     _localCollection = widget.collection;
     getNextBatch();
   }
@@ -59,6 +59,7 @@ class PaginateState extends State<Paginate> {
     setState(() {});
 
     _localCollection.start(currentOffset);
+    _localCollection.limit(currentOffset + widget.stepSize);
     List<Document> newDocs = await _localCollection.get();
     docs.addAll(newDocs);
 
@@ -73,11 +74,11 @@ class PaginateState extends State<Paginate> {
 
   Widget build(BuildContext context) {
     if (!isLoading && docs.length == 0) {
-      return Container(
-        child: Center(
-          child: Text(widget.emptyView()),
-        ),
-      );
+      return widget.emptyView();
+    }
+
+    if (reachedEnd && docs.isEmpty) {
+      return widget.emptyView();
     }
 
     List<Widget> children = [];
