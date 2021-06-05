@@ -31,7 +31,7 @@ class PaginateState extends State<Paginate> {
 
   ScrollController _scrollController = ScrollController();
 
-  List<Document> docs;
+  List<Document> docs = [];
 
   @override
   void initState() {
