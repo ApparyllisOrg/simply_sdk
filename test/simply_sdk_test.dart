@@ -41,7 +41,7 @@ void main() {
 
   test('add 20 documents', () async {
     await API().initialize();
-    API().connection().setDebugMode(true);
+    API().connection().setDebugMode(false);
     await API().cache().clear();
     await addDocs(20, 50);
   });

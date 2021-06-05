@@ -41,15 +41,13 @@ class Socket {
   IOWebSocketChannel getSocket() => _socket;
 
   void createConnection() {
-    try {
-      _socket = IOWebSocketChannel.connect('ws://localhost:8080');
+    _socket = IOWebSocketChannel.connect('ws://138.197.49.43:8080');
 
-      _socket.stream.listen(onReceivedData).onError((err) => null);
+    _socket.stream.listen(onReceivedData).onError((err) => throw (err));
 
-      for (Subscription sub in _subscriptions) {
-        requestDataListen(sub);
-      }
-    } catch (e) {}
+    for (Subscription sub in _subscriptions) {
+      requestDataListen(sub);
+    }
   }
 
   void updateDocument(Subscription sub, Map<String, dynamic> documentData) {
@@ -124,7 +122,8 @@ class Socket {
 
   void delayStartOfflineListener(Subscription sub) async {
     await Future.delayed(Duration(milliseconds: 100));
-    sub.controller.onResume.call();
+    sub.controller.onResume?.call();
+    sub.controller.onListen?.call();
   }
 
   Future<StreamController> subscribeToCollection(
