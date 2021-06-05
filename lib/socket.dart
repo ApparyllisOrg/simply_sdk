@@ -41,7 +41,7 @@ class Socket {
   IOWebSocketChannel getSocket() => _socket;
 
   void createConnection() {
-    _socket = IOWebSocketChannel.connect('ws://138.197.49.43:8080');
+    _socket = IOWebSocketChannel.connect('wss://api.apparyllis.com:3000');
 
     _socket.stream.listen(onReceivedData).onError((err) => throw (err));
 
