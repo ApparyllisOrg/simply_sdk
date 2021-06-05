@@ -31,6 +31,11 @@ class Socket {
   void reconnect() async {
     if (_subscriptions.isNotEmpty) {
       if (!isSocketLive()) {
+        if (_socket != null) {
+          print("Socket closed: " +
+              _socket.closeCode.toString() +
+              _socket.closeReason);
+        }
         createConnection();
       }
 
@@ -53,9 +58,11 @@ class Socket {
   IOWebSocketChannel getSocket() => _socket;
 
   void createConnection() {
-    _socket = IOWebSocketChannel.connect('wss://api.apparyllis.com:3000');
+    _socket = IOWebSocketChannel.connect('wss://api.apparyllis.com:3000',
+        pingInterval: Duration(seconds: 10));
 
-    _socket.stream.listen(onReceivedData).onError((err) => throw (err));
+    _socket.stream.handleError((err) => print(err));
+    _socket.stream.listen(onReceivedData).onError((err) => print(err));
 
     for (Subscription sub in _subscriptions) {
       pendingSubscriptions.add(sub.controller);
@@ -100,6 +107,7 @@ class Socket {
     Map<String, dynamic> data = jsonDecode(event);
 
     String msg = data["msg"];
+    print(msg);
 
     if (msg == "update") {
       for (Subscription sub in _subscriptions) {
