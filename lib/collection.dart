@@ -190,7 +190,7 @@ class Collection {
       var url = Uri.parse(API().connection().collectionGet() +
           "?" +
           "target=$id${_getOrderBy()}${_getLimit()}${_getStart()}&query=" +
-          jsonEncode(_getQueryString()));
+          jsonEncode(_getQueryString(), toEncodable: customEncode));
 
       var response;
       try {
