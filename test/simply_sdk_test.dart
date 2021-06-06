@@ -183,6 +183,29 @@ void main() {
     expect(doc.collectionId, newDoc.collectionId);
   });
 
+  test('Test Datetime encode and decode', () async {
+    await API().initialize();
+    auth();
+
+    DateTime now = DateTime.now();
+
+    var doc = await API().database().collection("codecTest").add({"time": now});
+
+    var newDoc =
+        await API().database().collection("codecTest").document(doc.id);
+
+    print(doc.id);
+
+    print(newDoc.data.toString());
+    print(newDoc.value<DateTime>("time", null));
+
+    expect(doc.exists, true);
+    expect(newDoc.exists, true);
+    expect(doc.id, newDoc.id);
+    expect(now, newDoc.value<DateTime>("time", null));
+    expect(doc.collectionId, newDoc.collectionId);
+  });
+
   test("Send enqued changes to server", () async {
     String id = ObjectId(clientMode: true).$oid;
     API().cache().queueAdd("test", id, {"exists": true});

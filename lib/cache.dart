@@ -19,14 +19,6 @@ class Cache {
     store.delete(db, finder: Finder(filter: Filter.equals("id", item["id"])));
   }
 
-  Map<String, dynamic> convertToTimestamps(Map<String, dynamic> source) {
-    source.forEach((key, value) {
-      if (value is DateTime) {
-        source[key] = fir.Timestamp.fromDate(value);
-      }
-    });
-  }
-
   void trySyncToServer() async {
     await Future.delayed(Duration(milliseconds: 1000));
     var store = StoreRef.main();
@@ -119,7 +111,7 @@ class Cache {
       "collectionRef": collection,
       "id": id,
       "action": "update",
-      "data": convertToTimestamps(data),
+      "data": data,
       "time": DateTime.now().millisecondsSinceEpoch
     });
   }
@@ -135,7 +127,7 @@ class Cache {
       "collectionRef": collection,
       "id": id,
       "action": "add",
-      "data": convertToTimestamps(data),
+      "data": data,
       "time": DateTime.now().millisecondsSinceEpoch
     });
   }
@@ -195,7 +187,7 @@ class Cache {
 
     await store.add(
       db,
-      convertToTimestamps(dataCopy),
+      dataCopy,
     );
 
     return id;
@@ -207,7 +199,7 @@ class Cache {
     var dataCopy = Map.from(data);
     dataCopy["collection"] = collection;
 
-    store.update(db, convertToTimestamps(dataCopy),
+    store.update(db, dataCopy,
         finder: Finder(
             filter: Filter.and([
           Filter.equals("id", id),
