@@ -23,7 +23,7 @@ dependencies:
   cloud_firestore: ^1.0.1
   sembast_cloud_firestore_type_adapters:
     git:
-      url: git://github.com/tekartik/sembast_flutter_more.dart
+      url: git://github.com/Apparyllis/sembast_flutter_more.dart
       path: cloud_firestore_type_adapters
       ref: dart2
       version: '>=0.1.0'
