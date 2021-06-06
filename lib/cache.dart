@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart' as fir;
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
@@ -16,6 +17,14 @@ class Cache {
   void removeFromQueue(Map<String, dynamic> item) {
     var store = StoreRef.main();
     store.delete(db, finder: Finder(filter: Filter.equals("id", item["id"])));
+  }
+
+  Map<String, dynamic> convertToTimestamps(Map<String, dynamic> source) {
+    source.forEach((key, value) {
+      if (value is DateTime) {
+        source[key] = fir.Timestamp.fromDate(value);
+      }
+    });
   }
 
   void trySyncToServer() async {
@@ -110,7 +119,7 @@ class Cache {
       "collectionRef": collection,
       "id": id,
       "action": "update",
-      "data": data,
+      "data": convertToTimestamps(data),
       "time": DateTime.now().millisecondsSinceEpoch
     });
   }
@@ -126,7 +135,7 @@ class Cache {
       "collectionRef": collection,
       "id": id,
       "action": "add",
-      "data": data,
+      "data": convertToTimestamps(data),
       "time": DateTime.now().millisecondsSinceEpoch
     });
   }
@@ -186,7 +195,7 @@ class Cache {
 
     await store.add(
       db,
-      dataCopy,
+      convertToTimestamps(dataCopy),
     );
 
     return id;
@@ -198,7 +207,7 @@ class Cache {
     var dataCopy = Map.from(data);
     dataCopy["collection"] = collection;
 
-    store.update(db, dataCopy,
+    store.update(db, convertToTimestamps(dataCopy),
         finder: Finder(
             filter: Filter.and([
           Filter.equals("id", id),

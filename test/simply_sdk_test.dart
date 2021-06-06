@@ -32,16 +32,22 @@ void main() {
     });
   }
 
+  void auth() {
+    API().auth().setLastAuthToken(
+        "eyJhbGciOiJSUzI1NiIsImtpZCI6InRCME0yQSJ9.eyJpc3MiOiJodHRwczovL2lkZW50aXR5dG9vbGtpdC5nb29nbGUuY29tLyIsImF1ZCI6ImZyb250aW1lLTdhYWNlIiwiaWF0IjoxNjIyOTcxMDM4LCJleHAiOjE2MjQxODA2MzgsInVzZXJfaWQiOiJ6ZGhFOExTWWhlUDlkR3pkd0t6eThlb0pyVHUxIiwiZW1haWwiOiJkZW1vQGFwcGFyeWxsaXMuY29tIiwic2lnbl9pbl9wcm92aWRlciI6InBhc3N3b3JkIiwidmVyaWZpZWQiOmZhbHNlfQ.Riz5LYqF39ZUCTFa12QvW6l6xSkL6hDPkXlTh4vG2XqnX37nQZUkE-bLp2Yss0zLA02fJOsQVIgoiRslV0a_gnxNTcDxRS60HIcIlMr75RLbVS-JKQ4ou30Q2axrIshTIvairTabMqb04Gxkq6d-1QdNsUW63kDqo5-DaGbg8GHxWp6uOX-HgtzvItXp4BJoSihSt1h44slHqEn4hNQgvSH8ZNEMzZxtI3wSl3aIxO-Wz8ubwTvjfY6T5-BHfd2FAGWHor6UTWnMWbxws-JLp0OnWHmXnGrQ3m1tR2erU13j1gOLruVr9AauU_1PcDoNkU_fy_t9h5muudtMupRA6w",
+        "zdhE8LSYheP9dGzdwKzy8eoJrTu1");
+  }
+
   test('Set auth token', () async {
     await API().initialize();
-    API().auth().setLastAuthToken(
-        "eyJhbGciOiJSUzI1NiIsImtpZCI6IjUzNmRhZWFiZjhkZDY1ZDRkZTIxZTgyNGI4OTlhMWYzZGEyZjg5NTgiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZnJvbnRpbWUtN2FhY2UiLCJhdWQiOiJmcm9udGltZS03YWFjZSIsImF1dGhfdGltZSI6MTYyMTQ1MTE0NiwidXNlcl9pZCI6InpkaEU4TFNZaGVQOWRHemR3S3p5OGVvSnJUdTEiLCJzdWIiOiJ6ZGhFOExTWWhlUDlkR3pkd0t6eThlb0pyVHUxIiwiaWF0IjoxNjIxNDUxMTQ2LCJleHAiOjE2MjE0NTQ3NDYsImVtYWlsIjoiZGVtb0BhcHBhcnlsbGlzLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJkZW1vQGFwcGFyeWxsaXMuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.ZQBE-i8F5-fsJ4bsL--w0-HWYNMdxleVTLWzjWDv4ME4ZrDnACZrHoY_96Q64_KAn2pWpP4rUAZldsx-fU7vK2quRZaEiPM1fyN_tBW1QS5uF6Ow6EySvXeC2zGT0w4Wf-6gfFnzXkg3mBIawp2xId_qRqbJfkIO4V8b2f-cM5FPQWnjwFk_H17hNycnnfenbOp_XyknlZ5iB_pY-MPGEzZcSeIL_Qd6ybAyCezBRi7uE1CNk3ULtxC0vO7t4wveqqnoPTVC3RNkeyJqVacA2_2EnwD_1m5-DxCAjpS-eLmZgso1rorvSoTM9b0ocXMXvFQseuel7IyjTZD8ExXzwQ",
-        "debug_0");
+    auth();
   });
 
   test('add 20 documents', () async {
     await API().initialize();
+    auth();
     API().connection().setDebugMode(false);
+    auth();
     await API().cache().clear();
     await addDocs(20, 50);
   });
@@ -116,8 +122,6 @@ void main() {
   });
 
   test('Test offline simple add, update and get', () async {
-    API().auth().setLastAuthToken("0", "0");
-
     var doc = await API()
         .database()
         .collection("test")
@@ -141,8 +145,6 @@ void main() {
   });
 
   test('Test offline simple add and get', () async {
-    API().auth().setLastAuthToken("0", "0");
-
     var doc = await API()
         .database()
         .collection("test")
@@ -161,7 +163,6 @@ void main() {
 
   test('Test Timestamp encode and decode', () async {
     await API().initialize();
-    API().auth().setLastAuthToken("0", "0");
 
     fir.Timestamp now = fir.Timestamp.now();
 
@@ -190,12 +191,14 @@ void main() {
   });
 
   test('Get test', () async {
+    auth();
     var results = await API().database().collection("unitTest").get();
     print("Returned ${results.length} results");
   });
 
   // fill up the database
   test('add 1000 documents', () async {
+    auth();
     for (int i = 0; i < 1000; i++) {
       API()
           .database()
@@ -204,6 +207,7 @@ void main() {
     }
   });
   test('get test with query equal 0', () async {
+    auth();
     var results = await API()
         .database()
         .collection("unitTest")
@@ -252,6 +256,7 @@ void main() {
   });
 
   test('test add, update and delete of the same document', () async {
+    auth();
     var result = await API()
         .database()
         .collection("unitTest")
@@ -275,6 +280,7 @@ void main() {
   });
 
   test('get test with query order by number', () async {
+    auth();
     var results =
         await API().database().collection("unitTest").orderBy("number").get();
     var lastNumber = -9999;
@@ -287,6 +293,7 @@ void main() {
   });
 
   test('get test with query order by number, limit to first 10', () async {
+    auth();
     var results = await API()
         .database()
         .collection("unitTest")
@@ -307,6 +314,7 @@ void main() {
   test(
       'get test with query order by number, limit to first 5 after starting at pos 5',
       () async {
+    auth();
     var results = await API()
         .database()
         .collection("unitTest")
