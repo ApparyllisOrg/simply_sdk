@@ -229,11 +229,12 @@ class Collection {
         "updateTime": time,
         "id": docID
       };
+
+      String decode = jsonEncode(postBody, toEncodable: customEncode);
+
       var response;
       try {
-        response = await http.post(url,
-            body: jsonEncode(postBody, toEncodable: customEncode),
-            headers: getHeader());
+        response = await http.post(url, body: decode, headers: getHeader());
       } catch (e) {
         print(e);
       }
