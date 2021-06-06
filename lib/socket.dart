@@ -74,7 +74,7 @@ class Socket {
         (element) => element.id == documentData["id"],
         orElse: () => null);
     if (docData != null) {
-      docData.data = documentData["content"];
+      docData.data = Document.convertTime(documentData["content"]);
     } else {
       Document newDoc = Document(
           true, documentData["id"], sub.target, documentData["content"]);

@@ -21,15 +21,19 @@ class Document {
     return fallback;
   }
 
-  Document(this.exists, this.id, this.collectionId, this.data) {
-    assert(id != null);
-    assert(collectionId != null);
-
+  static Map<String, dynamic> convertTime(Map<String, dynamic> data) {
     data.forEach((key, value) {
       if (key.toLowerCase().contains("time") && value is int) {
         data[key] = Timestamp.fromMicrosecondsSinceEpoch(value);
       }
     });
+    return data;
+  }
+
+  Document(this.exists, this.id, this.collectionId, this.data) {
+    assert(id != null);
+    assert(collectionId != null);
+    data = convertTime(this.data);
   }
 
   Future<Response> deleteImpl() {
