@@ -46,8 +46,11 @@ class Document {
       var response;
       try {
         response = await http.delete(url,
-            headers: getHeader(), body: jsonEncode(sendData));
-      } catch (e) {}
+            headers: getHeader(),
+            body: jsonEncode(sendData, toEncodable: customEncode));
+      } catch (e) {
+        print(e);
+      }
       return response;
     });
   }
