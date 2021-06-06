@@ -26,8 +26,8 @@ class Document {
     assert(collectionId != null);
 
     data.forEach((key, value) {
-      if (key.toLowerCase().contains("time") && value == int) {
-        data[key] = Timestamp.fromMillisecondsSinceEpoch(value);
+      if (key.toLowerCase().contains("time") && value is int) {
+        data[key] = Timestamp.fromMicrosecondsSinceEpoch(value);
       }
     });
   }
