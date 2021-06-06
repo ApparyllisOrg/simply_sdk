@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:http/http.dart' as http;
@@ -23,6 +24,12 @@ class Document {
   Document(this.exists, this.id, this.collectionId, this.data) {
     assert(id != null);
     assert(collectionId != null);
+
+    data.forEach((key, value) {
+      if (key.toLowerCase().contains("time") && value == int) {
+        data[key] = Timestamp.fromMillisecondsSinceEpoch(value);
+      }
+    });
   }
 
   Future<Response> deleteImpl() {
