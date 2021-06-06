@@ -111,8 +111,9 @@ class Collection {
 
       if (response.statusCode == 200) {
         var returnedDocument = jsonDecode(response.body, reviver: customDecode);
-        doc.data = returnedDocument["content"];
-        doc.exists = returnedDocument["exists"];
+
+        return Document(
+            returnedDocument["exists"], docId, id, returnedDocument["content"]);
       } else {
         doc.data = {};
         doc.exists = false;
