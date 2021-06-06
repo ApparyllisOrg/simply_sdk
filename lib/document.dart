@@ -14,6 +14,10 @@ class Document {
   final String id;
 
   T value<T>(String field, T fallback) {
+    if (data == null) {
+      return fallback;
+    }
+
     var value = data[field];
     if (value != null) {
       return value as T;
