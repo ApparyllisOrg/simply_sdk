@@ -14,6 +14,7 @@ class Document {
   final String id;
 
   T value<T>(String field, T fallback) {
+    // This really shouldn't be null, investigate.
     if (data == null) {
       return fallback;
     }
@@ -86,6 +87,8 @@ class Document {
 
       API().cache().removeDocument(collectionId, id);
 
+      API().socket().beOptimistic(collectionId, EUpdateType.Remove, id, data);
+
       var response = await deleteImpl();
 
       if (response == null) {
@@ -112,6 +115,8 @@ class Document {
       assert(API().auth().isAuthenticated());
 
       API().cache().updateDocument(collectionId, id, inData);
+
+      API().socket().beOptimistic(collectionId, EUpdateType.Update, id, data);
 
       var response =
           await updateImpl(inData, DateTime.now().millisecondsSinceEpoch);

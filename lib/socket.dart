@@ -6,6 +6,7 @@ import 'package:simply_sdk/collection.dart';
 import 'package:simply_sdk/document.dart';
 import 'package:web_socket_channel/io.dart';
 
+import 'helpers.dart';
 import 'simply_sdk.dart';
 
 class Subscription {
@@ -101,6 +102,16 @@ class Socket {
         removeDocument(sub, change["id"]);
         return;
     }
+  }
+
+  void beOptimistic(String targetCollection, EUpdateType operation, String id,
+      Map<String, dynamic> data) {
+    onReceivedData({
+      "msg": "update",
+      "target": targetCollection,
+      "operationType": updateTypeToString(operation),
+      "results": [data]
+    });
   }
 
   void onReceivedData(event) {

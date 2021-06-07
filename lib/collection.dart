@@ -250,6 +250,8 @@ class Collection {
 
       API().cache().insertDocument(id, docID, data);
 
+      API().socket().beOptimistic(id, EUpdateType.Add, docID, data);
+
       var response =
           await addImpl(docID, data, DateTime.now().millisecondsSinceEpoch);
 

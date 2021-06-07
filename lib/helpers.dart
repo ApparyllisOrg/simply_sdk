@@ -3,6 +3,21 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 
+enum EUpdateType { Add, Update, Remove }
+
+String updateTypeToString(EUpdateType type) {
+  switch (type) {
+    case EUpdateType.Add:
+      return "insert";
+    case EUpdateType.Update:
+      return "update";
+    case EUpdateType.Remove:
+      return "delete";
+  }
+
+  return "";
+}
+
 getHeader() => {
       "Content-Type": "application/json",
       "Authorization": API().auth().getToken()
