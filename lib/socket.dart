@@ -107,6 +107,7 @@ class Socket {
   void beOptimistic(String targetCollection, EUpdateType operation, String id,
       Map<String, dynamic> data) {
     data["operationType"] = updateTypeToString(operation);
+    data["id"] = id;
     onReceivedData(jsonEncode({
       "msg": "update",
       "target": targetCollection,
