@@ -106,16 +106,16 @@ class Socket {
 
   void beOptimistic(String targetCollection, EUpdateType operation, String id,
       Map<String, dynamic> data) {
-    onReceivedData({
+    onReceivedData(jsonEncode({
       "msg": "update",
       "target": targetCollection,
       "operationType": updateTypeToString(operation),
       "results": [data]
-    });
+    }, toEncodable: customEncode));
   }
 
   void onReceivedData(event) {
-    Map<String, dynamic> data = jsonDecode(event);
+    Map<String, dynamic> data = jsonDecode(event, reviver: customDecode);
 
     String msg = data["msg"];
     print(msg);
@@ -202,6 +202,6 @@ class Socket {
       "target": subscription.target,
       "jwt": API().auth().getToken(),
       "query": queries
-    }));
+    }, toEncodable: customEncode));
   }
 }
