@@ -155,6 +155,15 @@ class Socket {
     await Future.delayed(Duration(milliseconds: 100));
     sub.controller.onResume?.call();
     sub.controller.onListen?.call();
+
+    List<Document> initialDocs =
+        await API().cache().searchForDocuments(sub.target, sub.query, "");
+
+    if (sub.documents.isEmpty) {
+      sub.documents = initialDocs;
+    }
+
+    sub.controller.add(sub.documents);
   }
 
   Future<StreamController> subscribeToCollection(
@@ -165,10 +174,9 @@ class Socket {
       _subscriptions.add(sub);
       if (isSocketLive()) {
         pendingSubscriptions.add(sub.controller);
-      } else {
-        API().cache().listenForChanges(sub);
-        delayStartOfflineListener(sub);
       }
+      API().cache().listenForChanges(sub);
+      delayStartOfflineListener(sub);
       return controller;
     });
   }
