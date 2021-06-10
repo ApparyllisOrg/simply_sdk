@@ -176,8 +176,10 @@ class Socket {
       _subscriptions.add(sub);
       if (isSocketLive()) {
         pendingSubscriptions.add(sub.controller);
+      } else {
+        API().cache().listenForChanges(sub);
       }
-      API().cache().listenForChanges(sub);
+
       delayStartOfflineListener(sub);
       return controller;
     });

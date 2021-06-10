@@ -219,6 +219,46 @@ class Collection {
     });
   }
 
+  Future<List<Document>> getComplex(Map<dynamic, dynamic> query) {
+    return Future(() async {
+      assert(API().auth().isAuthenticated());
+
+      if (_end != null || _start != null || _limit != null) {
+        assert(_orderby != null);
+      }
+
+      List<Document> documents = [];
+      var url = Uri.parse(API().connection().collectionGet() +
+          "?" +
+          "target=$id${_getOrderBy()}${_getLimit()}${_getStart()}&query=" +
+          jsonEncode(query.toString(), toEncodable: customEncode));
+
+      var response;
+      try {
+        response = await http.get(
+          url,
+          headers: getHeader(),
+        );
+      } catch (e) {}
+
+      if (response == null) {
+        return [];
+      }
+
+      if (response.statusCode == 200) {
+        var returnedDocuments =
+            jsonDecode(response.body, reviver: customDecode);
+        for (var doc in returnedDocuments) {
+          documents.add(Document(true, doc["id"], id, doc["content"]));
+        }
+      } else {
+        throw ("${response.statusCode.toString()}: ${response.body}");
+      }
+
+      return documents;
+    });
+  }
+
   Future<Response> addImpl(String docID, Map<String, dynamic> data, int time) {
     return Future(() async {
       var url = Uri.parse(API().connection().documentAdd());
