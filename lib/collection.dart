@@ -227,11 +227,15 @@ class Collection {
         assert(_orderby != null);
       }
 
+      if (!query.containsKey("uid")) {
+        query["uid"] = {"isEqualTo": API().auth().getUid()};
+      }
+
       List<Document> documents = [];
       var url = Uri.parse(API().connection().collectionGet() +
           "?" +
           "target=$id${_getOrderBy()}${_getLimit()}${_getStart()}&query=" +
-          jsonEncode(query.toString(), toEncodable: customEncode));
+          jsonEncode(query, toEncodable: customEncode));
 
       var response;
       try {
