@@ -28,6 +28,7 @@ class Connection {
   }
 
   String collectionGet() => "$currentHost/collection/get";
+  String collectionGetComplex() => "$currentHost/collection/getComplex";
   String documentGet() => "$currentHost/document/get";
   String documentAdd() => "$currentHost/document/add";
   String documentUpdate() => "$currentHost/document/update";

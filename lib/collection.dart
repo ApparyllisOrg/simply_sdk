@@ -228,7 +228,7 @@ class Collection {
       }
 
       List<Document> documents = [];
-      var url = Uri.parse(API().connection().collectionGet() +
+      var url = Uri.parse(API().connection().collectionGetComplex() +
           "?" +
           "target=$id${_getOrderBy()}${_getLimit()}${_getStart()}&query=" +
           jsonEncode(query, toEncodable: customEncode));
