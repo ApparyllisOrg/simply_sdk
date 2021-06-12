@@ -38,6 +38,7 @@ class Document {
   Document(this.exists, this.id, this.collectionId, this.data) {
     assert(id != null);
     assert(collectionId != null);
+    if (data == null) data = {};
     data = convertTime(this.data);
   }
 
