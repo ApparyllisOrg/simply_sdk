@@ -227,10 +227,6 @@ class Collection {
         assert(_orderby != null);
       }
 
-      if (!query.containsKey("uid")) {
-        query["uid"] = {"isEqualTo": API().auth().getUid()};
-      }
-
       List<Document> documents = [];
       var url = Uri.parse(API().connection().collectionGet() +
           "?" +
