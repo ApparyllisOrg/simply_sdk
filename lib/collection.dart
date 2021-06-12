@@ -112,8 +112,8 @@ class Collection {
       if (response.statusCode == 200) {
         var returnedDocument = jsonDecode(response.body, reviver: customDecode);
 
-        return Document(
-            returnedDocument["exists"], docId, id, returnedDocument["content"]);
+        return Document(returnedDocument["exists"], docId, id,
+            returnedDocument["content"] ?? {});
       } else {
         doc.data = {};
         doc.exists = false;
@@ -209,7 +209,7 @@ class Collection {
         var returnedDocuments =
             jsonDecode(response.body, reviver: customDecode);
         for (var doc in returnedDocuments) {
-          documents.add(Document(true, doc["id"], id, doc["content"]));
+          documents.add(Document(true, doc["id"], id, doc["content"] ?? {}));
         }
       } else {
         throw ("${response.statusCode.toString()}: ${response.body}");
@@ -249,7 +249,7 @@ class Collection {
         var returnedDocuments =
             jsonDecode(response.body, reviver: customDecode);
         for (var doc in returnedDocuments) {
-          documents.add(Document(true, doc["id"], id, doc["content"]));
+          documents.add(Document(true, doc["id"], id, doc["content"] ?? {}));
         }
       } else {
         throw ("${response.statusCode.toString()}: ${response.body}");
