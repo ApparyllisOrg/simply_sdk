@@ -29,6 +29,14 @@ class Socket {
     reconnect();
   }
 
+  void cancelConnections() {
+    _subscriptions.clear();
+    pendingSubscriptions.clear();
+    if (isSocketLive()) {
+      _socket.sink.close();
+    }
+  }
+
   void reconnect() async {
     if (_subscriptions.isNotEmpty) {
       if (!isSocketLive()) {
