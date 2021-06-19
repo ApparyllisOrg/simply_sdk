@@ -70,6 +70,10 @@ class Batch {
   }
 
   Future<void> commit() async {
+    if (operations.isEmpty) {
+      return;
+    }
+
     var url = Uri.parse(API().connection().batch());
 
     List<Map<String, dynamic>> sendOps = [];
