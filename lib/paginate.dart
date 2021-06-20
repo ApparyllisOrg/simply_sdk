@@ -56,7 +56,9 @@ class PaginateState extends State<Paginate> {
     }
 
     isLoading = true;
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
 
     _localCollection.start(currentOffset);
     _localCollection.limit(currentOffset + widget.stepSize);
@@ -69,7 +71,9 @@ class PaginateState extends State<Paginate> {
 
     currentOffset += widget.stepSize;
     isLoading = false;
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Widget build(BuildContext context) {
