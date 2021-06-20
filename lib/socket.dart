@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:sembast/sembast.dart';
 import 'package:simply_sdk/collection.dart';
 import 'package:simply_sdk/document.dart';
 import 'package:web_socket_channel/io.dart';
+import 'package:uuid/uuid.dart';
 
 import 'helpers.dart';
 import 'simply_sdk.dart';
@@ -22,8 +22,10 @@ class Socket {
   IOWebSocketChannel _socket;
   List<Subscription> _subscriptions = [];
   List<StreamController> pendingSubscriptions = [];
+  String uniqueConnectionId;
 
   void initialize() {
+    uniqueConnectionId = Uuid().v4();
     createConnection();
     refreshConnection();
     reconnect();
@@ -215,7 +217,8 @@ class Socket {
     _socket.sink.add(jsonEncode({
       "target": subscription.target,
       "jwt": API().auth().getToken(),
-      "query": queries
+      "query": queries,
+      "uniqueId": uniqueConnectionId
     }, toEncodable: customEncode));
   }
 }

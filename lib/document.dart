@@ -23,7 +23,7 @@ class Document {
     if (value != null) {
       // Special case where every DateTime needs to be converted to Timestamp, as
       // we only provide Timestamp to ensure server/cache works in harmony
-      if (value is DateTime && T is Timestamp) {
+      if (value is DateTime) {
         return Timestamp.fromDate(value) as T;
       }
       return value as T;
