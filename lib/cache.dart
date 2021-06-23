@@ -41,7 +41,7 @@ class Cache {
                   .database()
                   .collection(data["collectionRef"])
                   .document(data["id"]);
-              var response = await doc.deleteImpl();
+              var response = await doc.deleteImpl(data["time"]);
               if (response != null) {
                 if (response.statusCode == 400 || response.statusCode == 200) {
                   print("sent ${data["id"]} to cloud");

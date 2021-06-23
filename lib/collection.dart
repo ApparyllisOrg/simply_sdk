@@ -293,7 +293,7 @@ class Collection {
       API().socket().beOptimistic(id, EUpdateType.Add, docID, data);
 
       var response =
-          await addImpl(docID, data, DateTime.now().millisecondsSinceEpoch);
+          await addImpl(docID, data, DateTime.now().microsecondsSinceEpoch);
 
       if (response == null) {
         API().cache().queueAdd(id, docID, data);

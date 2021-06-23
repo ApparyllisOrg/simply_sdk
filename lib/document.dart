@@ -47,12 +47,13 @@ class Document {
     data = convertTime(this.data);
   }
 
-  Future<Response> deleteImpl() {
+  Future<Response> deleteImpl(int time) {
     return Future(() async {
       var url = Uri.parse(API().connection().documentDelete());
       var sendData = Map.from(data);
       sendData["target"] = collectionId;
       sendData["id"] = id;
+      sendData["deleteTime"] = time;
 
       var response;
       try {
@@ -95,7 +96,7 @@ class Document {
 
       API().socket().beOptimistic(collectionId, EUpdateType.Remove, id, data);
 
-      var response = await deleteImpl();
+      var response = await deleteImpl(DateTime.now().microsecondsSinceEpoch);
 
       if (response == null) {
         API().cache().queueDelete(collectionId, id);
@@ -125,7 +126,7 @@ class Document {
       API().socket().beOptimistic(collectionId, EUpdateType.Update, id, data);
 
       var response =
-          await updateImpl(inData, DateTime.now().millisecondsSinceEpoch);
+          await updateImpl(inData, DateTime.now().microsecondsSinceEpoch);
 
       if (response == null) {
         API().cache().queueUpdate(collectionId, id, inData);
