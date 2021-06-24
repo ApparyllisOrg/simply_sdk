@@ -53,6 +53,7 @@ class Socket {
       if (isSocketLive()) {
         if (pendingSubscriptions.isNotEmpty) {
           StreamController cont = pendingSubscriptions.first;
+
           Subscription subscription = _subscriptions
               .firstWhere((element) => element.controller == cont);
           requestDataListen(subscription);
@@ -74,6 +75,8 @@ class Socket {
 
     _socket.stream.handleError((err) => print(err));
     _socket.stream.listen(onReceivedData).onError((err) => print(err));
+
+    _socket.sink.done.then((value) => createConnection());
 
     for (Subscription sub in _subscriptions) {
       pendingSubscriptions.add(sub.controller);
@@ -214,11 +217,18 @@ class Socket {
       queries["uid"] = {"method": "isEqualTo", "value": API().auth().getUid()};
     }
 
-    _socket.sink.add(jsonEncode({
-      "target": subscription.target,
-      "jwt": API().auth().getToken(),
-      "query": queries,
-      "uniqueId": uniqueConnectionId
-    }, toEncodable: customEncode));
+    try {
+      _socket.sink.add(jsonEncode({
+        "target": subscription.target,
+        "jwt": API().auth().getToken(),
+        "query": queries,
+        "uniqueId": uniqueConnectionId
+      }, toEncodable: customEncode));
+    } catch (e) {
+      print(e);
+      _socket.sink.close();
+      _socket = null;
+      createConnection();
+    }
   }
 }
