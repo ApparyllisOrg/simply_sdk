@@ -118,11 +118,19 @@ class Socket {
   }
 
   void beOptimistic(String targetCollection, EUpdateType operation, String id,
-      Map<String, dynamic> data) {
+      Map<String, dynamic> data) async {
     Map<String, dynamic> sendData = {};
     sendData["operationType"] = updateTypeToString(operation);
     sendData["id"] = id;
     sendData["content"] = data;
+
+    var cacheDoc = await API().cache().getDocument(targetCollection, id);
+    if (cacheDoc.exists) {
+      Map<String, dynamic> cacheData = cacheDoc.data;
+      cacheData.addAll(data);
+      sendData["content"] = cacheData;
+    }
+
     onReceivedData(jsonEncode({
       "msg": "update",
       "target": targetCollection,
