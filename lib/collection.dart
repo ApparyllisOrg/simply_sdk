@@ -222,6 +222,41 @@ class Collection {
     });
   }
 
+  Future<List<Document>> getMany(List<String> docs) {
+    return Future(() async {
+      await API().auth().isAuthenticated();
+
+      List<Document> documents = [];
+      var url = Uri.parse(
+          API().connection().collectionGet() + "?" + "target=$id&docs=$docs");
+
+      var response;
+      try {
+        response = await http.get(
+          url,
+          headers: getHeader(),
+        );
+      } catch (e) {}
+
+      if (response == null) {
+        return await API().cache().searchForDocuments(id, query, _orderby,
+            start: _start, end: _limit);
+      }
+
+      if (response.statusCode == 200) {
+        var returnedDocuments =
+            jsonDecode(response.body, reviver: customDecode);
+        for (var doc in returnedDocuments) {
+          documents.add(Document(true, doc["id"], id, doc["content"] ?? {}));
+        }
+      } else {
+        print("${response.statusCode.toString()}: ${response.body}");
+      }
+
+      return documents;
+    });
+  }
+
   Future<List<Document>> getComplex(Map<dynamic, dynamic> query) {
     return Future(() async {
       await API().auth().isAuthenticated();
