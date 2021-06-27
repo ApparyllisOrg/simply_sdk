@@ -118,7 +118,7 @@ class Batch {
       if (response.statusCode != 400) {
         enqueueToCache();
       }
-      throw ("${response.statusCode.toString()}: ${response.body}");
+      print("${response.statusCode.toString()}: ${response.body}");
     }
   }
 }

@@ -90,7 +90,7 @@ class Document {
 
   Future delete() async {
     return Future(() async {
-      assert(API().auth().isAuthenticated());
+      await API().auth().isAuthenticated();
 
       API().cache().removeDocument(collectionId, id);
 
@@ -110,7 +110,7 @@ class Document {
           API().cache().queueDelete(collectionId, id);
         }
 
-        throw ("${response.statusCode.toString()}: ${response.body}");
+        print("${response.statusCode.toString()}: ${response.body}");
       }
 
       return;
@@ -119,7 +119,7 @@ class Document {
 
   Future update(inData) async {
     return Future(() async {
-      assert(API().auth().isAuthenticated());
+      await API().auth().isAuthenticated();
 
       API().cache().updateDocument(collectionId, id, inData);
 
@@ -141,7 +141,7 @@ class Document {
         }
 
         if (response.statusCode == 500) {}
-        throw ("${response.statusCode.toString()}: ${response.body}");
+        print("${response.statusCode.toString()}: ${response.body}");
       }
 
       return;

@@ -89,7 +89,7 @@ class Collection {
 
   Future<Document> document(String docId) {
     return Future(() async {
-      assert(API().auth().isAuthenticated());
+      await API().auth().isAuthenticated();
 
       Document doc = Document(false, docId, id, {});
       print(docId);
@@ -180,7 +180,7 @@ class Collection {
 
   Future<List<Document>> get() {
     return Future(() async {
-      assert(API().auth().isAuthenticated());
+      await API().auth().isAuthenticated();
 
       if (_end != null || _start != null || _limit != null) {
         assert(_orderby != null);
@@ -212,7 +212,7 @@ class Collection {
           documents.add(Document(true, doc["id"], id, doc["content"] ?? {}));
         }
       } else {
-        throw ("${response.statusCode.toString()}: ${response.body}");
+        print("${response.statusCode.toString()}: ${response.body}");
       }
 
       return documents;
@@ -221,7 +221,7 @@ class Collection {
 
   Future<List<Document>> getComplex(Map<dynamic, dynamic> query) {
     return Future(() async {
-      assert(API().auth().isAuthenticated());
+      await API().auth().isAuthenticated();
 
       if (_end != null || _start != null || _limit != null) {
         assert(_orderby != null);
@@ -252,7 +252,7 @@ class Collection {
           documents.add(Document(true, doc["id"], id, doc["content"] ?? {}));
         }
       } else {
-        throw ("${response.statusCode.toString()}: ${response.body}");
+        print("${response.statusCode.toString()}: ${response.body}");
       }
 
       return documents;
@@ -284,7 +284,7 @@ class Collection {
 
   Future<Document> add(Map<String, dynamic> data, {String customId}) {
     return Future(() async {
-      assert(API().auth().isAuthenticated());
+      await API().auth().isAuthenticated();
       String docID =
           customId != null ? customId : mongo.ObjectId(clientMode: true).$oid;
 
@@ -307,7 +307,7 @@ class Collection {
           API().cache().queueAdd(id, docID, data);
           return Document(true, docID, id, data);
         }
-        throw ("${response.statusCode.toString()}: ${response.body}");
+        print("${response.statusCode.toString()}: ${response.body}");
       }
     });
   }

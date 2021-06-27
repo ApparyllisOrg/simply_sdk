@@ -2,6 +2,8 @@ class Auth {
   String _lastToken;
   String _lastUid;
 
+  Function _getAuth;
+
   void setLastAuthToken(String newToken, String newUid) {
     assert(newToken != null);
     assert(newToken.isNotEmpty);
@@ -17,7 +19,17 @@ class Auth {
     _lastUid = null;
   }
 
+  void setGetAuth(Function getAuth) {
+    _getAuth = getAuth;
+  }
+
   String getToken() => _lastToken;
   String getUid() => _lastUid;
-  bool isAuthenticated() => _lastToken != null;
+  Future<bool> isAuthenticated() {
+    return Future(() async {
+      var result = await _getAuth();
+      setLastAuthToken(result.token, result.uid);
+      return true;
+    });
+  }
 }
