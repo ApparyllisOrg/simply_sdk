@@ -227,8 +227,9 @@ class Collection {
       await API().auth().isAuthenticated();
 
       List<Document> documents = [];
-      var url = Uri.parse(
-          API().connection().collectionGet() + "?" + "target=$id&docs=$docs");
+      var url = Uri.parse(API().connection().collectionGetMany() +
+          "?" +
+          "target=$id&docs=${jsonEncode(docs, toEncodable: customEncode)}");
 
       var response;
       try {
