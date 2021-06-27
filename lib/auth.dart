@@ -28,8 +28,8 @@ class Auth {
   Future<bool> isAuthenticated() {
     return Future(() async {
       var result = await _getAuth();
-      if (result.success) {
-        setLastAuthToken(result.token, result.uid);
+      if (result['success']) {
+        setLastAuthToken(result['token'], result['uid']);
         return true;
       } else {
         invalidateToken();
