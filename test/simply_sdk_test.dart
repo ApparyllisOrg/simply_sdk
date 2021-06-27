@@ -304,8 +304,11 @@ void main() {
 
   test('get test with query order by number', () async {
     auth();
-    var results =
-        await API().database().collection("unitTest").orderBy("number").get();
+    var results = await API()
+        .database()
+        .collection("unitTest")
+        .orderBy("number", 1)
+        .get();
     var lastNumber = -9999;
     for (var result in results) {
       print(result.data);
@@ -320,7 +323,7 @@ void main() {
     var results = await API()
         .database()
         .collection("unitTest")
-        .orderBy("number")
+        .orderBy("number", 1)
         .limit(10)
         .get();
     var lastNumber = -9999;
@@ -341,7 +344,7 @@ void main() {
     var results = await API()
         .database()
         .collection("unitTest")
-        .orderBy("number")
+        .orderBy("number", 1)
         .limit(5)
         .start(5)
         .get();

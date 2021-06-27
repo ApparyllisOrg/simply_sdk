@@ -57,6 +57,7 @@ class Collection {
   final String id;
 
   String _orderby;
+  int _orderByOrder;
   int _limit;
   int _start;
   int _end;
@@ -72,8 +73,9 @@ class Collection {
     return this;
   }
 
-  Collection orderBy(String newValue) {
+  Collection orderBy(String newValue, int order) {
     _orderby = newValue;
+    _orderByOrder = order;
     return this;
   }
 
@@ -154,7 +156,8 @@ class Collection {
   }
 
   String _getOrderBy() {
-    if (_orderby != null) return "&orderBy=$_orderby";
+    if (_orderby != null)
+      return "&orderBy=$_orderby&orderByOrder=$_orderByOrder";
     return "";
   }
 
