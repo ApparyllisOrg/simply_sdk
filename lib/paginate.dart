@@ -61,15 +61,15 @@ class PaginateState extends State<Paginate> {
     }
 
     _localCollection.start(currentOffset);
-    _localCollection.limit(currentOffset + widget.stepSize);
+    _localCollection.limit(widget.stepSize);
     List<Document> newDocs = await _localCollection.get();
     docs.addAll(newDocs);
 
-    if (newDocs.length < widget.stepSize) {
+    if (newDocs.length <= 0) {
       reachedEnd = true;
     }
 
-    currentOffset += widget.stepSize;
+    currentOffset += newDocs.length;
     isLoading = false;
     if (mounted) {
       setState(() {});

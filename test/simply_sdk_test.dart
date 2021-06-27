@@ -33,9 +33,14 @@ void main() {
   }
 
   void auth() {
-    API().auth().setLastAuthToken(
-        "eyJhbGciOiJSUzI1NiIsImtpZCI6InRCME0yQSJ9.eyJpc3MiOiJodHRwczovL2lkZW50aXR5dG9vbGtpdC5nb29nbGUuY29tLyIsImF1ZCI6ImZyb250aW1lLTdhYWNlIiwiaWF0IjoxNjIyOTcxMDM4LCJleHAiOjE2MjQxODA2MzgsInVzZXJfaWQiOiJ6ZGhFOExTWWhlUDlkR3pkd0t6eThlb0pyVHUxIiwiZW1haWwiOiJkZW1vQGFwcGFyeWxsaXMuY29tIiwic2lnbl9pbl9wcm92aWRlciI6InBhc3N3b3JkIiwidmVyaWZpZWQiOmZhbHNlfQ.Riz5LYqF39ZUCTFa12QvW6l6xSkL6hDPkXlTh4vG2XqnX37nQZUkE-bLp2Yss0zLA02fJOsQVIgoiRslV0a_gnxNTcDxRS60HIcIlMr75RLbVS-JKQ4ou30Q2axrIshTIvairTabMqb04Gxkq6d-1QdNsUW63kDqo5-DaGbg8GHxWp6uOX-HgtzvItXp4BJoSihSt1h44slHqEn4hNQgvSH8ZNEMzZxtI3wSl3aIxO-Wz8ubwTvjfY6T5-BHfd2FAGWHor6UTWnMWbxws-JLp0OnWHmXnGrQ3m1tR2erU13j1gOLruVr9AauU_1PcDoNkU_fy_t9h5muudtMupRA6w",
-        "zdhE8LSYheP9dGzdwKzy8eoJrTu1");
+    API().auth().setGetAuth(() async {
+      return {
+        "success": true,
+        "token":
+            "eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg4ZGYxMzgwM2I3NDM2NjExYWQ0ODE0NmE4ZGExYjA3MTg2ZmQxZTkiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZnJvbnRpbWUtN2FhY2UiLCJhdWQiOiJmcm9udGltZS03YWFjZSIsImF1dGhfdGltZSI6MTYyNDc4MTM5NiwidXNlcl9pZCI6InJYSDV4bGllRk9aNHVscUFsTHYzWVhMbW41MzIiLCJzdWIiOiJyWEg1eGxpZUZPWjR1bHFBbEx2M1lYTG1uNTMyIiwiaWF0IjoxNjI0NzgxMzk2LCJleHAiOjE2MjQ3ODQ5OTYsImVtYWlsIjoiY2F0aGVyZWNlbHZpY3RvcmlhQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7Imdvb2dsZS5jb20iOlsiMTA2NDc3NTY3MTY0NDQzODYyMjI1Il0sImFwcGxlLmNvbSI6WyIwMDExNzUuMGEyMTI5ZDdjM2E3NDc2MThiOTQzZGMwZWZkZDM0ZjEuMTk1NCJdLCJlbWFpbCI6WyJjYXRoZXJlY2VsdmljdG9yaWFAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoiZ29vZ2xlLmNvbSJ9fQ.G0QuznZY6khBCJWXGFBspRaSgN_Pa6ouNOHwWO6UDxEOeHLsRYnbhdiJD0zdnxXWSJv38o3fKv4VpsqJJ_WOXrgCSJBTAMy0g-fIyLKrAdxI_dU8B2Hk94Ug4zSo_gvY4f6Y0N0DN_maLx8sCQAEFXsv601X4B8FxliDo6K_vCXi-wg1Ui_8lHvWujbPiBiWSW-KXIzWwEz4L_-U9Fg6Kot1n4zMRF3dU_hXT7bM04Ip1OWSnxBFP8jItuWhUpJRMSNOCpk3vwTTkKjtaYwwmIVGiAi7_",
+        "uid": "zdhE8LSYheP9dGzdwKzy8eoJrTu1"
+      };
+    });
   }
 
   test('Set auth token', () async {
