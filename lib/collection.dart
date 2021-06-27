@@ -227,9 +227,13 @@ class Collection {
       await API().auth().isAuthenticated();
 
       List<Document> documents = [];
+
+      Map<String, dynamic> docQuery = {};
+      docQuery["docs"] = docs;
+
       var url = Uri.parse(API().connection().collectionGetMany() +
           "?" +
-          "target=$id&docs=${jsonEncode(docs, toEncodable: customEncode)}");
+          "target=$id&docs=${jsonEncode(docQuery, toEncodable: customEncode)}");
 
       var response;
       try {
