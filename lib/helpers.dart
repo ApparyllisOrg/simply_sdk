@@ -25,21 +25,19 @@ getHeader() => {
 
 dynamic customEncode(var obj) {
   if (obj is Timestamp) {
-    return {"_seconds": obj.seconds, "_nanoseconds": obj.nanoseconds};
+    return obj.microsecondsSinceEpoch;
   }
   if (obj is DateTime) {
-    return {
-      "_seconds": obj.millisecondsSinceEpoch / 1000,
-      "_nanoseconds": Timestamp.fromDate(obj).nanoseconds
-    };
+    return obj.microsecondsSinceEpoch;
   }
 }
 
 Object customDecode(dynamic key, dynamic value) {
-  if (key is String) {
-    if (key.contains("time") || key.contains("date")) {
-      return Timestamp.fromMicrosecondsSinceEpoch(
-          (value["_seconds"] * 1000 * 1000) + (value["_nanoseconds"] / 1000));
+  if (value is int) {
+    if (key is String) {
+      if (key.contains("time") || key.contains("date")) {
+        return Timestamp.fromMicrosecondsSinceEpoch(value);
+      }
     }
   }
   return value;
