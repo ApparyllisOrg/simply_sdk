@@ -34,7 +34,7 @@ class Document {
   static Map<String, dynamic> convertTime(Map<String, dynamic> data) {
     data.forEach((key, value) {
       if (key.toLowerCase().contains("time") && value is int) {
-        data[key] = Timestamp.fromMicrosecondsSinceEpoch(value);
+        data[key] = Timestamp.fromMillisecondsSinceEpoch(value);
       }
     });
     return data;
@@ -96,7 +96,7 @@ class Document {
 
       API().socket().beOptimistic(collectionId, EUpdateType.Remove, id, data);
 
-      var response = await deleteImpl(DateTime.now().microsecondsSinceEpoch);
+      var response = await deleteImpl(DateTime.now().millisecondsSinceEpoch);
 
       if (response == null) {
         API().cache().queueDelete(collectionId, id);
@@ -126,7 +126,7 @@ class Document {
       API().socket().beOptimistic(collectionId, EUpdateType.Update, id, data);
 
       var response =
-          await updateImpl(inData, DateTime.now().microsecondsSinceEpoch);
+          await updateImpl(inData, DateTime.now().millisecondsSinceEpoch);
 
       if (response == null) {
         API().cache().queueUpdate(collectionId, id, inData);

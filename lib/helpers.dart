@@ -25,10 +25,10 @@ getHeader() => {
 
 dynamic customEncode(var obj) {
   if (obj is Timestamp) {
-    return obj.microsecondsSinceEpoch;
+    return obj.millisecondsSinceEpoch;
   }
   if (obj is DateTime) {
-    return obj.microsecondsSinceEpoch;
+    return obj.millisecondsSinceEpoch;
   }
 }
 
@@ -36,7 +36,7 @@ Object customDecode(dynamic key, dynamic value) {
   if (value is int) {
     if (key is String) {
       if (key.contains("time") || key.contains("date")) {
-        return Timestamp.fromMicrosecondsSinceEpoch(value);
+        return Timestamp.fromMillisecondsSinceEpoch(value);
       }
     }
   }
