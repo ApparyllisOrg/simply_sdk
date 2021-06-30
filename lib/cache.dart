@@ -16,70 +16,80 @@ class Cache {
 
   void removeFromQueue(Map<String, dynamic> item) {
     var store = StoreRef.main();
-    store.delete(db, finder: Finder(filter: Filter.equals("id", item["id"])));
+    try {
+      store.delete(db, finder: Finder(filter: Filter.equals("id", item["id"])));
+    } catch (e) {
+      assert(false, e);
+    }
   }
 
   void trySyncToServer() async {
     await Future.delayed(Duration(milliseconds: 1000));
     var store = StoreRef.main();
-    var queue = await store
-        .query(finder: Finder(filter: Filter.notNull("queue")))
-        .getSnapshots(db);
-
-    if (queue.isEmpty) {
-      trySyncToServer();
-      return;
-    }
     try {
-      for (var item in queue) {
-        Map<String, dynamic> data = item.value;
+      var queue = await store
+          .query(finder: Finder(filter: Filter.notNull("queue")))
+          .getSnapshots(db);
 
-        switch (data["action"]) {
-          case "delete":
-            {
+      if (queue.isEmpty) {
+        trySyncToServer();
+        return;
+      }
+
+      try {
+        for (var item in queue) {
+          Map<String, dynamic> data = item.value;
+
+          switch (data["action"]) {
+            case "delete":
+              {
+                var doc = await API()
+                    .database()
+                    .collection(data["collectionRef"])
+                    .document(data["id"]);
+                var response = await doc.deleteImpl(data["time"]);
+                if (response != null) {
+                  if (response.statusCode == 400 ||
+                      response.statusCode == 200) {
+                    print("sent ${data["id"]} to cloud");
+                    removeFromQueue(data);
+                  }
+                }
+              }
+              break;
+            case "update":
               var doc = await API()
                   .database()
                   .collection(data["collectionRef"])
                   .document(data["id"]);
-              var response = await doc.deleteImpl(data["time"]);
+              var response = await doc.updateImpl(data["data"], data["time"]);
               if (response != null) {
                 if (response.statusCode == 400 || response.statusCode == 200) {
                   print("sent ${data["id"]} to cloud");
                   removeFromQueue(data);
                 }
               }
-            }
-            break;
-          case "update":
-            var doc = await API()
-                .database()
-                .collection(data["collectionRef"])
-                .document(data["id"]);
-            var response = await doc.updateImpl(data["data"], data["time"]);
-            if (response != null) {
-              if (response.statusCode == 400 || response.statusCode == 200) {
-                print("sent ${data["id"]} to cloud");
-                removeFromQueue(data);
-              }
-            }
-            break;
-          case "add":
-            var response = await API()
-                .database()
-                .collection(data["collectionRef"])
-                .addImpl(data["id"], data["data"], data["time"]);
+              break;
+            case "add":
+              var response = await API()
+                  .database()
+                  .collection(data["collectionRef"])
+                  .addImpl(data["id"], data["data"], data["time"]);
 
-            if (response != null) {
-              if (response.statusCode == 400 || response.statusCode == 200) {
-                print("sent ${data["id"]} to cloud");
-                removeFromQueue(data);
+              if (response != null) {
+                if (response.statusCode == 400 || response.statusCode == 200) {
+                  print("sent ${data["id"]} to cloud");
+                  removeFromQueue(data);
+                }
               }
-            }
-            break;
+              break;
+          }
         }
+      } catch (e) {
+        print(e);
       }
     } catch (e) {
-      print(e);
+      assert(false, e);
     }
 
     await Future.delayed(Duration(milliseconds: 100));
@@ -89,31 +99,43 @@ class Cache {
   Future<void> clear() {
     return Future(() async {
       var store = StoreRef.main();
-      await store.drop(db);
+      try {
+        await store.drop(db);
+      } catch (e) {
+        assert(false, e);
+      }
     });
   }
 
   void queueDelete(String collection, String id) {
-    var store = StoreRef.main();
-    store.add(db, {
-      "queue": true,
-      "collectionRef": collection,
-      "id": id,
-      "action": "delete",
-      "time": DateTime.now().millisecondsSinceEpoch
-    });
+    try {
+      var store = StoreRef.main();
+      store.add(db, {
+        "queue": true,
+        "collectionRef": collection,
+        "id": id,
+        "action": "delete",
+        "time": DateTime.now().millisecondsSinceEpoch
+      });
+    } catch (e) {
+      assert(false, e);
+    }
   }
 
   void queueUpdate(String collection, String id, Map<String, dynamic> data) {
     var store = StoreRef.main();
-    store.add(db, {
-      "queue": true,
-      "collectionRef": collection,
-      "id": id,
-      "action": "update",
-      "data": data,
-      "time": DateTime.now().millisecondsSinceEpoch
-    });
+    try {
+      store.add(db, {
+        "queue": true,
+        "collectionRef": collection,
+        "id": id,
+        "action": "update",
+        "data": data,
+        "time": DateTime.now().millisecondsSinceEpoch
+      });
+    } catch (e) {
+      assert(false, e);
+    }
   }
 
   void queueAdd(
@@ -122,14 +144,18 @@ class Cache {
     Map<String, dynamic> data,
   ) {
     var store = StoreRef.main();
-    store.add(db, {
-      "queue": true,
-      "collectionRef": collection,
-      "id": id,
-      "action": "add",
-      "data": data,
-      "time": DateTime.now().millisecondsSinceEpoch
-    });
+    try {
+      store.add(db, {
+        "queue": true,
+        "collectionRef": collection,
+        "id": id,
+        "action": "add",
+        "data": data,
+        "time": DateTime.now().millisecondsSinceEpoch
+      });
+    } catch (e) {
+      assert(false, e);
+    }
   }
 
   Future<void> initialize() async {
@@ -141,7 +167,11 @@ class Cache {
     await dir.create(recursive: true);
     var dbPath = dir.path + "/simply.db";
 
-    db = await dbFactory.openDatabase(dbPath, codec: sembastFirestoreCodec);
+    db = await dbFactory
+        .openDatabase(dbPath, codec: sembastFirestoreCodec)
+        .onError((error, stackTrace) {
+      assert(false, error);
+    });
     trySyncToServer();
   }
 
@@ -174,6 +204,8 @@ class Cache {
         }
       }
       sub.controller.add(sub.documents);
+    }).onError((e) {
+      assert(false, e);
     });
   }
 
@@ -184,11 +216,14 @@ class Cache {
     var dataCopy = Map.from(data);
     dataCopy["collection"] = collection;
     dataCopy["id"] = id;
-
-    await store.add(
-      db,
-      dataCopy,
-    );
+    try {
+      await store.add(
+        db,
+        dataCopy,
+      );
+    } catch (e) {
+      assert(false, e);
+    }
 
     return id;
   }
@@ -198,24 +233,31 @@ class Cache {
 
     var dataCopy = Map.from(data);
     dataCopy["collection"] = collection;
-
-    store.update(db, dataCopy,
-        finder: Finder(
-            filter: Filter.and([
-          Filter.equals("id", id),
-          Filter.equals("collection", collection)
-        ])));
-  }
-
-  Future<void> removeDocument(String collection, String id) {
-    return Future(() async {
-      var store = StoreRef.main();
-      await store.delete(db,
+    try {
+      store.update(db, dataCopy,
           finder: Finder(
               filter: Filter.and([
             Filter.equals("id", id),
             Filter.equals("collection", collection)
           ])));
+    } catch (e) {
+      assert(false, e);
+    }
+  }
+
+  Future<void> removeDocument(String collection, String id) {
+    return Future(() async {
+      var store = StoreRef.main();
+      try {
+        await store.delete(db,
+            finder: Finder(
+                filter: Filter.and([
+              Filter.equals("id", id),
+              Filter.equals("collection", collection)
+            ])));
+      } catch (e) {
+        assert(false, e);
+      }
     });
   }
 
@@ -224,27 +266,29 @@ class Cache {
       Document doc = Document(false, id, collection, {});
 
       var store = StoreRef.main();
-
-      RecordSnapshot data = await store.findFirst(db,
-          finder: Finder(
-              filter: Filter.and([
-            Filter.equals("id", id),
-            Filter.equals("collection", collection)
-          ])));
-
-      if (data == null) {
-        return doc;
-      }
-
-      Map<String, dynamic> docData = Map.from(data.value);
-      Map<String, dynamic> sendData = {};
-      docData.forEach((key, value) {
-        if (key != "id" && key != "collection") {
-          sendData[key] = value;
+      try {
+        RecordSnapshot data = await store.findFirst(db,
+            finder: Finder(
+                filter: Filter.and([
+              Filter.equals("id", id),
+              Filter.equals("collection", collection)
+            ])));
+        if (data == null) {
+          return doc;
         }
-      });
-      doc.data = sendData;
-      doc.exists = true;
+
+        Map<String, dynamic> docData = Map.from(data.value);
+        Map<String, dynamic> sendData = {};
+        docData.forEach((key, value) {
+          if (key != "id" && key != "collection") {
+            sendData[key] = value;
+          }
+        });
+        doc.data = sendData;
+        doc.exists = true;
+      } catch (e) {
+        assert(false, e);
+      }
 
       return doc;
     });
@@ -278,25 +322,29 @@ class Cache {
 
     Filter filter = filterFromQuery(collection, queries);
 
-    var foundDocs = await store.find(db,
-        finder: Finder(
-            filter: filter,
-            sortOrders: orderBy == null ? [] : [SortOrder(orderBy)],
-            offset: start,
-            limit: end));
+    try {
+      var foundDocs = await store.find(db,
+          finder: Finder(
+              filter: filter,
+              sortOrders: orderBy == null ? [] : [SortOrder(orderBy)],
+              offset: start,
+              limit: end));
+      for (var foundDoc in foundDocs) {
+        Map<String, dynamic> data = Map.from(foundDoc.value);
 
-    for (var foundDoc in foundDocs) {
-      Map<String, dynamic> data = Map.from(foundDoc.value);
+        Map<String, dynamic> sendData = {};
+        data.forEach((key, value) {
+          if (key != "id" && key != "collection") {
+            sendData[key] = value;
+          }
+        });
 
-      Map<String, dynamic> sendData = {};
-      data.forEach((key, value) {
-        if (key != "id" && key != "collection") {
-          sendData[key] = value;
-        }
-      });
-
-      Document doc = Document(true, foundDoc.value["id"], collection, sendData);
-      docs.add(doc);
+        Document doc =
+            Document(true, foundDoc.value["id"], collection, sendData);
+        docs.add(doc);
+      }
+    } catch (e) {
+      assert(false, e);
     }
 
     return docs;
