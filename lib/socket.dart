@@ -94,10 +94,13 @@ class Socket {
           true, documentData["id"], sub.target, documentData["content"]);
       sub.documents.add(newDoc);
     }
+
+    API().cache().updateDocument(sub.target, docData.id, docData.data);
   }
 
   void removeDocument(Subscription sub, String id) {
     sub.documents.removeWhere((element) => element.id == id);
+    API().cache().removeDocument(sub.target, id);
   }
 
   void updateCollectionLocally(Subscription sub, Map<String, dynamic> change) {
@@ -105,7 +108,6 @@ class Socket {
 
     switch (operation) {
       case "update":
-        print(change);
         updateDocument(sub, change);
         return;
       case "insert":

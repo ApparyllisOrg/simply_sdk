@@ -48,6 +48,22 @@ void main() {
     auth();
   });
 
+  test('Test DateTime', () async {
+    await API().initialize();
+    auth();
+
+    await API()
+        .cache()
+        .insertDocument("test", "teststet", {"startTime": DateTime.now()});
+    var files = await API().cache().searchForDocuments(
+        "test",
+        {
+          "startTime":
+              Query(isLargerThan: DateTime.now().millisecondsSinceEpoch)
+        },
+        "");
+  });
+
   test('add 20 documents', () async {
     await API().initialize();
     auth();
