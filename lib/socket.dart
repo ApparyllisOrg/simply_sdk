@@ -83,18 +83,27 @@ class Socket {
     }
   }
 
-  void updateDocument(Subscription sub, Map<String, dynamic> documentData) {
+  void updateDocument(
+      Subscription sub, Map<String, dynamic> documentData) async {
+    var docId = "";
     var docData = sub.documents.firstWhere(
         (element) => element.id == documentData["id"],
         orElse: () => null);
     if (docData != null) {
+      docId = docData.id;
       docData.data = Document.convertTime(documentData["content"]);
-      API().cache().updateDocument(sub.target, docData.id, docData.data);
     } else {
+      docId = documentData["id"];
       Document newDoc = Document(
           true, documentData["id"], sub.target, documentData["content"]);
       sub.documents.add(newDoc);
-      API().cache().updateDocument(sub.target, newDoc.id, newDoc.data);
+    }
+
+    var cacheDoc = await API().cache().getDocument(sub.target, docId);
+    if (cacheDoc.exists) {
+      API().cache().updateDocument(sub.target, docId, documentData["content"]);
+    } else {
+      API().cache().insertDocument(sub.target, docId, documentData["content"]);
     }
   }
 
