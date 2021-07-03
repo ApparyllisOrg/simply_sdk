@@ -89,13 +89,13 @@ class Socket {
         orElse: () => null);
     if (docData != null) {
       docData.data = Document.convertTime(documentData["content"]);
+      API().cache().updateDocument(sub.target, docData.id, docData.data);
     } else {
       Document newDoc = Document(
           true, documentData["id"], sub.target, documentData["content"]);
       sub.documents.add(newDoc);
+      API().cache().updateDocument(sub.target, newDoc.id, newDoc.data);
     }
-
-    API().cache().updateDocument(sub.target, docData.id, docData.data);
   }
 
   void removeDocument(Subscription sub, String id) {
