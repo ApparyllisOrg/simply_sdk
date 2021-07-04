@@ -108,34 +108,38 @@ class Cache {
   }
 
   void queueDelete(String collection, String id) {
-    try {
-      var store = StoreRef.main();
-      store.add(db, {
-        "queue": true,
-        "collectionRef": collection,
-        "id": id,
-        "action": "delete",
-        "time": DateTime.now().millisecondsSinceEpoch
-      });
-    } catch (e) {
-      assert(false, e);
-    }
+    Future(() async {
+      try {
+        var store = StoreRef.main();
+        store.add(db, {
+          "queue": true,
+          "collectionRef": collection,
+          "id": id,
+          "action": "delete",
+          "time": DateTime.now().millisecondsSinceEpoch
+        });
+      } catch (e) {
+        assert(false, e);
+      }
+    });
   }
 
   void queueUpdate(String collection, String id, Map<String, dynamic> data) {
-    var store = StoreRef.main();
-    try {
-      store.add(db, {
-        "queue": true,
-        "collectionRef": collection,
-        "id": id,
-        "action": "update",
-        "data": data,
-        "time": DateTime.now().millisecondsSinceEpoch
-      });
-    } catch (e) {
-      assert(false, e);
-    }
+    Future(() async {
+      var store = StoreRef.main();
+      try {
+        store.add(db, {
+          "queue": true,
+          "collectionRef": collection,
+          "id": id,
+          "action": "update",
+          "data": data,
+          "time": DateTime.now().millisecondsSinceEpoch
+        });
+      } catch (e) {
+        assert(false, e);
+      }
+    });
   }
 
   void queueAdd(
@@ -143,19 +147,21 @@ class Cache {
     String id,
     Map<String, dynamic> data,
   ) {
-    var store = StoreRef.main();
-    try {
-      store.add(db, {
-        "queue": true,
-        "collectionRef": collection,
-        "id": id,
-        "action": "add",
-        "data": data,
-        "time": DateTime.now().millisecondsSinceEpoch
-      });
-    } catch (e) {
-      assert(false, e);
-    }
+    Future(() async {
+      var store = StoreRef.main();
+      try {
+        store.add(db, {
+          "queue": true,
+          "collectionRef": collection,
+          "id": id,
+          "action": "add",
+          "data": data,
+          "time": DateTime.now().millisecondsSinceEpoch
+        });
+      } catch (e) {
+        assert(false, e);
+      }
+    });
   }
 
   Future<void> initialize() async {
@@ -211,41 +217,46 @@ class Cache {
 
   Future<String> insertDocument(
       String collection, String id, Map<String, dynamic> data) async {
-    var store = StoreRef.main();
+    Future(() async {
+      var store = StoreRef.main();
 
-    var dataCopy = Map.from(data);
-    dataCopy["collection"] = collection;
-    dataCopy["id"] = id;
-    try {
-      await store.add(
-        db,
-        dataCopy,
-      );
-    } catch (e) {
-      assert(false, e);
-    }
+      var dataCopy = Map.from(data);
+      dataCopy["collection"] = collection;
+      dataCopy["id"] = id;
+      try {
+        await store.add(
+          db,
+          dataCopy,
+        );
+      } catch (e) {
+        assert(false, e);
+      }
 
-    return id;
+      return id;
+    });
   }
 
-  void updateDocument(String collection, String id, Map<String, dynamic> data) {
-    var store = StoreRef.main();
+  void updateDocument(
+      String collection, String id, Map<String, dynamic> data) async {
+    Future(() async {
+      var store = StoreRef.main();
 
-    var dataCopy = Map.from(data);
-    dataCopy["collection"] = collection;
-    try {
-      store.update(db, dataCopy,
-          finder: Finder(
-              filter: Filter.and([
-            Filter.equals("id", id),
-            Filter.equals("collection", collection)
-          ])));
-    } catch (e) {
-      assert(false, e);
-    }
+      var dataCopy = Map.from(data);
+      dataCopy["collection"] = collection;
+      try {
+        store.update(db, dataCopy,
+            finder: Finder(
+                filter: Filter.and([
+              Filter.equals("id", id),
+              Filter.equals("collection", collection)
+            ])));
+      } catch (e) {
+        assert(false, e);
+      }
+    });
   }
 
-  Future<void> removeDocument(String collection, String id) {
+  Future<void> removeDocument(String collection, String id) async {
     return Future(() async {
       var store = StoreRef.main();
       try {

@@ -85,31 +85,39 @@ class Socket {
 
   void updateDocument(
       Subscription sub, Map<String, dynamic> documentData) async {
-    var docId = "";
-    var docData = sub.documents.firstWhere(
-        (element) => element.id == documentData["id"],
-        orElse: () => null);
-    if (docData != null) {
-      docId = docData.id;
-      docData.data = Document.convertTime(documentData["content"]);
-    } else {
-      docId = documentData["id"];
-      Document newDoc = Document(
-          true, documentData["id"], sub.target, documentData["content"]);
-      sub.documents.add(newDoc);
-    }
+    Future(() async {
+      var docId = "";
+      var docData = sub.documents.firstWhere(
+          (element) => element.id == documentData["id"],
+          orElse: () => null);
+      if (docData != null) {
+        docId = docData.id;
+        docData.data = Document.convertTime(documentData["content"]);
+      } else {
+        docId = documentData["id"];
+        Document newDoc = Document(
+            true, documentData["id"], sub.target, documentData["content"]);
+        sub.documents.add(newDoc);
+      }
 
-    var cacheDoc = await API().cache().getDocument(sub.target, docId);
-    if (cacheDoc.exists) {
-      API().cache().updateDocument(sub.target, docId, documentData["content"]);
-    } else {
-      API().cache().insertDocument(sub.target, docId, documentData["content"]);
-    }
+      var cacheDoc = await API().cache().getDocument(sub.target, docId);
+      if (cacheDoc.exists) {
+        API()
+            .cache()
+            .updateDocument(sub.target, docId, documentData["content"]);
+      } else {
+        API()
+            .cache()
+            .insertDocument(sub.target, docId, documentData["content"]);
+      }
+    });
   }
 
-  void removeDocument(Subscription sub, String id) {
-    sub.documents.removeWhere((element) => element.id == id);
-    API().cache().removeDocument(sub.target, id);
+  void removeDocument(Subscription sub, String id) async {
+    Future(() async {
+      sub.documents.removeWhere((element) => element.id == id);
+      API().cache().removeDocument(sub.target, id);
+    });
   }
 
   void updateCollectionLocally(Subscription sub, Map<String, dynamic> change) {
@@ -130,27 +138,29 @@ class Socket {
 
   void beOptimistic(String targetCollection, EUpdateType operation, String id,
       Map<String, dynamic> data) async {
-    Map<String, dynamic> sendData = {};
-    sendData["operationType"] = updateTypeToString(operation);
-    sendData["id"] = id;
-    sendData["content"] = data;
+    Future(() async {
+      Map<String, dynamic> sendData = {};
+      sendData["operationType"] = updateTypeToString(operation);
+      sendData["id"] = id;
+      sendData["content"] = data;
 
-    var cacheDoc = await API().cache().getDocument(targetCollection, id);
-    if (cacheDoc.exists) {
-      Map<String, dynamic> cacheData = cacheDoc.data;
-      cacheData.addAll(data);
-      sendData["content"] = cacheData;
-    }
+      var cacheDoc = await API().cache().getDocument(targetCollection, id);
+      if (cacheDoc.exists) {
+        Map<String, dynamic> cacheData = cacheDoc.data;
+        cacheData.addAll(data);
+        sendData["content"] = cacheData;
+      }
 
-    onReceivedData(jsonEncode({
-      "msg": "update",
-      "target": targetCollection,
-      "operationType": updateTypeToString(operation),
-      "results": [sendData]
-    }, toEncodable: customEncode));
+      onReceivedData(jsonEncode({
+        "msg": "update",
+        "target": targetCollection,
+        "operationType": updateTypeToString(operation),
+        "results": [sendData]
+      }, toEncodable: customEncode));
+    });
   }
 
-  void onReceivedData(event) {
+  void onReceivedData(event) async {
     Map<String, dynamic> data = jsonDecode(event, reviver: customDecode);
 
     String msg = data["msg"];
