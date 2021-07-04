@@ -99,17 +99,6 @@ class Socket {
             true, documentData["id"], sub.target, documentData["content"]);
         sub.documents.add(newDoc);
       }
-
-      var cacheDoc = await API().cache().getDocument(sub.target, docId);
-      if (cacheDoc.exists) {
-        API()
-            .cache()
-            .updateDocument(sub.target, docId, documentData["content"]);
-      } else {
-        API()
-            .cache()
-            .insertDocument(sub.target, docId, documentData["content"]);
-      }
     });
   }
 
