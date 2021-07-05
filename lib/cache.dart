@@ -16,6 +16,7 @@ class Cache {
     Map<String, Map<String, dynamic>> data = _cache[collection];
     if (data != null) {
       data.remove(id);
+      API().socket().beOptimistic(collection, EUpdateType.Remove, id, {});
     }
   }
 
@@ -28,6 +29,8 @@ class Cache {
       _cache[collection] = Map<String, dynamic>();
       _cache[collection][id] = _data;
     }
+
+    API().socket().beOptimistic(collection, EUpdateType.Update, id, {});
   }
 
   Map<String, dynamic> getItemFromCollection(String collection, String id) {
@@ -230,40 +233,6 @@ class Cache {
         API().reportError(e);
       }
     });
-  }
-
-  void listenForChanges(Subscription sub) {
-    /* var store = StoreRef.main();
-    Filter filter = filterFromQuery(sub.target, sub.query);
-    var query = store.query(finder: Finder(filter: filter));
-    query.onSnapshots(db).listen((event) async {
-      for (var change in event) {
-        if (await change.ref.exists(db)) {
-          sub.documents
-              .removeWhere((element) => element.id == change.value["id"]);
-          continue;
-        }
-
-        Map<String, dynamic> value = change.value;
-        String id = value["id"];
-
-        Map<String, dynamic> objCopy = Map.from(value);
-        objCopy.remove("id");
-        objCopy.remove("collection");
-
-        var doc = sub.documents
-            .firstWhere((element) => element.id == id, orElse: () => null);
-
-        if (doc != null) {
-          doc.data = objCopy;
-        } else {
-          doc = Document(true, id, sub.target, objCopy);
-        }
-      }
-      sub.controller.add(sub.documents);
-    }).onError((e) {
-      assert(false, e);
-    });*/
   }
 
   Future<String> insertDocument(
