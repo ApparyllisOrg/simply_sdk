@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart' as fir;
 import 'package:path_provider/path_provider.dart';
@@ -12,22 +13,113 @@ import 'document.dart';
 import 'simply_sdk.dart';
 
 class Cache {
-  Database db;
+  Map<String, Map<String, Map<String, dynamic>>> _cache = {};
+
+  void removeFromCache(String collection, String id) {
+    Map<String, Map<String, dynamic>> data = _cache[collection];
+    if (data != null) {
+      data.remove(id);
+    }
+  }
+
+  void updateToCache(String collection, String id, Map<String, dynamic> data) {
+    Map<String, Map<String, dynamic>> data = _cache[collection];
+    if (data != null) {
+      data[id] = data;
+    }
+  }
+
+  void getFromCache(String collection, String id, Map<String, dynamic> data) {
+    Map<String, Map<String, dynamic>> data = _cache[collection];
+    if (data != null) {
+      data[id] = data;
+    }
+  }
+
+  Map<String, Map<String, dynamic>> getItemFromCollection(
+      String collection, String id) {
+    Map<String, Map<String, dynamic>> data = _cache[collection];
+    if (data != null) {
+      return data[id];
+    }
+    return null;
+  }
+
+  Map<String, Map<String, dynamic>> getCollectionCache(String collection) {
+    Map<String, Map<String, dynamic>> data = _cache[collection];
+    if (data != null) {
+      return data;
+    }
+    return {};
+  }
+
+  Future<void> clear() {
+    return Future(() async {
+      try {
+        _cache.clear();
+        await save();
+      } catch (e) {
+        API().reportError(e);
+      }
+    });
+  }
+
+  Future<void> save() async {
+    return Future(() async {
+      try {
+        var dir = await getApplicationDocumentsDirectory();
+        await dir.create(recursive: true);
+        var dbPath = dir.path + "/simply.db";
+        File file = File(dbPath);
+        await file.writeAsString(jsonEncode(_cache, toEncodable: customEncode));
+      } catch (e) {
+        API().reportError(e);
+        print(e);
+      }
+    });
+  }
+
+  Future<void> initialize() async {
+    trySyncToServer();
+    return Future(() async {
+      try {
+        var dir = await getApplicationDocumentsDirectory();
+        await dir.create(recursive: true);
+        var dbPath = dir.path + "/simply.db";
+        File file = File(dbPath);
+        bool exists = await file.exists();
+        if (exists) {
+          String jsonObjectString = await file.readAsString();
+          _cache = jsonDecode(jsonObjectString, reviver: customDecode);
+        } else {
+          _cache = {};
+        }
+      } catch (e) {
+        API().reportError(e);
+        print(e);
+      }
+    });
+  }
 
   void removeFromQueue(String collection, Map<String, dynamic> item) async {
     try {
-      await db.delete("query", where: "id=${item["id"]}&queue=true");
+      removeFromCache(collection, item["id"]);
     } catch (e) {
-      assert(false, e);
+      API().reportError(e);
     }
   }
 
   void trySyncToServer() async {
     await Future.delayed(Duration(milliseconds: 1000));
     try {
-      var queue = await db.query("query");
+      await save();
+      var queue;
 
-      if (queue.isEmpty) {
+      try {
+        queue = getCollectionCache("query");
+      } catch (e) {}
+
+      if (queue == null || queue.isEmpty) {
         trySyncToServer();
         return;
       }
@@ -83,30 +175,17 @@ class Cache {
         print(e);
       }
     } catch (e) {
-      assert(false, e);
+      API().reportError(e);
     }
 
     await Future.delayed(Duration(milliseconds: 100));
     trySyncToServer();
   }
 
-  Future<void> clear() {
-    return Future(() async {
-      try {
-        var dir = await getApplicationDocumentsDirectory();
-        await dir.create(recursive: true);
-        var dbPath = dir.path + "/simply.db";
-        await deleteDatabase(dbPath);
-      } catch (e) {
-        assert(false, e);
-      }
-    });
-  }
-
   void queueDelete(String collection, String id) {
     Future(() async {
       try {
-        await db.insert("query", {
+        updateToCache("query", id, {
           "queue": true,
           "id": id,
           "collectionRef": collection,
@@ -114,7 +193,7 @@ class Cache {
           "time": DateTime.now().millisecondsSinceEpoch
         });
       } catch (e) {
-        assert(false, e);
+        API().reportError(e);
       }
     });
   }
@@ -122,7 +201,7 @@ class Cache {
   void queueUpdate(String collection, String id, Map<String, dynamic> data) {
     Future(() async {
       try {
-        await db.insert("query", {
+        updateToCache("query", id, {
           "queue": true,
           "id": id,
           "collectionRef": collection,
@@ -131,7 +210,7 @@ class Cache {
           "time": DateTime.now().millisecondsSinceEpoch
         });
       } catch (e) {
-        assert(false, e);
+        API().reportError(e);
       }
     });
   }
@@ -143,7 +222,7 @@ class Cache {
   ) {
     Future(() async {
       try {
-        await db.insert("query", {
+        updateToCache("query", id, {
           "queue": true,
           "id": id,
           "collectionRef": collection,
@@ -152,21 +231,9 @@ class Cache {
           "time": DateTime.now().millisecondsSinceEpoch
         });
       } catch (e) {
-        assert(false, e);
+        API().reportError(e);
       }
     });
-  }
-
-  Future<void> initialize() async {
-    if (db != null) return;
-    var dir = await getApplicationDocumentsDirectory();
-    await dir.create(recursive: true);
-    var dbPath = dir.path + "/simply.db";
-
-    db = await openDatabase(dbPath);
-    assert(db != null);
-
-    trySyncToServer();
   }
 
   void listenForChanges(Subscription sub) {
@@ -205,14 +272,14 @@ class Cache {
 
   Future<String> insertDocument(
       String collection, String id, Map<String, dynamic> data) async {
-    Future(() async {
+    return Future(() async {
       try {
         var dataCopy = Map.from(data);
         dataCopy["collection"] = collection;
         dataCopy["id"] = id;
-        await db.insert(collection, dataCopy);
+        updateToCache(collection, id, dataCopy);
       } catch (e) {
-        assert(false, e);
+        API().reportError(e);
       }
 
       return id;
@@ -228,9 +295,9 @@ class Cache {
         var dataCopy = Map.from(data);
         dataCopy["collection"] = collection;
         dataCopy["id"] = id;
-        await db.update(collection, dataCopy, where: "id=$id&queue=false");
+        updateToCache(collection, id, dataCopy);
       } catch (e) {
-        assert(false, e);
+        API().reportError(e);
       }
     });
   }
@@ -238,9 +305,9 @@ class Cache {
   Future<void> removeDocument(String collection, String id) async {
     return Future(() async {
       try {
-        await db.delete(collection, where: "id=$id&queue=false");
+        removeFromCache(collection, id);
       } catch (e) {
-        assert(false, e);
+        API().reportError(e);
       }
     });
   }
@@ -250,13 +317,16 @@ class Cache {
       Document doc = Document(false, id, collection, {});
 
       try {
-        List<Map<String, dynamic>> docList =
-            await db.query(collection, where: "id=$id");
-        if (docList == null || docList.isEmpty) {
+        Map<String, dynamic> docData;
+
+        try {
+          docData = getItemFromCollection(collection, id);
+        } catch (e) {}
+
+        if (docData == null || docData.isEmpty) {
           return doc;
         }
 
-        Map<String, dynamic> docData = docList[0];
         Map<String, dynamic> sendData = {};
         docData.forEach((key, value) {
           if (key != "id" && key != "collection") {
@@ -266,28 +336,11 @@ class Cache {
         doc.data = sendData;
         doc.exists = true;
       } catch (e) {
-        assert(false, e);
+        API().reportError(e);
       }
 
       return doc;
     });
-  }
-
-  String filterFromQuery(Map<String, Query> queries) {
-    String filter;
-    if (queries.length == 1) {
-      var field = queries.keys.first;
-    } else {
-      List<String> filters = [];
-      for (var key in queries.keys) {
-        String filter = queries[key].getCacheMethod() +
-            jsonEncode(queries[key].getValue(), toEncodable: customEncode);
-        filters.add(filter);
-      }
-
-      filter = filters.join("&");
-    }
-    return filter;
   }
 
   Future<List<Document>> searchForDocuments(
@@ -295,26 +348,36 @@ class Cache {
       {int start, int end}) async {
     List<Document> docs = [];
 
-    String filter = filterFromQuery(queries);
-
     try {
-      var foundDocs = await db.query(collection,
-          where: filter, groupBy: orderBy, offset: start, limit: end);
-      for (var foundDoc in foundDocs) {
-        Map<String, dynamic> data = Map.from(foundDoc);
+      Map<String, Map<String, dynamic>> cachedCollection =
+          getCollectionCache(collection);
 
-        Map<String, dynamic> sendData = {};
-        data.forEach((key, value) {
-          if (key != "id" && key != "collection") {
-            sendData[key] = value;
-          }
-        });
+      cachedCollection.forEach((key, value) {
+        if (queries.isEmpty) {
+          docs.add(Document(true, key, collection, value));
+        } else {
+          bool isSatisfied = true;
+          queries.forEach((queryKey, queryValue) {
+            if (value.containsKey(queryKey)) {
+              if (!queryValue.isSatisfied(value[queryKey])) {
+                isSatisfied = false;
+              }
+            }
+          });
+          if (isSatisfied) docs.add(Document(true, key, collection, value));
+        }
+      });
 
-        Document doc = Document(true, foundDoc["id"], collection, sendData);
-        docs.add(doc);
+      if (orderBy != null) {
+        docs.sort((Document a, Document b) =>
+            a.value(orderBy, 0) >= b.value(orderBy, 0) ? 1 : -1);
+      }
+
+      if (start != null && end != null) {
+        docs = docs.getRange(start, end);
       }
     } catch (e) {
-      assert(false, e);
+      API().reportError(e);
     }
 
     return docs;

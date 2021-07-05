@@ -40,4 +40,12 @@ class API {
   Connection connection() => _connection;
   Database database() => _database;
   Socket socket() => _socket;
+
+  void reportError(e) {
+    try {
+      if (onErrorReported != null) onErrorReported(e);
+    } catch (e) {}
+  }
+
+  Function onErrorReported;
 }

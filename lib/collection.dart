@@ -29,14 +29,6 @@ class Query {
     assert(false, "Missing implementation!");
   }
 
-  String getCacheMethod() {
-    if (isEqualTo != null) return "=";
-    if (isNotEqualTo != null) return "!=";
-    if (isLargerThan != null) return ">=";
-    if (isSmallerThan != null) return "<=>";
-    assert(false, "Missing implementation!");
-  }
-
   dynamic getValue() {
     if (isEqualTo != null) return isEqualTo;
     if (isNotEqualTo != null) return isNotEqualTo;
@@ -50,6 +42,18 @@ class Query {
     query["method"] = getMethod();
     query["value"] = getValue();
     return query;
+  }
+
+  bool isSatisfied(dynamic property) {
+    try {
+      if (isEqualTo != null) return property == isEqualTo;
+      if (isNotEqualTo != null) return property != isNotEqualTo;
+      if (isLargerThan != null) return property > isLargerThan;
+      if (isSmallerThan != null) return property < isSmallerThan;
+      assert(false, "Missing implementation!");
+    } catch (e) {
+      return false;
+    }
   }
 }
 
