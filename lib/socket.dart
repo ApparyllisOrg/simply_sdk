@@ -99,6 +99,9 @@ class Socket {
             true, documentData["id"], sub.target, documentData["content"]);
         sub.documents.add(newDoc);
       }
+
+      API().cache().updateDocument(
+          sub.target, documentData["id"], documentData["content"]);
     });
   }
 

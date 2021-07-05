@@ -13,7 +13,8 @@ import 'document.dart';
 import 'simply_sdk.dart';
 
 class Cache {
-  Map<String, Map<String, Map<String, dynamic>>> _cache = {};
+  Map<String, Map<String, Map<String, dynamic>>> _cache =
+      Map<String, dynamic>();
 
   void removeFromCache(String collection, String id) {
     Map<String, Map<String, dynamic>> data = _cache[collection];
@@ -92,7 +93,7 @@ class Cache {
           String jsonObjectString = await file.readAsString();
           _cache = jsonDecode(jsonObjectString, reviver: customDecode);
         } else {
-          _cache = {};
+          _cache = Map<String, dynamic>();
         }
       } catch (e) {
         API().reportError(e);
