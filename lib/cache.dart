@@ -39,11 +39,13 @@ class Cache {
   }
 
   Map<String, Map<String, dynamic>> getCollectionCache(String collection) {
-    Map<String, Map<String, dynamic>> data = _cache[collection];
-    if (data != null) {
-      return data;
+    if (_cache.containsKey(collection)) {
+      Map<String, Map<String, dynamic>> data = Map.from(_cache[collection]);
+      if (data != null) {
+        return data;
+      }
     }
-    return Map<String, dynamic>();
+    return Map<String, Map<String, dynamic>>();
   }
 
   Future<void> clear() {
@@ -73,8 +75,7 @@ class Cache {
   }
 
   Future<void> initialize() async {
-    trySyncToServer();
-    return Future(() async {
+    await Future(() async {
       try {
         var dir = await getApplicationDocumentsDirectory();
         await dir.create(recursive: true);
@@ -93,6 +94,7 @@ class Cache {
         print(e);
       }
     });
+    trySyncToServer();
   }
 
   void removeFromQueue(String collection, Map<String, dynamic> item) async {
