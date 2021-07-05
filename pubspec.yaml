@@ -22,7 +22,6 @@ dependencies:
 
   cloud_firestore: ^1.0.1
 
-  sqflite: ^2.0.0+3
 
 dev_dependencies:
   flutter_test:
