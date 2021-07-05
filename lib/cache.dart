@@ -10,8 +10,7 @@ import 'document.dart';
 import 'simply_sdk.dart';
 
 class Cache {
-  Map<String, Map<String, Map<String, dynamic>>> _cache =
-      Map<String, Map<String, Map<String, dynamic>>>();
+  Map<String, dynamic> _cache = Map<String, dynamic>();
 
   void removeFromCache(String collection, String id) {
     Map<String, Map<String, dynamic>> data = _cache[collection];
@@ -33,13 +32,6 @@ class Cache {
     }
   }
 
-  void getFromCache(String collection, String id, Map<String, dynamic> _data) {
-    Map<String, Map<String, dynamic>> data = _cache[collection];
-    if (data != null) {
-      data[id] = _data;
-    }
-  }
-
   Map<String, dynamic> getItemFromCollection(String collection, String id) {
     Map<String, Map<String, dynamic>> data = _cache[collection];
     if (data != null) {
@@ -53,7 +45,7 @@ class Cache {
     if (data != null) {
       return data;
     }
-    return Map<String, Map<String, dynamic>>();
+    return Map<String, dynamic>();
   }
 
   Future<void> clear() {
@@ -93,10 +85,10 @@ class Cache {
         bool exists = await file.exists();
         if (exists) {
           String jsonObjectString = await file.readAsString();
-          _cache = Map<String, Map<String, Map<String, dynamic>>>.from(
+          _cache = Map<String, dynamic>.from(
               jsonDecode(jsonObjectString, reviver: customDecode));
         } else {
-          _cache = Map<String, Map<String, Map<String, dynamic>>>();
+          _cache = Map<String, dynamic>();
         }
       } catch (e) {
         API().reportError(e);
