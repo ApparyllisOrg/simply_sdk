@@ -186,36 +186,32 @@ class Cache {
   }
 
   void queueDelete(String collection, String id) {
-    Future(() async {
-      try {
-        updateToCache("query", id, {
-          "queue": true,
-          "id": id,
-          "collectionRef": collection,
-          "action": "delete",
-          "time": DateTime.now().millisecondsSinceEpoch
-        });
-      } catch (e) {
-        API().reportError(e);
-      }
-    });
+    try {
+      updateToCache("query", id, {
+        "queue": true,
+        "id": id,
+        "collectionRef": collection,
+        "action": "delete",
+        "time": DateTime.now().millisecondsSinceEpoch
+      });
+    } catch (e) {
+      API().reportError(e);
+    }
   }
 
   void queueUpdate(String collection, String id, Map<String, dynamic> data) {
-    Future(() async {
-      try {
-        updateToCache("query", id, {
-          "queue": true,
-          "id": id,
-          "collectionRef": collection,
-          "action": "update",
-          "data": data,
-          "time": DateTime.now().millisecondsSinceEpoch
-        });
-      } catch (e) {
-        API().reportError(e);
-      }
-    });
+    try {
+      updateToCache("query", id, {
+        "queue": true,
+        "id": id,
+        "collectionRef": collection,
+        "action": "update",
+        "data": data,
+        "time": DateTime.now().millisecondsSinceEpoch
+      });
+    } catch (e) {
+      API().reportError(e);
+    }
   }
 
   void queueAdd(
@@ -223,36 +219,32 @@ class Cache {
     String id,
     Map<String, dynamic> data,
   ) {
-    Future(() async {
-      try {
-        updateToCache("query", id, {
-          "queue": true,
-          "id": id,
-          "collectionRef": collection,
-          "action": "add",
-          "data": data,
-          "time": DateTime.now().millisecondsSinceEpoch
-        });
-      } catch (e) {
-        API().reportError(e);
-      }
-    });
+    try {
+      updateToCache("query", id, {
+        "queue": true,
+        "id": id,
+        "collectionRef": collection,
+        "action": "add",
+        "data": data,
+        "time": DateTime.now().millisecondsSinceEpoch
+      });
+    } catch (e) {
+      API().reportError(e);
+    }
   }
 
-  Future<String> insertDocument(
-      String collection, String id, Map<String, dynamic> data) async {
-    return Future(() async {
-      try {
-        Map<String, dynamic> dataCopy = Map.from(data);
-        dataCopy["collection"] = collection;
-        dataCopy["id"] = id;
-        updateToCache(collection, id, dataCopy);
-      } catch (e) {
-        API().reportError(e);
-      }
+  String insertDocument(
+      String collection, String id, Map<String, dynamic> data) {
+    try {
+      Map<String, dynamic> dataCopy = Map.from(data);
+      dataCopy["collection"] = collection;
+      dataCopy["id"] = id;
+      updateToCache(collection, id, dataCopy);
+    } catch (e) {
+      API().reportError(e);
+    }
 
-      return id;
-    });
+    return id;
   }
 
   void updateDocument(
@@ -268,13 +260,11 @@ class Cache {
   }
 
   Future<void> removeDocument(String collection, String id) async {
-    return Future(() async {
-      try {
-        removeFromCache(collection, id);
-      } catch (e) {
-        API().reportError(e);
-      }
-    });
+    try {
+      removeFromCache(collection, id);
+    } catch (e) {
+      API().reportError(e);
+    }
   }
 
   Future<Document> getDocument(String collection, String id) {

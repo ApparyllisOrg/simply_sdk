@@ -83,6 +83,22 @@ void main() async {
         "");
   });
 
+  test('Stresstest for funsies', () async {
+    await API().initialize();
+    auth();
+
+    for (int i = 0; i < 10000; i++) {
+      String id = ObjectId(clientMode: true).$oid;
+
+      await API()
+          .cache()
+          .insertDocument("test", id, {"number": Random().nextInt(1000)});
+    }
+
+    List<Document> docsForFun = await API().database().collection("test").get();
+    print(docsForFun);
+  });
+
   test('add 20 documents', () async {
     await API().initialize();
     auth();
