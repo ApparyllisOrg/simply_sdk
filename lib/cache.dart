@@ -30,7 +30,7 @@ class Cache {
       _cache[collection][id] = _data;
     }
 
-    API().socket().beOptimistic(collection, EUpdateType.Update, id, {});
+    API().socket().updateSubscription(collection);
   }
 
   Map<String, dynamic> getItemFromCollection(String collection, String id) {

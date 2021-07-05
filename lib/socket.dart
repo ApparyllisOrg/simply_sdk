@@ -151,6 +151,16 @@ class Socket {
     });
   }
 
+  void updateSubscription(String collection) async {
+    for (Subscription sub in _subscriptions) {
+      if (sub.target == collection) {
+        sub.documents =
+            await API().cache().searchForDocuments(collection, {}, "");
+        sub.controller.add(sub.documents);
+      }
+    }
+  }
+
   void onReceivedData(event) async {
     Map<String, dynamic> data = jsonDecode(event, reviver: customDecode);
 
