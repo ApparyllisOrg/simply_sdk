@@ -9,6 +9,8 @@ import 'package:simply_sdk/simply_sdk.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   Future<List<String>> addDocs(int count, int maxRandom) {
     return Future(() async {
       List<String> docIds = [];
@@ -46,6 +48,10 @@ void main() {
   test('Set auth token', () async {
     await API().initialize();
     auth();
+  });
+
+  test('Intialize db', () async {
+    await API().initialize();
   });
 
   test('Test DateTime', () async {

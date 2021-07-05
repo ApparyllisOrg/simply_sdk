@@ -338,22 +338,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.1"
-  sembast:
-    dependency: "direct main"
-    description:
-      name: sembast
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.1.0+2"
-  sembast_cloud_firestore_type_adapters:
-    dependency: "direct main"
-    description:
-      path: cloud_firestore_type_adapters
-      ref: dart2
-      resolved-ref: "14bd70ea74a1e64c5d987974c31c2ec20f081d0f"
-      url: "git://github.com/Apparyllis/sembast_flutter_more.dart"
-    source: git
-    version: "0.1.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -366,6 +350,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.0"
+  sqflite:
+    dependency: "direct main"
+    description:
+      name: sqflite
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0+3"
+  sqflite_common:
+    dependency: transitive
+    description:
+      name: sqflite_common
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0+2"
   stack_trace:
     dependency: transitive
     description:
@@ -452,4 +450,4 @@ packages:
     version: "0.2.0"
 sdks:
   dart: ">=2.12.0 <3.0.0"
-  flutter: ">=1.20.0"
+  flutter: ">=1.24.0-10"

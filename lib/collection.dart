@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:mongo_dart/mongo_dart.dart' as mongo;
-import 'package:sembast/sembast.dart';
 import 'package:simply_sdk/helpers.dart';
 
 import 'package:http/http.dart' as http;
@@ -30,6 +29,14 @@ class Query {
     assert(false, "Missing implementation!");
   }
 
+  String getCacheMethod() {
+    if (isEqualTo != null) return "=";
+    if (isNotEqualTo != null) return "!=";
+    if (isLargerThan != null) return ">=";
+    if (isSmallerThan != null) return "<=>";
+    assert(false, "Missing implementation!");
+  }
+
   dynamic getValue() {
     if (isEqualTo != null) return isEqualTo;
     if (isNotEqualTo != null) return isNotEqualTo;
@@ -43,13 +50,6 @@ class Query {
     query["method"] = getMethod();
     query["value"] = getValue();
     return query;
-  }
-
-  Filter getFilter(String field) {
-    if (isEqualTo != null) return Filter.equals(field, getValue());
-    if (isNotEqualTo != null) return Filter.notEquals(field, getValue());
-    if (isLargerThan != null) return Filter.greaterThan(field, getValue());
-    if (isSmallerThan != null) return Filter.lessThan(field, getValue());
   }
 }
 
