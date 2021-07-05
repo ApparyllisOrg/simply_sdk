@@ -27,6 +27,9 @@ class Cache {
     Map<String, Map<String, dynamic>> data = _cache[collection];
     if (data != null) {
       data[id] = data;
+    } else {
+      _cache[collection] = Map<String, dynamic>();
+      _cache[collection][id] = data;
     }
   }
 
@@ -51,7 +54,7 @@ class Cache {
     if (data != null) {
       return data;
     }
-    return {};
+    return Map<String, dynamic>();
   }
 
   Future<void> clear() {
