@@ -93,8 +93,8 @@ class Cache {
         bool exists = await file.exists();
         if (exists) {
           String jsonObjectString = await file.readAsString();
-          _cache = jsonDecode(jsonObjectString, reviver: customDecode)
-              as Map<String, dynamic>;
+          _cache = Map<String, Map<String, Map<String, dynamic>>>.from(
+              jsonDecode(jsonObjectString, reviver: customDecode));
         } else {
           _cache = Map<String, Map<String, Map<String, dynamic>>>();
         }
