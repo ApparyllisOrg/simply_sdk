@@ -196,7 +196,7 @@ class Socket {
     List<Document> initialDocs =
         await API().cache().searchForDocuments(sub.target, sub.query, "");
 
-    if (sub.documents.isEmpty) {
+    if (sub.documents.isNotEmpty) {
       sub.documents = initialDocs;
     }
 
