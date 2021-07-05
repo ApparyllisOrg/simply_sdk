@@ -74,7 +74,7 @@ class Cache {
         await dir.create(recursive: true);
         var dbPath = dir.path + "/simply.db";
         File file = File(dbPath);
-       = await file.writeAsString(jsonEncode(_cache, toEncodable: customEncode));
+        await file.writeAsString(jsonEncode(_cache, toEncodable: customEncode));
       } catch (e) {
         API().reportError(e);
         print(e);
@@ -93,7 +93,8 @@ class Cache {
         bool exists = await file.exists();
         if (exists) {
           String jsonObjectString = await file.readAsString();
-          _cache = jsonDecode(jsonObjectString, reviver: customDecode) as Map<String, dynamic>;
+          _cache = jsonDecode(jsonObjectString, reviver: customDecode)
+              as Map<String, dynamic>;
         } else {
           _cache = Map<String, Map<String, Map<String, dynamic>>>();
         }
