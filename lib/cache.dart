@@ -1,11 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart' as fir;
 import 'package:path_provider/path_provider.dart';
 import 'package:simply_sdk/helpers.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:simply_sdk/socket.dart';
 
 import 'collection.dart';
@@ -23,25 +20,27 @@ class Cache {
     }
   }
 
-  void updateToCache(String collection, String id, Map<String, dynamic> data) {
+  void updateToCache(String collection, String id, Map<String, dynamic> _data) {
     Map<String, Map<String, dynamic>> data = _cache[collection];
+
+    if (_data == null) return;
+
     if (data != null) {
-      data[id] = data;
+      data[id] = _data;
     } else {
-      _cache[collection] = Map<String, dynamic>();
-      _cache[collection][id] = data;
+      _cache[collection] = {};
+      _cache[collection][id] = _data;
     }
   }
 
-  void getFromCache(String collection, String id, Map<String, dynamic> data) {
+  void getFromCache(String collection, String id, Map<String, dynamic> _data) {
     Map<String, Map<String, dynamic>> data = _cache[collection];
     if (data != null) {
-      data[id] = data;
+      data[id] = _data;
     }
   }
 
-  Map<String, Map<String, dynamic>> getItemFromCollection(
-      String collection, String id) {
+  Map<String, dynamic> getItemFromCollection(String collection, String id) {
     Map<String, Map<String, dynamic>> data = _cache[collection];
     if (data != null) {
       return data[id];
@@ -54,7 +53,7 @@ class Cache {
     if (data != null) {
       return data;
     }
-    return Map<String, dynamic>();
+    return Map<String, Map<String, dynamic>>();
   }
 
   Future<void> clear() {
@@ -117,7 +116,7 @@ class Cache {
     await Future.delayed(Duration(milliseconds: 1000));
     try {
       await save();
-      var queue;
+      Map<String, Map<String, dynamic>> queue;
 
       try {
         queue = getCollectionCache("query");
@@ -129,7 +128,7 @@ class Cache {
       }
 
       try {
-        for (var data in queue) {
+        queue.forEach((key, data) async {
           switch (data["action"]) {
             case "delete":
               {
@@ -174,7 +173,7 @@ class Cache {
               }
               break;
           }
-        }
+        });
       } catch (e) {
         print(e);
       }
@@ -278,7 +277,7 @@ class Cache {
       String collection, String id, Map<String, dynamic> data) async {
     return Future(() async {
       try {
-        var dataCopy = Map.from(data);
+        Map<String, dynamic> dataCopy = Map.from(data);
         dataCopy["collection"] = collection;
         dataCopy["id"] = id;
         updateToCache(collection, id, dataCopy);
@@ -293,10 +292,10 @@ class Cache {
   void updateDocument(
       String collection, String id, Map<String, dynamic> data) async {
     Future(() async {
-      var dataCopy = Map.from(data);
+      Map<String, dynamic> dataCopy = Map.from(data);
       dataCopy["collection"] = collection;
       try {
-        var dataCopy = Map.from(data);
+        Map<String, dynamic> dataCopy = Map.from(data);
         dataCopy["collection"] = collection;
         dataCopy["id"] = id;
         updateToCache(collection, id, dataCopy);
@@ -325,7 +324,9 @@ class Cache {
 
         try {
           docData = getItemFromCollection(collection, id);
-        } catch (e) {}
+        } catch (e) {
+          print(e);
+        }
 
         if (docData == null || docData.isEmpty) {
           return doc;
@@ -349,7 +350,7 @@ class Cache {
 
   Future<List<Document>> searchForDocuments(
       String collection, Map<String, Query> queries, String orderBy,
-      {int start, int end}) async {
+      {int start, int end, bool orderUp = true}) async {
     List<Document> docs = [];
 
     try {
@@ -373,12 +374,22 @@ class Cache {
       });
 
       if (orderBy != null) {
-        docs.sort((Document a, Document b) =>
-            a.value(orderBy, 0) >= b.value(orderBy, 0) ? 1 : -1);
+        docs.sort((Document a, Document b) => orderUp
+            ? a.value(orderBy, 0) >= b.value(orderBy, 0)
+                ? 1
+                : -1
+            : a.value(orderBy, 0) >= b.value(orderBy, 0)
+                ? -1
+                : 1);
       }
 
-      if (start != null && end != null) {
-        docs = docs.getRange(start, end);
+      if (end != null) {
+        if (start == null) start = 0;
+        List<Document> returnDocs = [];
+        for (int i = start; i < end && i < docs.length; i++) {
+          returnDocs.add(docs[i]);
+        }
+        return returnDocs;
       }
     } catch (e) {
       API().reportError(e);

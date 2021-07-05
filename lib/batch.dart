@@ -26,6 +26,7 @@ class Operation {
       case OperationType.delete:
         return "delete";
     }
+    return "err";
   }
 
   Map<String, dynamic> toJson() {

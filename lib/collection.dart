@@ -27,6 +27,7 @@ class Query {
     if (isLargerThan != null) return "isLargerThan";
     if (isSmallerThan != null) return "isSmallerThan";
     assert(false, "Missing implementation!");
+    return "";
   }
 
   dynamic getValue() {
@@ -54,6 +55,7 @@ class Query {
     } catch (e) {
       return false;
     }
+    return false;
   }
 }
 
@@ -97,7 +99,6 @@ class Collection {
     return Future(() async {
       await API().auth().isAuthenticated();
 
-      Document doc = Document(false, docId, id, {});
       print(docId);
 
       var url = Uri.parse(
@@ -121,12 +122,9 @@ class Collection {
         return Document(returnedDocument["exists"], docId, id,
             returnedDocument["content"] ?? {});
       } else {
-        doc.data = {};
-        doc.exists = false;
         print("${response.statusCode.toString()}: ${response.body}");
+        return await API().cache().getDocument(id, docId);
       }
-
-      return doc;
     });
   }
 
@@ -208,8 +206,11 @@ class Collection {
       } catch (e) {}
 
       if (response == null) {
-        return await API().cache().searchForDocuments(id, query, _orderby,
-            start: _start, end: _limit);
+        var docs = await API().cache().searchForDocuments(id, query, _orderby,
+            start: _start,
+            end: _limit,
+            orderUp: _orderByOrder != null ? _orderByOrder == 1 : true);
+        return docs;
       }
 
       if (response.statusCode == 200) {
@@ -220,6 +221,11 @@ class Collection {
         }
       } else {
         print("${response.statusCode.toString()}: ${response.body}");
+        var docs = await API().cache().searchForDocuments(id, query, _orderby,
+            start: _start,
+            end: _limit,
+            orderUp: _orderByOrder != null ? _orderByOrder == 1 : true);
+        return docs;
       }
 
       return documents;
@@ -330,7 +336,7 @@ class Collection {
   }
 
   Future<Document> add(Map<String, dynamic> data, {String customId}) {
-    return Future(() async {
+    return Future<Document>(() async {
       await API().auth().isAuthenticated();
       String docID =
           customId != null ? customId : mongo.ObjectId(clientMode: true).$oid;
@@ -356,6 +362,8 @@ class Collection {
         }
         print("${response.statusCode.toString()}: ${response.body}");
       }
+
+      return Document(true, docID, id, data);
     });
   }
 }

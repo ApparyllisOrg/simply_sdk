@@ -1,5 +1,5 @@
 class FileManager {
-  FileManager() {}
+  FileManager();
 
-  void LoadImage(String id, String uid) {}
+  void loadImage(String id, String uid) {}
 }

@@ -15,7 +15,7 @@ class API {
     return _singleton;
   }
 
-  API._internal() {}
+  API._internal();
 
   Future<void> initialize({APISettings settings}) async {
     _auth = Auth();

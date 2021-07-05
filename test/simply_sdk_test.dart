@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart' as fir;
 import 'package:flutter_test/flutter_test.dart';
@@ -8,7 +7,19 @@ import 'package:simply_sdk/document.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
-void main() {
+void setAuth() async {
+  await API().initialize();
+  API().auth().setGetAuth(() async {
+    return {
+      "success": true,
+      "token":
+          "eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg4ZGYxMzgwM2I3NDM2NjExYWQ0ODE0NmE4ZGExYjA3MTg2ZmQxZTkiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZnJvbnRpbWUtN2FhY2UiLCJhdWQiOiJmcm9udGltZS03YWFjZSIsImF1dGhfdGltZSI6MTYyNDc4MTM5NiwidXNlcl9pZCI6InJYSDV4bGllRk9aNHVscUFsTHYzWVhMbW41MzIiLCJzdWIiOiJyWEg1eGxpZUZPWjR1bHFBbEx2M1lYTG1uNTMyIiwiaWF0IjoxNjI0NzgxMzk2LCJleHAiOjE2MjQ3ODQ5OTYsImVtYWlsIjoiY2F0aGVyZWNlbHZpY3RvcmlhQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7Imdvb2dsZS5jb20iOlsiMTA2NDc3NTY3MTY0NDQzODYyMjI1Il0sImFwcGxlLmNvbSI6WyIwMDExNzUuMGEyMTI5ZDdjM2E3NDc2MThiOTQzZGMwZWZkZDM0ZjEuMTk1NCJdLCJlbWFpbCI6WyJjYXRoZXJlY2VsdmljdG9yaWFAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoiZ29vZ2xlLmNvbSJ9fQ.G0QuznZY6khBCJWXGFBspRaSgN_Pa6ouNOHwWO6UDxEOeHLsRYnbhdiJD0zdnxXWSJv38o3fKv4VpsqJJ_WOXrgCSJBTAMy0g-fIyLKrAdxI_dU8B2Hk94Ug4zSo_gvY4f6Y0N0DN_maLx8sCQAEFXsv601X4B8FxliDo6K_vCXi-wg1Ui_8lHvWujbPiBiWSW-KXIzWwEz4L_-U9Fg6Kot1n4zMRF3dU_hXT7bM04Ip1OWSnxBFP8jItuWhUpJRMSNOCpk3vwTTkKjtaYwwmIVGiAi7_",
+      "uid": "zdhE8LSYheP9dGzdwKzy8eoJrTu1"
+    };
+  });
+}
+
+void main() async {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   Future<List<String>> addDocs(int count, int maxRandom) {
@@ -20,6 +31,8 @@ void main() {
 
         String receivedId = await API().cache().insertDocument(
             "test", id, {"number": Random().nextInt(maxRandom)});
+        await API().cache().insertDocument(
+            "unitTest", id, {"number": Random().nextInt(maxRandom)});
 
         expect(id, receivedId);
 
@@ -116,26 +129,26 @@ void main() {
     expect(afterDocs.length, 20);
   });
 
-  test('add 20 documents and query all 20 documents in 2 steps and order by',
+  test('add 40 documents and query all 40 documents in 2 steps and order by',
       () async {
     await API().cache().clear();
-    List<String> docs = await addDocs(20, 50);
+    List<String> docs = await addDocs(40, 50);
 
-    expect(docs.length, 20);
+    expect(docs.length, 40);
 
-    List<Document> afterDocs = await API()
+    List<Document> previous = await API()
         .cache()
         .searchForDocuments("test", {}, "number", start: 0, end: 10);
 
     int lastNum = -999;
 
-    for (var doc in afterDocs) {
+    for (var doc in previous) {
       print(doc.data);
       expect(lastNum <= doc.data["number"], true);
       lastNum = doc.data["number"];
     }
 
-    afterDocs = await API()
+    List<Document> afterDocs = await API()
         .cache()
         .searchForDocuments("test", {}, "number", start: 10, end: 20);
 
@@ -149,6 +162,8 @@ void main() {
   });
 
   test('Test offline simple add, update and get', () async {
+    await setAuth();
+
     var doc = await API()
         .database()
         .collection("test")
@@ -172,6 +187,8 @@ void main() {
   });
 
   test('Test offline simple add and get', () async {
+    await setAuth();
+
     var doc = await API()
         .database()
         .collection("test")
@@ -189,7 +206,7 @@ void main() {
   });
 
   test('Test Timestamp encode and decode', () async {
-    await API().initialize();
+    await setAuth();
 
     fir.Timestamp now = fir.Timestamp.now();
 
@@ -211,9 +228,7 @@ void main() {
   });
 
   test('Test Datetime encode and decode', () async {
-    await API().initialize();
-    auth();
-
+    await setAuth();
     DateTime now = DateTime.now();
 
     var doc = await API().database().collection("codecTest").add({"time": now});
@@ -224,16 +239,18 @@ void main() {
     print(doc.id);
 
     print(newDoc.data.toString());
-    print(newDoc.value<DateTime>("time", null));
+    print(newDoc.value<fir.Timestamp>("time", null));
 
     expect(doc.exists, true);
     expect(newDoc.exists, true);
     expect(doc.id, newDoc.id);
-    expect(now, newDoc.value<DateTime>("time", null));
+    expect(
+        fir.Timestamp.fromDate(now), newDoc.value<fir.Timestamp>("time", null));
     expect(doc.collectionId, newDoc.collectionId);
   });
 
   test("Send enqued changes to server", () async {
+    await setAuth();
     String id = ObjectId(clientMode: true).$oid;
     API().cache().queueAdd("test", id, {"exists": true});
     API().cache().queueUpdate("test", id, {"exists": false});
@@ -241,14 +258,16 @@ void main() {
   });
 
   test('Get test', () async {
-    auth();
+    await setAuth();
+
     var results = await API().database().collection("unitTest").get();
     print("Returned ${results.length} results");
   });
 
   // fill up the database
   test('add 1000 documents', () async {
-    auth();
+    await setAuth();
+
     for (int i = 0; i < 1000; i++) {
       API()
           .database()
@@ -257,7 +276,8 @@ void main() {
     }
   });
   test('get test with query equal 0', () async {
-    auth();
+    await setAuth();
+
     var results = await API()
         .database()
         .collection("unitTest")
@@ -270,6 +290,7 @@ void main() {
   });
 
   test('get test with query larger than 50', () async {
+    await setAuth();
     var results = await API()
         .database()
         .collection("unitTest")
@@ -282,6 +303,7 @@ void main() {
   });
 
   test('get test with query smaller than 50', () async {
+    await setAuth();
     var results = await API()
         .database()
         .collection("unitTest")
@@ -294,6 +316,7 @@ void main() {
   });
 
   test('get test with query not equal to 0', () async {
+    await setAuth();
     var results = await API()
         .database()
         .collection("unitTest")
@@ -346,7 +369,8 @@ void main() {
   });
 
   test('get test with query order by number, limit to first 10', () async {
-    auth();
+    await setAuth();
+    await addDocs(40, 50);
     var results = await API()
         .database()
         .collection("unitTest")
@@ -367,13 +391,14 @@ void main() {
   test(
       'get test with query order by number, limit to first 5 after starting at pos 5',
       () async {
-    auth();
+    await setAuth();
+    await addDocs(40, 50);
     var results = await API()
         .database()
         .collection("unitTest")
         .orderBy("number", 1)
         .limit(5)
-        .start(5)
+        .start(0)
         .get();
     var lastNumber = -9999;
     for (var result in results) {

@@ -95,13 +95,12 @@ class Socket {
         docData.data = Document.convertTime(documentData["content"]);
       } else {
         docId = documentData["id"];
-        Document newDoc = Document(
-            true, documentData["id"], sub.target, documentData["content"]);
+        Document newDoc =
+            Document(true, docId, sub.target, documentData["content"]);
         sub.documents.add(newDoc);
       }
 
-      API().cache().updateDocument(
-          sub.target, documentData["id"], documentData["content"]);
+      API().cache().updateDocument(sub.target, docId, documentData["content"]);
     });
   }
 
