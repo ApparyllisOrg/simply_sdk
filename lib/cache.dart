@@ -36,7 +36,9 @@ class Cache {
   Map<String, dynamic> getItemFromCollection(String collection, String id) {
     Map<String, Map<String, dynamic>> data = _cache[collection];
     if (data != null) {
-      return Map.from(data[id]);
+      var docData = Map.of(data[id]);
+      docData.remove("id");
+      return docData;
     }
     return null;
   }
@@ -254,12 +256,8 @@ class Cache {
   void updateDocument(
       String collection, String id, Map<String, dynamic> data) async {
     Future(() async {
-      Map<String, dynamic> dataCopy = Map.from(data);
-      dataCopy["collection"] = collection;
       try {
         Map<String, dynamic> dataCopy = Map.from(data);
-        dataCopy["collection"] = collection;
-        dataCopy["id"] = id;
         updateToCache(collection, id, dataCopy);
       } catch (e) {
         API().reportError(e);
