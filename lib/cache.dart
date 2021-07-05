@@ -23,11 +23,13 @@ class Cache {
   void updateToCache(String collection, String id, Map<String, dynamic> _data) {
     if (_data == null) return;
 
-    if (_cache[collection] != null) {
-      _cache[collection][id] = _data;
+    var collectionData = _cache[collection];
+
+    if (collectionData != null) {
+      collectionData[id] = _data;
     } else {
-      _cache[collection] = Map<String, dynamic>();
-      _cache[collection][id] = _data;
+      collectionData = Map<String, dynamic>();
+      collectionData[id] = _data;
     }
 
     API().socket().updateSubscription(collection);
