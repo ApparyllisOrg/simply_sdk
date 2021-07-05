@@ -20,14 +20,12 @@ class Cache {
   }
 
   void updateToCache(String collection, String id, Map<String, dynamic> _data) {
-    Map<String, Map<String, dynamic>> data = _cache[collection];
-
     if (_data == null) return;
 
-    if (data != null) {
-      data[id] = _data;
+    if (_cache[collection] != null) {
+      _cache[collection][id] = _data;
     } else {
-      _cache[collection] = {};
+      _cache[collection] = Map<String, dynamic>();
       _cache[collection][id] = _data;
     }
   }
@@ -35,7 +33,7 @@ class Cache {
   Map<String, dynamic> getItemFromCollection(String collection, String id) {
     Map<String, Map<String, dynamic>> data = _cache[collection];
     if (data != null) {
-      return data[id];
+      return Map.from(data[id]);
     }
     return null;
   }
@@ -325,7 +323,7 @@ class Cache {
           return doc;
         }
 
-        Map<String, dynamic> sendData = {};
+        Map<String, dynamic> sendData = Map<String, dynamic>();
         docData.forEach((key, value) {
           if (key != "id" && key != "collection") {
             sendData[key] = value;
