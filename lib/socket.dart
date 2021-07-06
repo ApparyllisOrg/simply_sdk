@@ -128,27 +128,25 @@ class Socket {
 
   void beOptimistic(String targetCollection, EUpdateType operation, String id,
       Map<String, dynamic> data) async {
-    Future(() async {
-      Map<String, dynamic> sendData = {};
-      sendData["operationType"] = updateTypeToString(operation);
-      sendData["id"] = id;
-      sendData["content"] = data;
+    Map<String, dynamic> sendData = {};
+    sendData["operationType"] = updateTypeToString(operation);
+    sendData["id"] = id;
+    sendData["content"] = data;
 
-      var cacheDoc = await API().cache().getDocument(targetCollection, id);
-      if (cacheDoc.exists) {
-        Map<String, dynamic> cacheData = cacheDoc.data;
-        cacheData.addAll(data);
-        sendData["content"] = cacheData;
-      }
+    var cacheDoc = await API().cache().getDocument(targetCollection, id);
+    if (cacheDoc.exists) {
+      Map<String, dynamic> cacheData = cacheDoc.data;
+      cacheData.addAll(data);
+      sendData["content"] = cacheData;
+    }
 
-      await onReceivedData(jsonEncode({
-        "msg": "update",
-        "target": targetCollection,
-        "operationType": updateTypeToString(operation),
-        "results": [sendData]
-      }, toEncodable: customEncode));
-      updateSubscription(targetCollection);
-    });
+    await onReceivedData(jsonEncode({
+      "msg": "update",
+      "target": targetCollection,
+      "operationType": updateTypeToString(operation),
+      "results": [sendData]
+    }, toEncodable: customEncode));
+    updateSubscription(targetCollection);
   }
 
   void updateSubscription(String collection) async {
