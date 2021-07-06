@@ -14,9 +14,8 @@ class Cache {
 
   void removeFromCache(String collection, String id,
       {bool triggerUpdateSubscription: true}) {
-    Map<String, Map<String, dynamic>> data = _cache[collection];
-    if (data != null) {
-      data.remove(id);
+    if (_cache[collection] != null) {
+      _cache[collection].remove(id);
       API().socket().beOptimistic(collection, EUpdateType.Remove, id, {});
     }
     if (triggerUpdateSubscription)
