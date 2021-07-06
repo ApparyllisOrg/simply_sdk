@@ -24,13 +24,11 @@ class Cache {
       {bool triggerUpdateSubscription: true}) {
     if (_data == null) return;
 
-    var collectionData = _cache[collection];
-
-    if (collectionData != null) {
-      collectionData[id] = _data;
+    if (_cache[collection] != null) {
+      _cache[collection][id] = _data;
     } else {
-      collectionData = Map<String, dynamic>();
-      collectionData[id] = _data;
+      _cache[collection] = Map<String, dynamic>();
+      _cache[collection][id] = _data;
     }
 
     if (triggerUpdateSubscription)
