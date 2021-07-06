@@ -85,31 +85,27 @@ class Socket {
 
   void updateDocument(
       Subscription sub, Map<String, dynamic> documentData) async {
-    Future(() async {
-      var docId = "";
-      var docData = sub.documents.firstWhere(
-          (element) => element.id == documentData["id"],
-          orElse: () => null);
-      if (docData != null) {
-        docId = docData.id;
-        docData.data = Document.convertTime(documentData["content"]);
-      } else {
-        docId = documentData["id"];
-        Document newDoc =
-            Document(true, docId, sub.target, documentData["content"]);
-        sub.documents.add(newDoc);
-      }
+    var docId = "";
+    var docData = sub.documents.firstWhere(
+        (element) => element.id == documentData["id"],
+        orElse: () => null);
+    if (docData != null) {
+      docId = docData.id;
+      docData.data = Document.convertTime(documentData["content"]);
+    } else {
+      docId = documentData["id"];
+      Document newDoc =
+          Document(true, docId, sub.target, documentData["content"]);
+      sub.documents.add(newDoc);
+    }
 
-      API().cache().updateDocument(sub.target, docId, documentData["content"],
-          doTriggerUpdateSubscription: false);
-    });
+    API().cache().updateDocument(sub.target, docId, documentData["content"],
+        doTriggerUpdateSubscription: false);
   }
 
   void removeDocument(Subscription sub, String id) async {
-    Future(() async {
-      sub.documents.removeWhere((element) => element.id == id);
-      API().cache().removeDocument(sub.target, id);
-    });
+    sub.documents.removeWhere((element) => element.id == id);
+    API().cache().removeDocument(sub.target, id);
   }
 
   void updateCollectionLocally(Subscription sub, Map<String, dynamic> change) {
@@ -143,12 +139,13 @@ class Socket {
         sendData["content"] = cacheData;
       }
 
-      onReceivedData(jsonEncode({
+      await onReceivedData(jsonEncode({
         "msg": "update",
         "target": targetCollection,
         "operationType": updateTypeToString(operation),
         "results": [sendData]
       }, toEncodable: customEncode));
+      updateSubscription(targetCollection);
     });
   }
 
