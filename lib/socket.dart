@@ -100,7 +100,8 @@ class Socket {
         sub.documents.add(newDoc);
       }
 
-      API().cache().updateDocument(sub.target, docId, documentData["content"]);
+      API().cache().updateDocument(sub.target, docId, documentData["content"],
+          doTriggerUpdateSubscription: false);
     });
   }
 

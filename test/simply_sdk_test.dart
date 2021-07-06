@@ -90,12 +90,13 @@ void main() async {
     for (int i = 0; i < 10000; i++) {
       String id = ObjectId(clientMode: true).$oid;
 
-      await API()
-          .cache()
-          .insertDocument("test", id, {"number": Random().nextInt(1000)});
+      await API().cache().insertDocument(
+          "test", id, {"number": Random().nextInt(1000)},
+          doTriggerUpdateSubscription: false);
     }
 
-    List<Document> docsForFun = await API().database().collection("test").get();
+    List<Document> docsForFun =
+        await API().cache().searchForDocuments("test", {}, "");
     print(docsForFun);
   });
 

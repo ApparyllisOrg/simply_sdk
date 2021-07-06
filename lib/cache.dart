@@ -20,7 +20,8 @@ class Cache {
     }
   }
 
-  void updateToCache(String collection, String id, Map<String, dynamic> _data) {
+  void updateToCache(String collection, String id, Map<String, dynamic> _data,
+      {bool triggerUpdateSubscription: true}) {
     if (_data == null) return;
 
     var collectionData = _cache[collection];
@@ -32,7 +33,8 @@ class Cache {
       collectionData[id] = _data;
     }
 
-    API().socket().updateSubscription(collection);
+    if (triggerUpdateSubscription)
+      API().socket().updateSubscription(collection);
   }
 
   Map<String, dynamic> getItemFromCollection(String collection, String id) {
@@ -233,13 +235,14 @@ class Cache {
     }
   }
 
-  String insertDocument(
-      String collection, String id, Map<String, dynamic> data) {
+  String insertDocument(String collection, String id, Map<String, dynamic> data,
+      {bool doTriggerUpdateSubscription: true}) {
     try {
       Map<String, dynamic> dataCopy = Map.from(data);
       dataCopy["collection"] = collection;
       dataCopy["id"] = id;
-      updateToCache(collection, id, dataCopy);
+      updateToCache(collection, id, dataCopy,
+          triggerUpdateSubscription: doTriggerUpdateSubscription);
     } catch (e) {
       API().reportError(e);
     }
@@ -247,12 +250,13 @@ class Cache {
     return id;
   }
 
-  void updateDocument(
-      String collection, String id, Map<String, dynamic> data) async {
+  void updateDocument(String collection, String id, Map<String, dynamic> data,
+      {bool doTriggerUpdateSubscription: true}) async {
     Future(() async {
       try {
         Map<String, dynamic> dataCopy = Map.from(data);
-        updateToCache(collection, id, dataCopy);
+        updateToCache(collection, id, dataCopy,
+            triggerUpdateSubscription: doTriggerUpdateSubscription);
       } catch (e) {
         API().reportError(e);
       }
