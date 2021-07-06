@@ -128,18 +128,14 @@ class Collection {
     });
   }
 
-  Future<void> updateDocument(String docId, Map<String, dynamic> data) {
-    return Future(() async {
-      Document doc = Document(true, docId, id, {});
-      await doc.update(data);
-    });
+  Future<void> updateDocument(String docId, Map<String, dynamic> data) async {
+    Document doc = Document(true, docId, id, {});
+    await doc.update(data);
   }
 
-  Future<void> deleteDocument(String docId) {
-    return Future(() async {
-      Document doc = Document(true, docId, id, {});
-      await doc.delete();
-    });
+  Future<void> deleteDocument(String docId) async {
+    Document doc = Document(true, docId, id, {});
+    await doc.delete();
   }
 
   Map<String, dynamic> _getQueryString() {
@@ -183,53 +179,50 @@ class Collection {
     });
   }
 
-  Future<List<Document>> get() {
-    return Future(() async {
-      await API().auth().isAuthenticated();
+  Future<List<Document>> get() async {
+    await API().auth().isAuthenticated();
 
-      if (_end != null || _start != null || _limit != null) {
-        assert(_orderby != null);
+    if (_end != null || _start != null || _limit != null) {
+      assert(_orderby != null);
+    }
+
+    List<Document> documents = [];
+    var url = Uri.parse(API().connection().collectionGet() +
+        "?" +
+        "target=$id${_getOrderBy()}${_getLimit()}${_getStart()}&query=" +
+        jsonEncode(_getQueryString(), toEncodable: customEncode));
+
+    var response;
+    try {
+      response = await http.get(
+        url,
+        headers: getHeader(),
+      );
+    } catch (e) {}
+
+    if (response == null) {
+      var docs = await API().cache().searchForDocuments(id, query, _orderby,
+          start: _start,
+          end: _limit,
+          orderUp: _orderByOrder != null ? _orderByOrder == 1 : true);
+      return docs;
+    }
+
+    if (response.statusCode == 200) {
+      var returnedDocuments = jsonDecode(response.body, reviver: customDecode);
+      for (var doc in returnedDocuments) {
+        documents.add(Document(true, doc["id"], id, doc["content"] ?? {}));
       }
+    } else {
+      print("${response.statusCode.toString()}: ${response.body}");
+      var docs = await API().cache().searchForDocuments(id, query, _orderby,
+          start: _start,
+          end: _limit,
+          orderUp: _orderByOrder != null ? _orderByOrder == 1 : true);
+      return docs;
+    }
 
-      List<Document> documents = [];
-      var url = Uri.parse(API().connection().collectionGet() +
-          "?" +
-          "target=$id${_getOrderBy()}${_getLimit()}${_getStart()}&query=" +
-          jsonEncode(_getQueryString(), toEncodable: customEncode));
-
-      var response;
-      try {
-        response = await http.get(
-          url,
-          headers: getHeader(),
-        );
-      } catch (e) {}
-
-      if (response == null) {
-        var docs = await API().cache().searchForDocuments(id, query, _orderby,
-            start: _start,
-            end: _limit,
-            orderUp: _orderByOrder != null ? _orderByOrder == 1 : true);
-        return docs;
-      }
-
-      if (response.statusCode == 200) {
-        var returnedDocuments =
-            jsonDecode(response.body, reviver: customDecode);
-        for (var doc in returnedDocuments) {
-          documents.add(Document(true, doc["id"], id, doc["content"] ?? {}));
-        }
-      } else {
-        print("${response.statusCode.toString()}: ${response.body}");
-        var docs = await API().cache().searchForDocuments(id, query, _orderby,
-            start: _start,
-            end: _limit,
-            orderUp: _orderByOrder != null ? _orderByOrder == 1 : true);
-        return docs;
-      }
-
-      return documents;
-    });
+    return documents;
   }
 
   Future<List<Document>> getMany(List<String> docs) {
@@ -312,58 +305,55 @@ class Collection {
     });
   }
 
-  Future<Response> addImpl(String docID, Map<String, dynamic> data, int time) {
-    return Future(() async {
-      var url = Uri.parse(API().connection().documentAdd());
+  Future<Response> addImpl(
+      String docID, Map<String, dynamic> data, int time) async {
+    var url = Uri.parse(API().connection().documentAdd());
 
-      Map<String, dynamic> postBody = {
-        "target": id,
-        "content": data,
-        "updateTime": time,
-        "id": docID
-      };
+    Map<String, dynamic> postBody = {
+      "target": id,
+      "content": data,
+      "updateTime": time,
+      "id": docID
+    };
 
-      String decode = jsonEncode(postBody, toEncodable: customEncode);
+    String decode = jsonEncode(postBody, toEncodable: customEncode);
 
-      var response;
-      try {
-        response = await http.post(url, body: decode, headers: getHeader());
-      } catch (e) {
-        print(e);
-      }
-      return response;
-    });
+    var response;
+    try {
+      response = await http.post(url, body: decode, headers: getHeader());
+    } catch (e) {
+      print(e);
+    }
+    return response;
   }
 
-  Future<Document> add(Map<String, dynamic> data, {String customId}) {
-    return Future<Document>(() async {
-      await API().auth().isAuthenticated();
-      String docID =
-          customId != null ? customId : mongo.ObjectId(clientMode: true).$oid;
+  Future<Document> add(Map<String, dynamic> data, {String customId}) async {
+    await API().auth().isAuthenticated();
+    String docID =
+        customId != null ? customId : mongo.ObjectId(clientMode: true).$oid;
 
-      API().cache().insertDocument(id, docID, data);
+    API().cache().insertDocument(id, docID, data);
 
-      API().socket().beOptimistic(id, EUpdateType.Add, docID, data);
+    API().socket().beOptimistic(id, EUpdateType.Add, docID, data);
 
-      var response =
-          await addImpl(docID, data, DateTime.now().millisecondsSinceEpoch);
+    var response =
+        await addImpl(docID, data, DateTime.now().millisecondsSinceEpoch);
 
-      if (response == null) {
+    if (response == null) {
+      API().cache().queueAdd(id, docID, data);
+      return Document(true, docID, id, data);
+    }
+
+    if (response.statusCode == 200) {
+      return Document(true, docID, id, data);
+    } else {
+      if (response.statusCode != 400) {
         API().cache().queueAdd(id, docID, data);
         return Document(true, docID, id, data);
       }
+      print("${response.statusCode.toString()}: ${response.body}");
+    }
 
-      if (response.statusCode == 200) {
-        return Document(true, docID, id, data);
-      } else {
-        if (response.statusCode != 400) {
-          API().cache().queueAdd(id, docID, data);
-          return Document(true, docID, id, data);
-        }
-        print("${response.statusCode.toString()}: ${response.body}");
-      }
-
-      return Document(true, docID, id, data);
-    });
+    return Document(true, docID, id, data);
   }
 }

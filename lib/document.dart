@@ -47,104 +47,96 @@ class Document {
     data = convertTime(this.data);
   }
 
-  Future<Response> deleteImpl(int time) {
-    return Future(() async {
-      var url = Uri.parse(API().connection().documentDelete());
-      var sendData = Map.from(data);
-      sendData["target"] = collectionId;
-      sendData["id"] = id;
-      sendData["deleteTime"] = time;
+  Future<Response> deleteImpl(int time) async {
+    var url = Uri.parse(API().connection().documentDelete());
+    var sendData = Map.from(data);
+    sendData["target"] = collectionId;
+    sendData["id"] = id;
+    sendData["deleteTime"] = time;
 
-      var response;
-      try {
-        response = await http.delete(url,
-            headers: getHeader(),
-            body: jsonEncode(sendData, toEncodable: customEncode));
-      } catch (e) {
-        print(e);
-      }
-      return response;
-    });
+    var response;
+    try {
+      response = await http.delete(url,
+          headers: getHeader(),
+          body: jsonEncode(sendData, toEncodable: customEncode));
+    } catch (e) {
+      print(e);
+    }
+    return response;
   }
 
-  Future<Response> updateImpl(Map<String, dynamic> inData, int time) {
-    return Future(() async {
-      var url = Uri.parse(API().connection().documentUpdate());
+  Future<Response> updateImpl(Map<String, dynamic> inData, int time) async {
+    var url = Uri.parse(API().connection().documentUpdate());
 
-      Map<String, dynamic> sendData = {};
-      sendData["target"] = collectionId;
-      sendData["id"] = id;
-      sendData["content"] = inData;
-      sendData["updateTime"] = time;
+    Map<String, dynamic> sendData = {};
+    sendData["target"] = collectionId;
+    sendData["id"] = id;
+    sendData["content"] = inData;
+    sendData["updateTime"] = time;
 
-      var response;
-      try {
-        response = await http.patch(url,
-            headers: getHeader(),
-            body: jsonEncode(sendData, toEncodable: customEncode));
-      } catch (e) {}
+    var response;
+    try {
+      response = await http.patch(url,
+          headers: getHeader(),
+          body: jsonEncode(sendData, toEncodable: customEncode));
+    } catch (e) {}
 
-      return response;
-    });
+    return response;
   }
 
   Future delete() async {
-    return Future(() async {
-      await API().auth().isAuthenticated();
+    await API().auth().isAuthenticated();
 
-      API().cache().removeDocument(collectionId, id);
+    API().cache().removeDocument(collectionId, id);
 
-      API().socket().beOptimistic(collectionId, EUpdateType.Remove, id, data);
+    API().socket().beOptimistic(collectionId, EUpdateType.Remove, id, data);
 
-      var response = await deleteImpl(DateTime.now().millisecondsSinceEpoch);
+    var response = await deleteImpl(DateTime.now().millisecondsSinceEpoch);
 
-      if (response == null) {
-        API().cache().queueDelete(collectionId, id);
-        return;
-      }
-
-      if (response.statusCode == 200) {
-        exists = false;
-      } else {
-        if (response.statusCode != 400) {
-          API().cache().queueDelete(collectionId, id);
-        }
-
-        print("${response.statusCode.toString()}: ${response.body}");
-      }
-
+    if (response == null) {
+      API().cache().queueDelete(collectionId, id);
       return;
-    });
+    }
+
+    if (response.statusCode == 200) {
+      exists = false;
+    } else {
+      if (response.statusCode != 400) {
+        API().cache().queueDelete(collectionId, id);
+      }
+
+      print("${response.statusCode.toString()}: ${response.body}");
+    }
+
+    return;
   }
 
   Future update(inData) async {
-    return Future(() async {
-      await API().auth().isAuthenticated();
+    await API().auth().isAuthenticated();
 
-      API().cache().updateDocument(collectionId, id, inData);
+    API().cache().updateDocument(collectionId, id, inData);
 
-      API().socket().beOptimistic(collectionId, EUpdateType.Update, id, data);
+    API().socket().beOptimistic(collectionId, EUpdateType.Update, id, data);
 
-      var response =
-          await updateImpl(inData, DateTime.now().millisecondsSinceEpoch);
+    var response =
+        await updateImpl(inData, DateTime.now().millisecondsSinceEpoch);
 
-      if (response == null) {
-        API().cache().queueUpdate(collectionId, id, inData);
-        return;
-      }
-
-      if (response.statusCode == 200) {
-        data.addAll(inData);
-      } else {
-        if (response.statusCode != 400) {
-          API().cache().queueUpdate(collectionId, id, inData);
-        }
-
-        if (response.statusCode == 500) {}
-        print("${response.statusCode.toString()}: ${response.body}");
-      }
-
+    if (response == null) {
+      API().cache().queueUpdate(collectionId, id, inData);
       return;
-    });
+    }
+
+    if (response.statusCode == 200) {
+      data.addAll(inData);
+    } else {
+      if (response.statusCode != 400) {
+        API().cache().queueUpdate(collectionId, id, inData);
+      }
+
+      if (response.statusCode == 500) {}
+      print("${response.statusCode.toString()}: ${response.body}");
+    }
+
+    return;
   }
 }

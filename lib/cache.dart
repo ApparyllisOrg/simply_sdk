@@ -16,7 +16,6 @@ class Cache {
       {bool triggerUpdateSubscription: true}) {
     if (_cache[collection] != null) {
       _cache[collection].remove(id);
-      API().socket().beOptimistic(collection, EUpdateType.Remove, id, {});
     }
     if (triggerUpdateSubscription)
       API().socket().updateSubscription(collection);
@@ -273,37 +272,35 @@ class Cache {
     }
   }
 
-  Future<Document> getDocument(String collection, String id) {
-    return new Future(() async {
-      Document doc = Document(false, id, collection, {});
+  Document getDocument(String collection, String id) {
+    Document doc = Document(false, id, collection, {});
+
+    try {
+      Map<String, dynamic> docData;
 
       try {
-        Map<String, dynamic> docData;
-
-        try {
-          docData = getItemFromCollection(collection, id);
-        } catch (e) {
-          print(e);
-        }
-
-        if (docData == null || docData.isEmpty) {
-          return doc;
-        }
-
-        Map<String, dynamic> sendData = Map<String, dynamic>();
-        docData.forEach((key, value) {
-          if (key != "id" && key != "collection") {
-            sendData[key] = value;
-          }
-        });
-        doc.data = sendData;
-        doc.exists = true;
+        docData = getItemFromCollection(collection, id);
       } catch (e) {
-        API().reportError(e);
+        print(e);
       }
 
-      return doc;
-    });
+      if (docData == null || docData.isEmpty) {
+        return doc;
+      }
+
+      Map<String, dynamic> sendData = Map<String, dynamic>();
+      docData.forEach((key, value) {
+        if (key != "id" && key != "collection") {
+          sendData[key] = value;
+        }
+      });
+      doc.data = sendData;
+      doc.exists = true;
+    } catch (e) {
+      API().reportError(e);
+    }
+
+    return doc;
   }
 
   Future<List<Document>> searchForDocuments(
