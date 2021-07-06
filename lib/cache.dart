@@ -12,12 +12,15 @@ import 'simply_sdk.dart';
 class Cache {
   Map<String, dynamic> _cache = Map<String, dynamic>();
 
-  void removeFromCache(String collection, String id) {
+  void removeFromCache(String collection, String id,
+      {bool triggerUpdateSubscription: true}) {
     Map<String, Map<String, dynamic>> data = _cache[collection];
     if (data != null) {
       data.remove(id);
       API().socket().beOptimistic(collection, EUpdateType.Remove, id, {});
     }
+    if (triggerUpdateSubscription)
+      API().socket().updateSubscription(collection);
   }
 
   void updateToCache(String collection, String id, Map<String, dynamic> _data,
@@ -261,9 +264,11 @@ class Cache {
     });
   }
 
-  Future<void> removeDocument(String collection, String id) async {
+  Future<void> removeDocument(String collection, String id,
+      {bool doTriggerUpdateSubscription: true}) async {
     try {
-      removeFromCache(collection, id);
+      removeFromCache(collection, id,
+          triggerUpdateSubscription: doTriggerUpdateSubscription);
     } catch (e) {
       API().reportError(e);
     }

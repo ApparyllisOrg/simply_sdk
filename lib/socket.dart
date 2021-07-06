@@ -105,7 +105,9 @@ class Socket {
 
   void removeDocument(Subscription sub, String id) async {
     sub.documents.removeWhere((element) => element.id == id);
-    API().cache().removeDocument(sub.target, id);
+    API()
+        .cache()
+        .removeDocument(sub.target, id, doTriggerUpdateSubscription: false);
   }
 
   void updateCollectionLocally(Subscription sub, Map<String, dynamic> change) {
