@@ -125,7 +125,7 @@ class Collection {
             returnedDocument["content"] ?? {});
       } else {
         print("${response.statusCode.toString()}: ${response.body}");
-        return await API().cache().getDocument(id, docId);
+        return API().cache().getDocument(id, docId);
       }
     });
   }
