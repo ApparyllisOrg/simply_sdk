@@ -70,7 +70,7 @@ class Socket {
   IOWebSocketChannel getSocket() => _socket;
 
   void createConnection() {
-    _socket = IOWebSocketChannel.connect('wss://api.apparyllis.com:8443',
+    _socket = IOWebSocketChannel.connect('wss://api.apparyllis.com:443',
         pingInterval: Duration(seconds: 10));
 
     _socket.stream.handleError((err) => print(err));
