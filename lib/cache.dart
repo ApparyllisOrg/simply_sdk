@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart' as fir;
 import 'package:path_provider/path_provider.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/socket.dart';
@@ -105,6 +106,21 @@ class Cache {
     trySyncToServer();
   }
 
+  int getTime(var data) {
+    if (data is fir.Timestamp) {
+      return data.millisecondsSinceEpoch;
+    }
+    if (data is DateTime) {
+      return data.millisecondsSinceEpoch;
+    }
+    if (data is int) {
+      return data;
+    }
+    API().reportError(
+        "data in getTime is not int or timestamp!" + data.toString());
+    return 0;
+  }
+
   void removeFromQueue(String collection, Map<String, dynamic> item) async {
     try {
       removeFromCache(collection, item["id"]);
@@ -137,7 +153,7 @@ class Cache {
                     .database()
                     .collection(data["collectionRef"])
                     .document(data["id"]);
-                var response = await doc.deleteImpl(data["time"]);
+                var response = await doc.deleteImpl(getTime(data["time"]));
                 if (response != null) {
                   if (response.statusCode == 400 ||
                       response.statusCode == 200) {
@@ -152,7 +168,8 @@ class Cache {
                   .database()
                   .collection(data["collectionRef"])
                   .document(data["id"]);
-              var response = await doc.updateImpl(data["data"], data["time"]);
+              var response =
+                  await doc.updateImpl(data["data"], getTime(data["time"]));
               if (response != null) {
                 if (response.statusCode == 400 || response.statusCode == 200) {
                   print("sent ${data["id"]} to cloud");
@@ -164,7 +181,7 @@ class Cache {
               var response = await API()
                   .database()
                   .collection(data["collectionRef"])
-                  .addImpl(data["id"], data["data"], data["time"]);
+                  .addImpl(data["id"], data["data"], getTime(data["time"]));
 
               if (response != null) {
                 if (response.statusCode == 400 || response.statusCode == 200) {
