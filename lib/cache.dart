@@ -158,7 +158,7 @@ class Cache {
                   if (response.statusCode == 400 ||
                       response.statusCode == 200) {
                     print("sent ${data["id"]} to cloud");
-                    removeFromQueue(data["collectionRef"], data);
+                    removeFromQueue("query", data);
                   }
                 }
               }
@@ -173,7 +173,7 @@ class Cache {
               if (response != null) {
                 if (response.statusCode == 400 || response.statusCode == 200) {
                   print("sent ${data["id"]} to cloud");
-                  removeFromQueue(data["collectionRef"], data);
+                  removeFromQueue("query", data);
                 }
               }
               break;
@@ -186,7 +186,7 @@ class Cache {
               if (response != null) {
                 if (response.statusCode == 400 || response.statusCode == 200) {
                   print("sent ${data["id"]} to cloud");
-                  removeFromQueue(data["collectionRef"], data);
+                  removeFromQueue("query", data);
                 }
               }
               break;
