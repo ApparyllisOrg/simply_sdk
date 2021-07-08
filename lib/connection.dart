@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 
 class Connection {
-  static const String localHost = "http://localhost:3000";
-  static const String prodHost = "https://api.apparyllis.com:3000";
+  static const String localHost = "http://localhost:443";
+  static const String prodHost = "https://api.apparyllis.com:443";
 
   String currentHost = "";
 
