@@ -106,10 +106,12 @@ class Collection {
 
       var response;
       try {
-        response = await http.get(
-          url,
-          headers: getHeader(),
-        );
+        response = await http
+            .get(
+              url,
+              headers: getHeader(),
+            )
+            .timeout(Duration(seconds: 5));
       } catch (e) {}
 
       if (response == null) {
@@ -196,10 +198,12 @@ class Collection {
 
     var response;
     try {
-      response = await http.get(
-        url,
-        headers: getHeader(),
-      );
+      response = await http
+          .get(
+            url,
+            headers: getHeader(),
+          )
+          .timeout(Duration(seconds: 5));
     } catch (e) {}
 
     if (response == null) {
@@ -250,8 +254,10 @@ class Collection {
       } catch (e) {}
 
       if (response == null) {
-        return await API().cache().searchForDocuments(id, query, _orderby,
-            start: _start, end: _limit);
+        return await API()
+            .cache()
+            .searchForDocuments(id, query, _orderby, start: _start, end: _limit)
+            .timeout(Duration(seconds: 5));
       }
 
       if (response.statusCode == 200) {
@@ -284,10 +290,12 @@ class Collection {
 
       var response;
       try {
-        response = await http.get(
-          url,
-          headers: getHeader(),
-        );
+        response = await http
+            .get(
+              url,
+              headers: getHeader(),
+            )
+            .timeout(Duration(seconds: 5));
       } catch (e) {}
 
       if (response == null) {
@@ -323,7 +331,9 @@ class Collection {
 
     var response;
     try {
-      response = await http.post(url, body: decode, headers: getHeader());
+      response = await http
+          .post(url, body: decode, headers: getHeader())
+          .timeout(Duration(seconds: 5));
     } catch (e) {
       print(e);
     }
