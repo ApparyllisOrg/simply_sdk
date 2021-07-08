@@ -9,6 +9,7 @@ import 'helpers.dart';
 
 class Document {
   bool exists;
+  final bool fromCache;
   Map<String, dynamic> data;
   final String collectionId;
   final String id;
@@ -40,7 +41,8 @@ class Document {
     return data;
   }
 
-  Document(this.exists, this.id, this.collectionId, this.data) {
+  Document(this.exists, this.id, this.collectionId, this.data,
+      {this.fromCache = false}) {
     assert(id != null);
     assert(collectionId != null);
     if (data == null) data = {};

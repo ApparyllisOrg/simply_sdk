@@ -118,7 +118,9 @@ class Collection {
 
       if (response.statusCode == 200) {
         var returnedDocument = jsonDecode(response.body, reviver: customDecode);
-
+        API()
+            .cache()
+            .insertDocument(id, docId, returnedDocument["content"] ?? {});
         return Document(returnedDocument["exists"], docId, id,
             returnedDocument["content"] ?? {});
       } else {
@@ -219,6 +221,7 @@ class Collection {
           start: _start,
           end: _limit,
           orderUp: _orderByOrder != null ? _orderByOrder == 1 : true);
+
       return docs;
     }
 

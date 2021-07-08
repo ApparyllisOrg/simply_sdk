@@ -290,7 +290,7 @@ class Cache {
   }
 
   Document getDocument(String collection, String id) {
-    Document doc = Document(false, id, collection, {});
+    Document doc = Document(false, id, collection, {}, fromCache: true);
 
     try {
       Map<String, dynamic> docData;
@@ -341,7 +341,8 @@ class Cache {
               }
             }
           });
-          if (isSatisfied) docs.add(Document(true, key, collection, value));
+          if (isSatisfied)
+            docs.add(Document(true, key, collection, value, fromCache: true));
         }
       });
 
