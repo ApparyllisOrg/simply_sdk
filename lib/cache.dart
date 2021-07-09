@@ -40,7 +40,7 @@ class Cache {
   Map<String, dynamic> getItemFromCollection(String collection, String id) {
     Map<String, Map<String, dynamic>> data = _cache[collection];
     if (data != null) {
-      var docData = Map.of(data[id]);
+      Map<String, dynamic> docData = Map.of(data[id]);
       docData.remove("id");
       return docData;
     }
