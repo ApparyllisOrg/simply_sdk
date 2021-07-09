@@ -93,7 +93,7 @@ class Document {
 
     API().cache().removeDocument(collectionId, id);
 
-    API().socket().beOptimistic(collectionId, EUpdateType.Remove, id, data);
+    // API().socket().beOptimistic(collectionId, EUpdateType.Remove, id, data);
 
     API().cache().queueDelete(collectionId, id);
 
@@ -105,7 +105,7 @@ class Document {
 
     API().cache().updateDocument(collectionId, id, inData);
 
-    API().socket().beOptimistic(collectionId, EUpdateType.Update, id, data);
+    //API().socket().beOptimistic(collectionId, EUpdateType.Update, id, data);
 
     API().cache().queueUpdate(collectionId, id, inData);
 
