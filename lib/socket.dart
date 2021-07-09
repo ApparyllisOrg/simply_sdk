@@ -140,7 +140,7 @@ class Socket {
       sendData["content"] = cacheData;
     }
 
-    await onReceivedData(jsonEncode({
+    onReceivedData(jsonEncode({
       "msg": "update",
       "target": targetCollection,
       "operationType": updateTypeToString(operation),
