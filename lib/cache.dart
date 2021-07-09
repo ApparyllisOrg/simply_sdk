@@ -155,9 +155,7 @@ class Cache {
                     .document(data["id"]);
                 var response;
                 try {
-                  response = await doc
-                      .deleteImpl(getTime(data["time"]))
-                      .timeout(Duration(seconds: 5));
+                  response = await doc.deleteImpl(getTime(data["time"]));
                 } catch (e) {}
                 if (response != null) {
                   if (response.statusCode == 400 ||
@@ -175,9 +173,8 @@ class Cache {
                   .document(data["id"]);
               var response;
               try {
-                response = await doc
-                    .updateImpl(data["data"], getTime(data["time"]))
-                    .timeout(Duration(seconds: 5));
+                response =
+                    await doc.updateImpl(data["data"], getTime(data["time"]));
               } catch (e) {}
               if (response != null) {
                 if (response.statusCode == 400 || response.statusCode == 200) {
@@ -192,8 +189,7 @@ class Cache {
                 response = await API()
                     .database()
                     .collection(data["collectionRef"])
-                    .addImpl(data["id"], data["data"], getTime(data["time"]))
-                    .timeout(Duration(seconds: 5));
+                    .addImpl(data["id"], data["data"], getTime(data["time"]));
               } catch (e) {}
 
               if (response != null) {

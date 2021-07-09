@@ -254,10 +254,8 @@ class Collection {
       } catch (e) {}
 
       if (response == null) {
-        return await API()
-            .cache()
-            .searchForDocuments(id, query, _orderby, start: _start, end: _limit)
-            .timeout(Duration(seconds: 5));
+        return await API().cache().searchForDocuments(id, query, _orderby,
+            start: _start, end: _limit);
       }
 
       if (response.statusCode == 200) {
@@ -290,12 +288,10 @@ class Collection {
 
       var response;
       try {
-        response = await http
-            .get(
-              url,
-              headers: getHeader(),
-            )
-            .timeout(Duration(seconds: 5));
+        response = await http.get(
+          url,
+          headers: getHeader(),
+        );
       } catch (e) {}
 
       if (response == null) {
