@@ -91,9 +91,11 @@ class Document {
   Future delete() async {
     await API().auth().isAuthenticated();
 
-    API().cache().removeDocument(collectionId, id);
+    API()
+        .cache()
+        .removeDocument(collectionId, id, doTriggerUpdateSubscription: false);
 
-    // API().socket().beOptimistic(collectionId, EUpdateType.Remove, id, data);
+    API().socket().beOptimistic(collectionId, EUpdateType.Remove, id, data);
 
     API().cache().queueDelete(collectionId, id);
 
@@ -103,9 +105,10 @@ class Document {
   Future update(inData) async {
     await API().auth().isAuthenticated();
 
-    API().cache().updateDocument(collectionId, id, inData);
+    API().cache().updateDocument(collectionId, id, inData,
+        doTriggerUpdateSubscription: false);
 
-    //API().socket().beOptimistic(collectionId, EUpdateType.Update, id, data);
+    API().socket().beOptimistic(collectionId, EUpdateType.Update, id, data);
 
     API().cache().queueUpdate(collectionId, id, inData);
 
