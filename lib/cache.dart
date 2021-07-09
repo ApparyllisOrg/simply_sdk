@@ -49,14 +49,14 @@ class Cache {
     return null;
   }
 
-  Map<String, Map<String, dynamic>> getCollectionCache(String collection) {
+  Map<String, dynamic> getCollectionCache(String collection) {
     if (_cache.containsKey(collection)) {
       Map<String, dynamic> data = _cache[collection];
       if (data != null) {
-        return data as Map<String, Map<String, dynamic>>;
+        return data;
       }
     }
-    return Map<String, Map<String, dynamic>>();
+    return Map<String, dynamic>();
   }
 
   Future<void> clear() {
@@ -103,6 +103,7 @@ class Cache {
       } catch (e) {
         API().reportError(e);
         print(e);
+        _cache = Map<String, dynamic>();
       }
     });
     trySyncToServer();
@@ -135,7 +136,7 @@ class Cache {
     await Future.delayed(Duration(milliseconds: 300));
     try {
       await save();
-      Map<String, Map<String, dynamic>> queue;
+      Map<String, dynamic> queue;
 
       try {
         queue = getCollectionCache("query");
@@ -337,8 +338,7 @@ class Cache {
     List<Document> docs = [];
 
     try {
-      Map<String, Map<String, dynamic>> cachedCollection =
-          getCollectionCache(collection);
+      Map<String, dynamic> cachedCollection = getCollectionCache(collection);
 
       cachedCollection.forEach((key, value) {
         if (queries.isEmpty) {

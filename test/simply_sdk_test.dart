@@ -370,7 +370,8 @@ void main() async {
   });
 
   test('get test with query order by number', () async {
-    auth();
+    await setAuth();
+    await addDocs(40, 50);
     var results = await API()
         .database()
         .collection("unitTest")
