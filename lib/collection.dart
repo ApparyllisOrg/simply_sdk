@@ -349,23 +349,7 @@ class Collection {
 
     API().socket().beOptimistic(id, EUpdateType.Add, docID, data);
 
-    var response =
-        await addImpl(docID, data, DateTime.now().millisecondsSinceEpoch);
-
-    if (response == null) {
-      API().cache().queueAdd(id, docID, data);
-      return Document(true, docID, id, data);
-    }
-
-    if (response.statusCode == 200) {
-      return Document(true, docID, id, data);
-    } else {
-      if (response.statusCode != 400) {
-        API().cache().queueAdd(id, docID, data);
-        return Document(true, docID, id, data);
-      }
-      print("${response.statusCode.toString()}: ${response.body}");
-    }
+    API().cache().queueAdd(id, docID, data);
 
     return Document(true, docID, id, data);
   }

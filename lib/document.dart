@@ -93,22 +93,7 @@ class Document {
 
     API().socket().beOptimistic(collectionId, EUpdateType.Remove, id, data);
 
-    var response = await deleteImpl(DateTime.now().millisecondsSinceEpoch);
-
-    if (response == null) {
-      API().cache().queueDelete(collectionId, id);
-      return;
-    }
-
-    if (response.statusCode == 200) {
-      exists = false;
-    } else {
-      if (response.statusCode != 400) {
-        API().cache().queueDelete(collectionId, id);
-      }
-
-      print("${response.statusCode.toString()}: ${response.body}");
-    }
+    API().cache().queueDelete(collectionId, id);
 
     return;
   }
@@ -120,24 +105,7 @@ class Document {
 
     API().socket().beOptimistic(collectionId, EUpdateType.Update, id, data);
 
-    var response =
-        await updateImpl(inData, DateTime.now().millisecondsSinceEpoch);
-
-    if (response == null) {
-      API().cache().queueUpdate(collectionId, id, inData);
-      return;
-    }
-
-    if (response.statusCode == 200) {
-      data.addAll(inData);
-    } else {
-      if (response.statusCode != 400) {
-        API().cache().queueUpdate(collectionId, id, inData);
-      }
-
-      if (response.statusCode == 500) {}
-      print("${response.statusCode.toString()}: ${response.body}");
-    }
+    API().cache().queueUpdate(collectionId, id, inData);
 
     return;
   }

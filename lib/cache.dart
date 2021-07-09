@@ -130,7 +130,7 @@ class Cache {
   }
 
   void trySyncToServer() async {
-    await Future.delayed(Duration(milliseconds: 1000));
+    await Future.delayed(Duration(milliseconds: 300));
     try {
       await save();
       Map<String, Map<String, dynamic>> queue;
