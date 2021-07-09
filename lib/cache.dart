@@ -51,10 +51,9 @@ class Cache {
 
   Map<String, Map<String, dynamic>> getCollectionCache(String collection) {
     if (_cache.containsKey(collection)) {
-      Map<String, Map<String, dynamic>> data =
-          Map<String, dynamic>.from(_cache[collection]);
+      Map<String, dynamic> data = _cache[collection];
       if (data != null) {
-        return data;
+        return data as Map<String, Map<String, dynamic>>;
       }
     }
     return Map<String, Map<String, dynamic>>();
