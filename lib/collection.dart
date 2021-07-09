@@ -95,7 +95,7 @@ class Collection {
     return this;
   }
 
-  Future<Document> document(String docId) {
+  Future<Document> document(String docId, {bool addToCache = true}) {
     return Future(() async {
       await API().auth().isAuthenticated();
 
@@ -120,9 +120,12 @@ class Collection {
 
       if (response.statusCode == 200) {
         var returnedDocument = jsonDecode(response.body, reviver: customDecode);
-        API()
-            .cache()
-            .insertDocument(id, docId, returnedDocument["content"] ?? {});
+        if (addToCache) {
+          API()
+              .cache()
+              .insertDocument(id, docId, returnedDocument["content"] ?? {});
+        }
+
         return Document(returnedDocument["exists"], docId, id,
             returnedDocument["content"] ?? {});
       } else {

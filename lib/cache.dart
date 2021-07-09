@@ -155,7 +155,7 @@ class Cache {
                 var doc = await API()
                     .database()
                     .collection(data["collectionRef"])
-                    .document(data["id"]);
+                    .document(data["id"], addToCache: false);
                 var response;
                 try {
                   response = await doc.deleteImpl(getTime(data["time"]));
@@ -173,7 +173,7 @@ class Cache {
               var doc = await API()
                   .database()
                   .collection(data["collectionRef"])
-                  .document(data["id"]);
+                  .document(data["id"], addToCache: false);
               var response;
               try {
                 response =
