@@ -81,7 +81,9 @@ class Document {
       response = await http.patch(url,
           headers: getHeader(),
           body: jsonEncode(sendData, toEncodable: customEncode));
-    } catch (e) {}
+    } catch (e) {
+      print(e);
+    }
 
     return response;
   }

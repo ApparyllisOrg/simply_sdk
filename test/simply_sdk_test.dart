@@ -346,7 +346,7 @@ void main() async {
   });
 
   test('test add, update and delete of the same document', () async {
-    auth();
+    await setAuth();
     var result = await API()
         .database()
         .collection("unitTest")

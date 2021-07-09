@@ -11,8 +11,7 @@ import 'document.dart';
 import 'simply_sdk.dart';
 
 class Cache {
-  Map<String, Map<String, Map<String, dynamic>>> _cache =
-      Map<String, Map<String, Map<String, dynamic>>>();
+  Map<String, dynamic> _cache = Map<String, dynamic>();
 
   void removeFromCache(String collection, String id,
       {bool triggerUpdateSubscription: true}) {
@@ -39,11 +38,13 @@ class Cache {
   }
 
   Map<String, dynamic> getItemFromCollection(String collection, String id) {
-    Map<String, Map<String, dynamic>> data = _cache[collection];
+    Map<String, dynamic> data = _cache[collection] as Map<String, dynamic>;
     if (data != null) {
-      Map<String, dynamic> docData = Map<String, dynamic>.from(data[id]);
-      docData.remove("id");
-      return docData;
+      Map<String, dynamic> docData = data[id] as Map<String, dynamic>;
+      if (docData != null) {
+        docData.remove("id");
+        return docData;
+      }
     }
     return null;
   }
@@ -95,8 +96,8 @@ class Cache {
         bool exists = await file.exists();
         if (exists) {
           String jsonObjectString = await file.readAsString();
-          _cache = Map<String, dynamic>.from(
-              jsonDecode(jsonObjectString, reviver: customDecode));
+          _cache = jsonDecode(jsonObjectString, reviver: customDecode)
+              as Map<String, dynamic>;
         } else {
           _cache = Map<String, dynamic>();
         }
