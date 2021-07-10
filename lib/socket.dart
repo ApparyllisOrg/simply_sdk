@@ -67,7 +67,7 @@ class Socket {
   WebSocket getSocket() => _socket;
 
   void createConnection() async {
-    _socket = await WebSocket.connect('wss://api.apparyllis.com:8443');
+    _socket = await WebSocket.connect('wss://api.apparyllis.com:2053');
 
     _socket.handleError((err) => print(err));
     _socket.listen(onReceivedData).onError((err) => print(err));

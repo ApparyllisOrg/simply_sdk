@@ -110,7 +110,7 @@ class Cache {
         _cache = Map<String, dynamic>();
       }
     });
-    trySyncToServer();
+    if (!bSyncing) trySyncToServer();
   }
 
   int getTime(var data) {
@@ -136,7 +136,9 @@ class Cache {
     }
   }
 
+  bool bSyncing = false;
   void trySyncToServer() async {
+    bSyncing = true;
     await Future.delayed(Duration(seconds: 3));
     try {
       await save();
