@@ -94,7 +94,8 @@ class Collection {
     return this;
   }
 
-  Future<Document> document(String docId, {bool addToCache = true}) {
+  Future<Document> document(String docId,
+      {bool addToCache = true, bool forceFromCache = false}) {
     return Future(() async {
       await API().auth().isAuthenticated();
 
@@ -104,15 +105,17 @@ class Collection {
           API().connection().documentGet() + "?" + "target=$id&id=$docId");
 
       var response;
-      try {
-        response = await API()
-            .httpClient
-            .get(
-              url.toString(),
-              options: Options(headers: getHeader()),
-            )
-            .timeout(Duration(seconds: 5));
-      } catch (e) {}
+      if (!forceFromCache) {
+        try {
+          response = await API()
+              .httpClient
+              .get(
+                url.toString(),
+                options: Options(headers: getHeader()),
+              )
+              .timeout(Duration(seconds: 5));
+        } catch (e) {}
+      }
 
       if (response == null) {
         return await API().cache().getDocument(id, docId);

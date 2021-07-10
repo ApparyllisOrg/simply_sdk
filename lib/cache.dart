@@ -137,7 +137,7 @@ class Cache {
   }
 
   void trySyncToServer() async {
-    await Future.delayed(Duration(milliseconds: 300));
+    await Future.delayed(Duration(seconds: 3));
     try {
       await save();
       Map<String, dynamic> queue;
@@ -159,7 +159,8 @@ class Cache {
                 var doc = await API()
                     .database()
                     .collection(data["collectionRef"])
-                    .document(data["id"], addToCache: false);
+                    .document(data["id"],
+                        addToCache: false, forceFromCache: true);
                 var response;
                 try {
                   response = await doc.deleteImpl(getTime(data["time"]));
@@ -177,7 +178,8 @@ class Cache {
               var doc = await API()
                   .database()
                   .collection(data["collectionRef"])
-                  .document(data["id"], addToCache: false);
+                  .document(data["id"],
+                      addToCache: false, forceFromCache: true);
               var response;
               try {
                 response =
