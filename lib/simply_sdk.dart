@@ -31,9 +31,7 @@ class API {
     _database = Database();
     _socket = Socket();
     _socket.initialize();
-    httpClient = Dio()
-      ..options.baseUrl = connection().currentHost
-      ..interceptors.add(LogInterceptor());
+    httpClient = Dio();
     await _cache.initialize();
   }
 
