@@ -1,15 +1,10 @@
 library simply_sdk;
 
-import 'dart:io';
-
-import 'package:dio/dio.dart';
 import 'package:simply_sdk/auth.dart';
 import 'package:simply_sdk/cache.dart';
 import 'package:simply_sdk/connection.dart';
 import 'package:simply_sdk/database.dart';
 import 'package:simply_sdk/socket.dart';
-
-import 'package:http/http.dart' as http;
 
 class APISettings {}
 
@@ -20,8 +15,6 @@ class API {
     return _singleton;
   }
 
-  Dio httpClient;
-
   API._internal();
 
   Future<void> initialize({APISettings settings}) async {
@@ -31,7 +24,6 @@ class API {
     _database = Database();
     _socket = Socket();
     _socket.initialize();
-    httpClient = Dio();
     await _cache.initialize();
   }
 

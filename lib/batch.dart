@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:dio/dio.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:http/http.dart' as http;
@@ -100,9 +99,9 @@ class Batch {
 
     var response;
     try {
-      response = await API().httpClient.post(url.toString(),
-          options: Options(headers: getHeader()),
-          data: jsonEncode({
+      response = await http.post(url,
+          headers: getHeader(),
+          body: jsonEncode({
             "operations": sendOps,
             "target": collection,
             "updateTime": DateTime.now().millisecondsSinceEpoch

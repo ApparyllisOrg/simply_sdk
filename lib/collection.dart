@@ -1,9 +1,10 @@
 import 'dart:convert';
 
-import 'package:dio/dio.dart';
-
+import 'package:http/http.dart';
 import 'package:mongo_dart/mongo_dart.dart' as mongo;
 import 'package:simply_sdk/helpers.dart';
+
+import 'package:http/http.dart' as http;
 
 import 'document.dart';
 import 'simply_sdk.dart';
@@ -95,7 +96,7 @@ class Collection {
   }
 
   Future<Document> document(String docId,
-      {bool addToCache = true, bool forceFromCache = false}) {
+      {bool addToCache = true, forceFromCache = false}) {
     return Future(() async {
       await API().auth().isAuthenticated();
 
@@ -107,11 +108,10 @@ class Collection {
       var response;
       if (!forceFromCache) {
         try {
-          response = await API()
-              .httpClient
+          response = await http
               .get(
-                url.toString(),
-                options: Options(headers: getHeader()),
+                url,
+                headers: getHeader(),
               )
               .timeout(Duration(seconds: 5));
         } catch (e) {}
@@ -204,11 +204,10 @@ class Collection {
 
     var response;
     try {
-      response = await API()
-          .httpClient
+      response = await http
           .get(
-            url.toString(),
-            options: Options(headers: getHeader()),
+            url,
+            headers: getHeader(),
           )
           .timeout(Duration(seconds: 5));
     } catch (e) {}
@@ -257,10 +256,10 @@ class Collection {
 
       var response;
       try {
-        response = await API().httpClient.get(
-              url.toString(),
-              options: Options(headers: getHeader()),
-            );
+        response = await http.get(
+          url,
+          headers: getHeader(),
+        );
       } catch (e) {}
 
       if (response == null) {
@@ -298,10 +297,10 @@ class Collection {
 
       var response;
       try {
-        response = await API().httpClient.get(
-              url.toString(),
-              options: Options(headers: getHeader()),
-            );
+        response = await http.get(
+          url,
+          headers: getHeader(),
+        );
       } catch (e) {}
 
       if (response == null) {
@@ -337,10 +336,8 @@ class Collection {
 
     var response;
     try {
-      response = await API()
-          .httpClient
-          .post(url.toString(),
-              data: decode, options: Options(headers: getHeader()))
+      response = await http
+          .post(url, body: decode, headers: getHeader())
           .timeout(Duration(seconds: 5));
     } catch (e) {
       print(e);
