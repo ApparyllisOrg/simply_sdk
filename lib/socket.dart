@@ -67,8 +67,6 @@ class Socket {
   WebSocket getSocket() => _socket;
 
   void createConnection() async {
-    print("Disabled websockets until a servers are stable.");
-
     _socket = await WebSocket.connect('wss://api.apparyllis.com:8443');
 
     _socket.handleError((err) => print(err));

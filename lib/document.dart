@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:http/http.dart';
+import 'package:dio/dio.dart';
+
 import 'package:simply_sdk/simply_sdk.dart';
-import 'package:http/http.dart' as http;
 
 import 'helpers.dart';
 
@@ -58,9 +58,10 @@ class Document {
 
     var response;
     try {
-      response = await API().httpClient.delete(url,
-          headers: getHeader(),
-          body: jsonEncode(sendData, toEncodable: customEncode));
+      response = await API().httpClient.delete(url.toString(),
+          options: Options(headers: getHeader()),
+          data: jsonEncode(sendData, toEncodable: customEncode));
+      API().httpClient.close();
     } catch (e) {
       print(e);
     }
@@ -76,11 +77,11 @@ class Document {
     sendData["content"] = inData;
     sendData["updateTime"] = time;
 
-    var response;
+    Response response;
     try {
-      response = await API().httpClient.patch(url,
-          headers: getHeader(),
-          body: jsonEncode(sendData, toEncodable: customEncode));
+      response = await API().httpClient.patch(url.toString(),
+          options: Options(headers: getHeader()),
+          data: jsonEncode(sendData, toEncodable: customEncode));
     } catch (e) {
       print(e);
     }

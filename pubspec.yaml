@@ -21,6 +21,7 @@ dependencies:
 
   cloud_firestore: ^1.0.1
   dio: ^4.0.0
+  dio_http2_adapter: ^2.0.0
 
 
 dev_dependencies:
