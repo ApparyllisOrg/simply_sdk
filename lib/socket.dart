@@ -71,13 +71,15 @@ class Socket {
 
   void createConnection() {
     print("Create socket connection" + StackTrace.current.toString());
-    _socket = IOWebSocketChannel.connect('wss://api.apparyllis.com:8443',
-        pingInterval: Duration(seconds: 10));
+    try {
+      _socket = IOWebSocketChannel.connect('wss://api.apparyllis.com:8443',
+          pingInterval: Duration(seconds: 10));
 
-    _socket.stream.handleError((err) => print(err));
-    _socket.stream.listen(onReceivedData).onError((err) => print(err));
+      _socket.stream.handleError((err) => print(err));
+      _socket.stream.listen(onReceivedData).onError((err) => print(err));
 
-    _socket.sink.done.then((value) => createConnection());
+      _socket.sink.done.then((value) => createConnection());
+    } catch (e) {}
 
     for (Subscription sub in _subscriptions) {
       pendingSubscriptions.add(sub.controller);
