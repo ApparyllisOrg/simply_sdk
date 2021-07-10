@@ -363,6 +363,8 @@ void main() async {
 
     await getResult.delete();
 
+    await Future.delayed(Duration(seconds: 4));
+
     var postDeleteResult =
         await API().database().collection("unitTest").document(result.id);
 

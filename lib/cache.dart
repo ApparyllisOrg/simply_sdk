@@ -154,14 +154,13 @@ class Cache {
         return;
       }
 
-      List<Future> serverCommands = [];
-
       try {
+        List<Future> serverCommands = [];
         for (int i = 0; i < min(2, queue.length); i++) {
           var data = queue[queue.keys.toList()[i]];
           switch (data["action"]) {
             case "delete":
-              serverCommands.add(Future(() async {
+              var future = Future(() async {
                 var doc = await API()
                     .database()
                     .collection(data["collectionRef"])
@@ -178,11 +177,12 @@ class Cache {
                     removeFromQueue("query", data);
                   }
                 }
-              }));
+              });
+              serverCommands.add(future);
 
               break;
             case "update":
-              serverCommands.add(Future(() async {
+              var future = Future(() async {
                 var doc = await API()
                     .database()
                     .collection(data["collectionRef"])
@@ -200,10 +200,11 @@ class Cache {
                     removeFromQueue("query", data);
                   }
                 }
-              }));
+              });
+              serverCommands.add(future);
               break;
             case "add":
-              serverCommands.add(Future(() async {
+              var future = Future(() async {
                 var response;
                 try {
                   response = await API()
@@ -219,7 +220,8 @@ class Cache {
                     removeFromQueue("query", data);
                   }
                 }
-              }));
+              });
+              serverCommands.add(future);
               break;
           }
         }
