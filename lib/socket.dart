@@ -25,10 +25,10 @@ class Socket {
   String uniqueConnectionId;
 
   void initialize() {
-    uniqueConnectionId = Uuid().v4();
-    createConnection();
-    refreshConnection();
-    reconnect();
+    //uniqueConnectionId = Uuid().v4();
+    //createConnection();
+    //refreshConnection();
+    //reconnect();
   }
 
   void cancelConnections() {
