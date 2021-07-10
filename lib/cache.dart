@@ -157,74 +157,72 @@ class Cache {
       List<Future> serverCommands = [];
 
       try {
-        for (int i = 0; i < min(2, queue.length); i++)
-          queue.forEach((key, data) async {
-            switch (data["action"]) {
-              case "delete":
-                serverCommands.add(Future(() async {
-                  var doc = await API()
+        for (int i = 0; i < min(2, queue.length); i++) {
+          var data = queue[queue.keys.toList()[i]];
+          switch (data["action"]) {
+            case "delete":
+              serverCommands.add(Future(() async {
+                var doc = await API()
+                    .database()
+                    .collection(data["collectionRef"])
+                    .document(data["id"],
+                        addToCache: false, forceFromCache: true);
+                var response;
+                try {
+                  response = await doc.deleteImpl(getTime(data["time"]));
+                } catch (e) {}
+                if (response != null) {
+                  if (response.statusCode == 400 ||
+                      response.statusCode == 200) {
+                    print("sent ${data["id"]} to cloud");
+                    removeFromQueue("query", data);
+                  }
+                }
+              }));
+
+              break;
+            case "update":
+              serverCommands.add(Future(() async {
+                var doc = await API()
+                    .database()
+                    .collection(data["collectionRef"])
+                    .document(data["id"],
+                        addToCache: false, forceFromCache: true);
+                var response;
+                try {
+                  response =
+                      await doc.updateImpl(data["data"], getTime(data["time"]));
+                } catch (e) {}
+                if (response != null) {
+                  if (response.statusCode == 400 ||
+                      response.statusCode == 200) {
+                    print("sent ${data["id"]} to cloud");
+                    removeFromQueue("query", data);
+                  }
+                }
+              }));
+              break;
+            case "add":
+              serverCommands.add(Future(() async {
+                var response;
+                try {
+                  response = await API()
                       .database()
                       .collection(data["collectionRef"])
-                      .document(data["id"],
-                          addToCache: false, forceFromCache: true);
-                  var response;
-                  try {
-                    response = await doc.deleteImpl(getTime(data["time"]));
-                  } catch (e) {}
-                  if (response != null) {
-                    if (response.statusCode == 400 ||
-                        response.statusCode == 200) {
-                      print("sent ${data["id"]} to cloud");
-                      removeFromQueue("query", data);
-                    }
-                  }
-                }));
+                      .addImpl(data["id"], data["data"], getTime(data["time"]));
+                } catch (e) {}
 
-                break;
-              case "update":
-                serverCommands.add(Future(() async {
-                  var doc = await API()
-                      .database()
-                      .collection(data["collectionRef"])
-                      .document(data["id"],
-                          addToCache: false, forceFromCache: true);
-                  var response;
-                  try {
-                    response = await doc.updateImpl(
-                        data["data"], getTime(data["time"]));
-                  } catch (e) {}
-                  if (response != null) {
-                    if (response.statusCode == 400 ||
-                        response.statusCode == 200) {
-                      print("sent ${data["id"]} to cloud");
-                      removeFromQueue("query", data);
-                    }
+                if (response != null) {
+                  if (response.statusCode == 400 ||
+                      response.statusCode == 200) {
+                    print("sent ${data["id"]} to cloud");
+                    removeFromQueue("query", data);
                   }
-                }));
-                break;
-              case "add":
-                serverCommands.add(Future(() async {
-                  var response;
-                  try {
-                    response = await API()
-                        .database()
-                        .collection(data["collectionRef"])
-                        .addImpl(
-                            data["id"], data["data"], getTime(data["time"]));
-                  } catch (e) {}
-
-                  if (response != null) {
-                    if (response.statusCode == 400 ||
-                        response.statusCode == 200) {
-                      print("sent ${data["id"]} to cloud");
-                      removeFromQueue("query", data);
-                    }
-                  }
-                }));
-                break;
-            }
-          });
-
+                }
+              }));
+              break;
+          }
+        }
         await Future.wait(serverCommands);
       } catch (e) {
         print(e);
