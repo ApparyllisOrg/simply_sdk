@@ -16,7 +16,7 @@ String updateTypeToString(EUpdateType type) {
   return "";
 }
 
-getHeader() => {
+Map<String, dynamic> getHeader() => {
       "Content-Type": "application/json",
       "Authorization": API().auth().getToken()
     };

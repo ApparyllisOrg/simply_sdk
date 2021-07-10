@@ -1,10 +1,9 @@
 import 'dart:convert';
 
-import 'package:http/http.dart';
+import 'package:dio/dio.dart';
+
 import 'package:mongo_dart/mongo_dart.dart' as mongo;
 import 'package:simply_sdk/helpers.dart';
-
-import 'package:http/http.dart' as http;
 
 import 'document.dart';
 import 'simply_sdk.dart';
@@ -106,10 +105,10 @@ class Collection {
 
       var response;
       try {
-        response = await http
+        response = await Dio()
             .get(
-              url,
-              headers: getHeader(),
+              url.toString(),
+              options: Options(headers: getHeader()),
             )
             .timeout(Duration(seconds: 5));
       } catch (e) {}
@@ -201,10 +200,10 @@ class Collection {
 
     var response;
     try {
-      response = await http
+      response = await Dio()
           .get(
-            url,
-            headers: getHeader(),
+            url.toString(),
+            options: Options(headers: getHeader()),
           )
           .timeout(Duration(seconds: 5));
     } catch (e) {}
@@ -253,9 +252,9 @@ class Collection {
 
       var response;
       try {
-        response = await http.get(
-          url,
-          headers: getHeader(),
+        response = await Dio().get(
+          url.toString(),
+          options: Options(headers: getHeader()),
         );
       } catch (e) {}
 
@@ -294,9 +293,9 @@ class Collection {
 
       var response;
       try {
-        response = await http.get(
-          url,
-          headers: getHeader(),
+        response = await Dio().get(
+          url.toString(),
+          options: Options(headers: getHeader()),
         );
       } catch (e) {}
 
@@ -333,8 +332,9 @@ class Collection {
 
     var response;
     try {
-      response = await http
-          .post(url, body: decode, headers: getHeader())
+      response = await Dio()
+          .post(url.toString(),
+              data: decode, options: Options(headers: getHeader()))
           .timeout(Duration(seconds: 5));
     } catch (e) {
       print(e);
