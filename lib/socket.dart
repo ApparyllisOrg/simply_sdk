@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:html';
+import 'dart:io';
 
 import 'package:simply_sdk/collection.dart';
 import 'package:simply_sdk/document.dart';
@@ -66,14 +66,12 @@ class Socket {
       _socket != null && (_socket.readyState == 0 || _socket.readyState == 1);
   WebSocket getSocket() => _socket;
 
-  void createConnection() {
+  void createConnection() async {
     print("Create socket connection" + StackTrace.current.toString());
-    _socket = new WebSocket('wss://api.apparyllis.com:8443');
+    _socket = await WebSocket.connect('wss://api.apparyllis.com:8443');
 
-    _socket.onError.listen((err) => print(err));
-    _socket.onMessage.listen(onReceivedData).onError((err) => print(err));
-
-    _socket.onClose..listen((value) => createConnection());
+    _socket.handleError((err) => print(err));
+    _socket.listen(onReceivedData).onError((err) => print(err));
 
     for (Subscription sub in _subscriptions) {
       pendingSubscriptions.add(sub.controller);
@@ -240,7 +238,7 @@ class Socket {
     }
 
     try {
-      _socket.sendString(jsonEncode({
+      _socket.add(jsonEncode({
         "target": subscription.target,
         "jwt": API().auth().getToken(),
         "query": queries,
