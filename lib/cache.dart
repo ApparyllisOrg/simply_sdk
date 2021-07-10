@@ -153,11 +153,13 @@ class Cache {
         return;
       }
 
+      List<Future> serverCommands;
+
       try {
         queue.forEach((key, data) async {
           switch (data["action"]) {
             case "delete":
-              {
+              serverCommands.add(Future(() async {
                 var doc = await API()
                     .database()
                     .collection(data["collectionRef"])
@@ -174,44 +176,53 @@ class Cache {
                     removeFromQueue("query", data);
                   }
                 }
-              }
+              }));
+
               break;
             case "update":
-              var doc = await API()
-                  .database()
-                  .collection(data["collectionRef"])
-                  .document(data["id"],
-                      addToCache: false, forceFromCache: true);
-              var response;
-              try {
-                response =
-                    await doc.updateImpl(data["data"], getTime(data["time"]));
-              } catch (e) {}
-              if (response != null) {
-                if (response.statusCode == 400 || response.statusCode == 200) {
-                  print("sent ${data["id"]} to cloud");
-                  removeFromQueue("query", data);
-                }
-              }
-              break;
-            case "add":
-              var response;
-              try {
-                response = await API()
+              serverCommands.add(Future(() async {
+                var doc = await API()
                     .database()
                     .collection(data["collectionRef"])
-                    .addImpl(data["id"], data["data"], getTime(data["time"]));
-              } catch (e) {}
-
-              if (response != null) {
-                if (response.statusCode == 400 || response.statusCode == 200) {
-                  print("sent ${data["id"]} to cloud");
-                  removeFromQueue("query", data);
+                    .document(data["id"],
+                        addToCache: false, forceFromCache: true);
+                var response;
+                try {
+                  response =
+                      await doc.updateImpl(data["data"], getTime(data["time"]));
+                } catch (e) {}
+                if (response != null) {
+                  if (response.statusCode == 400 ||
+                      response.statusCode == 200) {
+                    print("sent ${data["id"]} to cloud");
+                    removeFromQueue("query", data);
+                  }
                 }
-              }
+              }));
+              break;
+            case "add":
+              serverCommands.add(Future(() async {
+                var response;
+                try {
+                  response = await API()
+                      .database()
+                      .collection(data["collectionRef"])
+                      .addImpl(data["id"], data["data"], getTime(data["time"]));
+                } catch (e) {}
+
+                if (response != null) {
+                  if (response.statusCode == 400 ||
+                      response.statusCode == 200) {
+                    print("sent ${data["id"]} to cloud");
+                    removeFromQueue("query", data);
+                  }
+                }
+              }));
               break;
           }
         });
+
+        await Future.wait(serverCommands);
       } catch (e) {
         print(e);
       }
