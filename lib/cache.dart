@@ -153,7 +153,7 @@ class Cache {
         return;
       }
 
-      List<Future> serverCommands;
+      List<Future> serverCommands = [];
 
       try {
         queue.forEach((key, data) async {
