@@ -3,7 +3,6 @@ library simply_sdk;
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:dio_http2_adapter/dio_http2_adapter.dart';
 import 'package:simply_sdk/auth.dart';
 import 'package:simply_sdk/cache.dart';
 import 'package:simply_sdk/connection.dart';
@@ -34,14 +33,7 @@ class API {
     _socket.initialize();
     httpClient = Dio()
       ..options.baseUrl = connection().currentHost
-      ..interceptors.add(LogInterceptor())
-      ..httpClientAdapter = Http2Adapter(
-        ConnectionManager(
-          idleTimeout: 10000,
-          // Ignore bad certificate
-          onClientCreate: (_, config) => config.onBadCertificate = (_) => true,
-        ),
-      );
+      ..interceptors.add(LogInterceptor());
     await _cache.initialize();
   }
 
