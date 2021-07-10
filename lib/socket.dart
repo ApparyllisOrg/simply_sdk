@@ -67,7 +67,8 @@ class Socket {
   WebSocket getSocket() => _socket;
 
   void createConnection() async {
-    print("Create socket connection" + StackTrace.current.toString());
+    print("Disabled websockets until a servers are stable.");
+    return;
     _socket = await WebSocket.connect('wss://api.apparyllis.com:8443');
 
     _socket.handleError((err) => print(err));
@@ -196,8 +197,13 @@ class Socket {
     sub.controller.onResume?.call();
     sub.controller.onListen?.call();
 
-    List<Document> initialDocs =
-        await API().cache().searchForDocuments(sub.target, sub.query, "");
+    List<Document> initialDocs = [];
+
+    initialDocs = await API().database().collection(sub.target).get();
+    if (initialDocs.isEmpty) {
+      initialDocs =
+          await API().cache().searchForDocuments(sub.target, sub.query, "");
+    }
 
     if (sub.documents.isEmpty) {
       sub.documents = initialDocs;
@@ -212,9 +218,9 @@ class Socket {
       StreamController controller = StreamController();
       Subscription sub = Subscription(target, query, controller);
       _subscriptions.add(sub);
-      if (isSocketLive()) {
+      /* if (isSocketLive()) {
         pendingSubscriptions.add(sub.controller);
-      }
+      }*/
       delayStartOfflineListener(sub);
       return controller;
     });

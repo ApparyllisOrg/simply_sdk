@@ -59,6 +59,10 @@ class Cache {
     return Map<String, dynamic>();
   }
 
+  void clearCollectionCache(String collection) {
+    _cache.remove(collection);
+  }
+
   Future<void> clear() {
     return Future(() async {
       try {
