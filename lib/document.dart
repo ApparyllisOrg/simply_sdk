@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dio/dio.dart';
-
+import 'package:http/http.dart';
 import 'package:simply_sdk/simply_sdk.dart';
+import 'package:http/http.dart' as http;
 
 import 'helpers.dart';
 
@@ -56,11 +56,11 @@ class Document {
     sendData["id"] = id;
     sendData["deleteTime"] = time;
 
-    Response response;
+    var response;
     try {
-      response = await Dio().delete(url.toString(),
-          options: Options(headers: getHeader()),
-          data: jsonEncode(sendData, toEncodable: customEncode));
+      response = await API().httpClient.delete(url,
+          headers: getHeader(),
+          body: jsonEncode(sendData, toEncodable: customEncode));
     } catch (e) {
       print(e);
     }
@@ -78,9 +78,9 @@ class Document {
 
     var response;
     try {
-      response = await Dio().patch(url.toString(),
-          options: Options(headers: getHeader()),
-          data: jsonEncode(sendData, toEncodable: customEncode));
+      response = await API().httpClient.patch(url,
+          headers: getHeader(),
+          body: jsonEncode(sendData, toEncodable: customEncode));
     } catch (e) {
       print(e);
     }
