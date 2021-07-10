@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:html';
 
 import 'package:simply_sdk/collection.dart';
 import 'package:simply_sdk/document.dart';
-import 'package:web_socket_channel/io.dart';
 import 'package:uuid/uuid.dart';
 
 import 'helpers.dart';
@@ -19,7 +19,7 @@ class Subscription {
 }
 
 class Socket {
-  IOWebSocketChannel _socket;
+  WebSocket _socket;
   List<Subscription> _subscriptions = [];
   List<StreamController> pendingSubscriptions = [];
   String uniqueConnectionId;
@@ -35,18 +35,14 @@ class Socket {
     _subscriptions.clear();
     pendingSubscriptions.clear();
     if (isSocketLive()) {
-      _socket.sink.close();
+      _socket.close();
     }
   }
 
   void reconnect() async {
     if (_subscriptions.isNotEmpty) {
       if (!isSocketLive()) {
-        if (_socket != null) {
-          print("Socket closed: " +
-              _socket.closeCode.toString() +
-              _socket.closeReason);
-        }
+        if (_socket != null) {}
         createConnection();
       }
 
@@ -66,17 +62,18 @@ class Socket {
     reconnect();
   }
 
-  bool isSocketLive() => _socket != null && _socket.closeCode == null;
-  IOWebSocketChannel getSocket() => _socket;
+  bool isSocketLive() =>
+      _socket != null && (_socket.readyState == 0 || _socket.readyState == 1);
+  WebSocket getSocket() => _socket;
 
   void createConnection() {
-    _socket = IOWebSocketChannel.connect('wss://api.apparyllis.com:8443',
-        pingInterval: Duration(seconds: 10));
+    print("Create socket connection" + StackTrace.current.toString());
+    _socket = new WebSocket('wss://api.apparyllis.com:8443');
 
-    _socket.stream.handleError((err) => print(err));
-    _socket.stream.listen(onReceivedData).onError((err) => print(err));
+    _socket.onError.listen((err) => print(err));
+    _socket.onMessage.listen(onReceivedData).onError((err) => print(err));
 
-    _socket.sink.done.then((value) => createConnection());
+    _socket.onClose..listen((value) => createConnection());
 
     for (Subscription sub in _subscriptions) {
       pendingSubscriptions.add(sub.controller);
@@ -243,7 +240,7 @@ class Socket {
     }
 
     try {
-      _socket.sink.add(jsonEncode({
+      _socket.sendString(jsonEncode({
         "target": subscription.target,
         "jwt": API().auth().getToken(),
         "query": queries,
@@ -251,7 +248,7 @@ class Socket {
       }, toEncodable: customEncode));
     } catch (e) {
       print(e);
-      _socket.sink.close();
+      _socket.close();
       _socket = null;
       createConnection();
     }
