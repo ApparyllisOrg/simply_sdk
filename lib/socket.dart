@@ -25,10 +25,10 @@ class Socket {
   String uniqueConnectionId;
 
   void initialize() {
-    //uniqueConnectionId = Uuid().v4();
-    //createConnection();
-    //refreshConnection();
-    //reconnect();
+    uniqueConnectionId = Uuid().v4();
+    createConnection();
+    refreshConnection();
+    reconnect();
   }
 
   void cancelConnections() {
@@ -68,7 +68,7 @@ class Socket {
 
   void createConnection() async {
     print("Disabled websockets until a servers are stable.");
-    return;
+
     _socket = await WebSocket.connect('wss://api.apparyllis.com:8443');
 
     _socket.handleError((err) => print(err));
@@ -218,9 +218,9 @@ class Socket {
       StreamController controller = StreamController();
       Subscription sub = Subscription(target, query, controller);
       _subscriptions.add(sub);
-      /* if (isSocketLive()) {
+      if (isSocketLive()) {
         pendingSubscriptions.add(sub.controller);
-      }*/
+      }
       delayStartOfflineListener(sub);
       return controller;
     });
