@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:simply_sdk/collection.dart';
 import 'package:simply_sdk/document.dart';
+import 'package:web_socket_channel/io.dart';
 import 'package:uuid/uuid.dart';
 
 import 'helpers.dart';
@@ -19,7 +19,7 @@ class Subscription {
 }
 
 class Socket {
-  WebSocket _socket;
+  IOWebSocketChannel _socket;
   List<Subscription> _subscriptions = [];
   List<StreamController> pendingSubscriptions = [];
   String uniqueConnectionId;
@@ -35,14 +35,18 @@ class Socket {
     _subscriptions.clear();
     pendingSubscriptions.clear();
     if (isSocketLive()) {
-      _socket.close();
+      _socket.sink.close();
     }
   }
 
   void reconnect() async {
     if (_subscriptions.isNotEmpty) {
       if (!isSocketLive()) {
-        if (_socket != null) {}
+        if (_socket != null) {
+          print("Socket closed: " +
+              _socket.closeCode.toString() +
+              _socket.closeReason);
+        }
         createConnection();
       }
 
@@ -62,15 +66,18 @@ class Socket {
     reconnect();
   }
 
-  bool isSocketLive() =>
-      _socket != null && (_socket.readyState == 0 || _socket.readyState == 1);
-  WebSocket getSocket() => _socket;
+  bool isSocketLive() => _socket != null && _socket.closeCode == null;
+  IOWebSocketChannel getSocket() => _socket;
 
-  void createConnection() async {
-    _socket = await WebSocket.connect('wss://api.apparyllis.com:8443');
+  void createConnection() {
+    print("Create socket connection" + StackTrace.current.toString());
+    _socket = IOWebSocketChannel.connect('wss://api.apparyllis.com:8443',
+        pingInterval: Duration(seconds: 10));
 
-    _socket.handleError((err) => print(err));
-    _socket.listen(onReceivedData).onError((err) => print(err));
+    _socket.stream.handleError((err) => print(err));
+    _socket.stream.listen(onReceivedData).onError((err) => print(err));
+
+    _socket.sink.done.then((value) => createConnection());
 
     for (Subscription sub in _subscriptions) {
       pendingSubscriptions.add(sub.controller);
@@ -195,13 +202,8 @@ class Socket {
     sub.controller.onResume?.call();
     sub.controller.onListen?.call();
 
-    List<Document> initialDocs = [];
-
-    initialDocs = await API().database().collection(sub.target).get();
-    if (initialDocs.isEmpty) {
-      initialDocs =
-          await API().cache().searchForDocuments(sub.target, sub.query, "");
-    }
+    List<Document> initialDocs =
+        await API().cache().searchForDocuments(sub.target, sub.query, "");
 
     if (sub.documents.isEmpty) {
       sub.documents = initialDocs;
@@ -242,7 +244,7 @@ class Socket {
     }
 
     try {
-      _socket.add(jsonEncode({
+      _socket.sink.add(jsonEncode({
         "target": subscription.target,
         "jwt": API().auth().getToken(),
         "query": queries,
@@ -250,7 +252,7 @@ class Socket {
       }, toEncodable: customEncode));
     } catch (e) {
       print(e);
-      _socket.close();
+      _socket.sink.close();
       _socket = null;
       createConnection();
     }
