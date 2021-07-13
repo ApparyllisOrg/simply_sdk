@@ -162,6 +162,30 @@ class Socket {
     }
   }
 
+  void replayCacheOnCollectionSync(String collection) async {
+    var queue = API().cache().getCollectionCache("query");
+    for (Subscription sub in _subscriptions) {
+      if (sub.target == collection) {
+        for (int i = 0; i < queue.length; i++) {
+          var queuedDoc = queue[queue.keys.toList()[i]];
+          if (queuedDoc["collectionRef"] == collection) {
+            switch (queuedDoc["action"]) {
+              case "update":
+                updateDocument(sub, queuedDoc["data"]);
+                return;
+              case "add": // We use add, they use insert
+                updateDocument(sub, queuedDoc["data"]);
+                return;
+              case "delete":
+                removeDocument(sub, queuedDoc["id"]);
+                return;
+            }
+          }
+        }
+      }
+    }
+  }
+
   void onReceivedData(event) async {
     Map<String, dynamic> data = jsonDecode(event, reviver: customDecode);
 
@@ -174,9 +198,20 @@ class Socket {
           continue;
         }
         if (sub.target == data["target"]) {
+          bool initial = data["initial"] == true;
+
+          if (initial) {
+            // Clear the cache, we may have deleted things while on another phone
+            API().cache().clearCollectionCache(sub.target);
+          }
           for (Map<String, dynamic> result in data["results"]) {
             updateCollectionLocally(sub, result);
           }
+
+          if (initial) {
+            replayCacheOnCollectionSync(sub.target);
+          }
+
           sub.controller.add(sub.documents);
           print("received update");
         }

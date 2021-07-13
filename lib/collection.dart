@@ -179,9 +179,9 @@ class Collection {
     return "";
   }
 
-  Future<Document> getOne() {
+  Future<Document> getOne({preventCaching = false}) {
     return Future(() async {
-      List<Document> getResult = await get();
+      List<Document> getResult = await get(preventCaching: preventCaching);
       if (getResult.isNotEmpty) {
         return getResult.first;
       }
@@ -189,7 +189,7 @@ class Collection {
     });
   }
 
-  Future<List<Document>> get() async {
+  Future<List<Document>> get({preventCaching = false}) async {
     await API().auth().isAuthenticated();
 
     if (_end != null || _start != null || _limit != null) {
@@ -225,8 +225,10 @@ class Collection {
 
       for (var doc in returnedDocuments) {
         documents.add(Document(true, doc["id"], id, doc["content"] ?? {}));
-        API().cache().insertDocument(id, doc["id"], doc["content"] ?? {},
-            doTriggerUpdateSubscription: false);
+        if (preventCaching) {
+          API().cache().insertDocument(id, doc["id"], doc["content"] ?? {},
+              doTriggerUpdateSubscription: false);
+        }
       }
     } else {
       print("${response.statusCode.toString()}: ${response.body}");
