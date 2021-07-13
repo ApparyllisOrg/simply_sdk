@@ -188,7 +188,8 @@ class Collection {
 
   Future<Document> getOne({preventCaching = false, allowCache = true}) {
     return Future(() async {
-      List<Document> getResult = await get(preventCaching: preventCaching);
+      List<Document> getResult =
+          await get(preventCaching: preventCaching, allowCache: allowCache);
       if (getResult.isNotEmpty) {
         return getResult.first;
       }
