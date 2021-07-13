@@ -225,7 +225,7 @@ class Collection {
 
       for (var doc in returnedDocuments) {
         documents.add(Document(true, doc["id"], id, doc["content"] ?? {}));
-        if (preventCaching) {
+        if (!preventCaching) {
           API().cache().insertDocument(id, doc["id"], doc["content"] ?? {},
               doTriggerUpdateSubscription: false);
         }
