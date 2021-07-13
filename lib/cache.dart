@@ -64,6 +64,11 @@ class Cache {
     _cache.remove(collection);
   }
 
+  bool hasDataInCacheForCollection(String collection) {
+    return _cache.containsKey(collection) &&
+        (_cache[collection] as Map<String, dynamic>).length > 0;
+  }
+
   Future<void> clear() {
     return Future(() async {
       try {
