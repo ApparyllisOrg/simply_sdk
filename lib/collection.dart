@@ -96,7 +96,7 @@ class Collection {
   }
 
   Future<Document> document(String docId,
-      {bool addToCache = true, forceFromCache = false}) {
+      {bool addToCache = true, forceFromCache = false, allowCache = true}) {
     return Future(() async {
       await API().auth().isAuthenticated();
 
@@ -118,7 +118,10 @@ class Collection {
       }
 
       if (response == null) {
-        return await API().cache().getDocument(id, docId);
+        if (allowCache) {
+          return await API().cache().getDocument(id, docId);
+        }
+        return Document(false, docId, id, {}, fromCache: true);
       }
 
       if (response.statusCode == 200) {
@@ -133,7 +136,11 @@ class Collection {
             returnedDocument["content"] ?? {});
       } else {
         print("${response.statusCode.toString()}: ${response.body}");
-        return API().cache().getDocument(id, docId);
+        if (allowCache) {
+          return API().cache().getDocument(id, docId);
+        }
+
+        return Document(false, docId, id, {}, fromCache: true);
       }
     });
   }
@@ -179,7 +186,7 @@ class Collection {
     return "";
   }
 
-  Future<Document> getOne({preventCaching = false}) {
+  Future<Document> getOne({preventCaching = false, allowCache = true}) {
     return Future(() async {
       List<Document> getResult = await get(preventCaching: preventCaching);
       if (getResult.isNotEmpty) {
@@ -189,7 +196,8 @@ class Collection {
     });
   }
 
-  Future<List<Document>> get({preventCaching = false}) async {
+  Future<List<Document>> get(
+      {preventCaching = false, allowCache = true}) async {
     await API().auth().isAuthenticated();
 
     if (_end != null || _start != null || _limit != null) {
@@ -213,11 +221,14 @@ class Collection {
     } catch (e) {}
 
     if (response == null) {
-      var docs = await API().cache().searchForDocuments(id, query, _orderby,
-          start: _start,
-          end: _limit,
-          orderUp: _orderByOrder != null ? _orderByOrder == 1 : true);
-      return docs;
+      if (allowCache) {
+        var docs = await API().cache().searchForDocuments(id, query, _orderby,
+            start: _start,
+            end: _limit,
+            orderUp: _orderByOrder != null ? _orderByOrder == 1 : true);
+        return docs;
+      }
+      return [];
     }
 
     if (response.statusCode == 200) {
@@ -232,18 +243,20 @@ class Collection {
       }
     } else {
       print("${response.statusCode.toString()}: ${response.body}");
-      var docs = await API().cache().searchForDocuments(id, query, _orderby,
-          start: _start,
-          end: _limit,
-          orderUp: _orderByOrder != null ? _orderByOrder == 1 : true);
-
-      return docs;
+      if (allowCache) {
+        var docs = await API().cache().searchForDocuments(id, query, _orderby,
+            start: _start,
+            end: _limit,
+            orderUp: _orderByOrder != null ? _orderByOrder == 1 : true);
+        return docs;
+      }
+      return [];
     }
 
     return documents;
   }
 
-  Future<List<Document>> getMany(List<String> docs) {
+  Future<List<Document>> getMany(List<String> docs, {allowCache = true}) {
     return Future(() async {
       await API().auth().isAuthenticated();
 
@@ -268,8 +281,11 @@ class Collection {
       } catch (e) {}
 
       if (response == null) {
-        return await API().cache().searchForDocuments(id, query, _orderby,
-            start: _start, end: _limit);
+        if (allowCache) {
+          return await API().cache().searchForDocuments(id, query, _orderby,
+              start: _start, end: _limit);
+        }
+        return [];
       }
 
       if (response.statusCode == 200) {
