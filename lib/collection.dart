@@ -258,10 +258,13 @@ class Collection {
 
       var response;
       try {
-        response = await http.get(
-          url,
-          headers: getHeader(),
-        );
+        response = await http
+            .get(
+              url,
+              headers: getHeader(),
+            )
+            .timeout(Duration(seconds: 5));
+        ;
       } catch (e) {}
 
       if (response == null) {
@@ -299,10 +302,13 @@ class Collection {
 
       var response;
       try {
-        response = await http.get(
-          url,
-          headers: getHeader(),
-        );
+        response = await http
+            .get(
+              url,
+              headers: getHeader(),
+            )
+            .timeout(Duration(seconds: 5));
+        ;
       } catch (e) {}
 
       if (response == null) {
