@@ -14,18 +14,21 @@ class Query {
   final dynamic isNotEqualTo;
   final dynamic isLargerThan;
   final dynamic isSmallerThan;
+  final bool notNull;
 
   Query(
       {this.isEqualTo,
       this.isNotEqualTo,
       this.isLargerThan,
-      this.isSmallerThan});
+      this.isSmallerThan,
+      this.notNull});
 
   String getMethod() {
     if (isEqualTo != null) return "isEqualTo";
     if (isNotEqualTo != null) return "isNotEqualTo";
     if (isLargerThan != null) return "isLargerThan";
     if (isSmallerThan != null) return "isSmallerThan";
+    if (notNull != null) return "isNotEqualTo";
     assert(false, "Missing implementation!");
     return "";
   }
@@ -35,6 +38,7 @@ class Query {
     if (isNotEqualTo != null) return isNotEqualTo;
     if (isLargerThan != null) return isLargerThan;
     if (isSmallerThan != null) return isSmallerThan;
+    if (notNull != null) return null;
     assert(false, "Missing implementation!");
   }
 
@@ -51,6 +55,7 @@ class Query {
       if (isNotEqualTo != null) return property != isNotEqualTo;
       if (isLargerThan != null) return property > isLargerThan;
       if (isSmallerThan != null) return property < isSmallerThan;
+      if (notNull != null) return property != null;
       assert(false, "Missing implementation!");
     } catch (e) {
       return false;
