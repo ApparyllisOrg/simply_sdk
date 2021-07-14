@@ -307,15 +307,13 @@ class Cache {
 
   void updateDocument(String collection, String id, Map<String, dynamic> data,
       {bool doTriggerUpdateSubscription: true}) async {
-    Future(() async {
-      try {
-        Map<String, dynamic> dataCopy = Map.from(data);
-        updateToCache(collection, id, dataCopy,
-            triggerUpdateSubscription: doTriggerUpdateSubscription);
-      } catch (e) {
-        API().reportError(e);
-      }
-    });
+    try {
+      Map<String, dynamic> dataCopy = Map.from(data);
+      updateToCache(collection, id, dataCopy,
+          triggerUpdateSubscription: doTriggerUpdateSubscription);
+    } catch (e) {
+      API().reportError(e);
+    }
   }
 
   Future<void> removeDocument(String collection, String id,
