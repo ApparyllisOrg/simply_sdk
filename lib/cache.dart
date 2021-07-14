@@ -195,8 +195,10 @@ class Cache {
                         addToCache: false, forceFromCache: true);
                 var response;
                 try {
+                  Map<String, dynamic> sendData = data["data"];
+                  sendData.remove("uid");
                   response =
-                      await doc.updateImpl(data["data"], getTime(data["time"]));
+                      await doc.updateImpl(sendData, getTime(data["time"]));
                 } catch (e) {}
                 if (response != null) {
                   if (response.statusCode == 400 ||
@@ -212,10 +214,12 @@ class Cache {
               var future = Future(() async {
                 var response;
                 try {
+                  Map<String, dynamic> sendData = data["data"];
+                  sendData.remove("uid");
                   response = await API()
                       .database()
                       .collection(data["collectionRef"])
-                      .addImpl(data["id"], data["data"], getTime(data["time"]));
+                      .addImpl(data["id"], sendData, getTime(data["time"]));
                 } catch (e) {}
 
                 if (response != null) {
