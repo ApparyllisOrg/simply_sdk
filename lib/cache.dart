@@ -27,8 +27,15 @@ class Cache {
       {bool triggerUpdateSubscription: true}) {
     if (_data == null) return;
 
+    Map<String, dynamic> coll = _cache[collection];
     if (_cache[collection] != null) {
-      _cache[collection][id] = _data;
+      if (coll.containsKey(id)) {
+        Map<String, dynamic> dat = _cache[collection][id];
+        dat.addAll(_data);
+        _cache[collection][id] = dat;
+      } else {
+        _cache[collection][id] = _data;
+      }
     } else {
       _cache[collection] = Map<String, dynamic>();
       _cache[collection][id] = _data;
