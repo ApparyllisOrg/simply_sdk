@@ -105,6 +105,8 @@ class Document {
   Future update(inData) async {
     await API().auth().isAuthenticated();
 
+    data.addAll(inData);
+
     API().cache().updateDocument(collectionId, id, inData,
         doTriggerUpdateSubscription: false);
 
