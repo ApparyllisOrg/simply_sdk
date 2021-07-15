@@ -88,18 +88,18 @@ class Cache {
   }
 
   Future<void> save() async {
-    return Future(() async {
-      try {
-        var dir = await getApplicationDocumentsDirectory();
-        await dir.create(recursive: true);
-        var dbPath = dir.path + "/simply.db";
-        File file = File(dbPath);
-        await file.writeAsString(jsonEncode(_cache, toEncodable: customEncode));
-      } catch (e) {
-        API().reportError(e);
-        print(e);
-      }
-    });
+    try {
+      var dir = await getApplicationDocumentsDirectory();
+      await dir.create(recursive: true);
+      var dbPath = dir.path + "/simply.db";
+      File file = File(dbPath);
+      await file.writeAsString(jsonEncode(_cache, toEncodable: customEncode));
+    } catch (e) {
+      API().reportError(e);
+      print(e);
+    }
+    await Future.delayed(Duration(seconds: 1));
+    save();
   }
 
   Future<void> initialize() async {
@@ -122,6 +122,9 @@ class Cache {
         print(e);
         _cache = Map<String, dynamic>();
       }
+
+      await Future.delayed(Duration(seconds: 1));
+      save();
     });
     if (!bSyncing) trySyncToServer();
   }
@@ -154,7 +157,6 @@ class Cache {
     bSyncing = true;
     await Future.delayed(Duration(seconds: 3));
     try {
-      await save();
       Map<String, dynamic> queue;
 
       try {
