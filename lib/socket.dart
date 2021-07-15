@@ -208,10 +208,6 @@ class Socket {
             updateCollectionLocally(sub, result);
           }
 
-          if (initial) {
-            replayCacheOnCollectionSync(sub.target);
-          }
-
           sub.controller.add(sub.documents);
           print("received update");
         }
