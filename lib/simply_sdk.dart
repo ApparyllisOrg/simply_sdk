@@ -24,7 +24,7 @@ class API {
     _database = Database();
     _socket = Socket();
     _socket.initialize();
-    await _cache.initialize();
+    await _cache.initialize("");
   }
 
   // Declare globals

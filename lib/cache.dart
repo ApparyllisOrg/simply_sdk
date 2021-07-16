@@ -81,6 +81,7 @@ class Cache {
     return Future(() async {
       try {
         _cache.clear();
+        _sync.clear();
         await save();
       } catch (e) {
         API().reportError(e);
@@ -111,7 +112,15 @@ class Cache {
     save();
   }
 
-  Future<void> initialize() async {
+  String lastInitializeFor = "";
+  Future<void> initialize(String initializeFor) async {
+    if (lastInitializeFor != initializeFor) {
+      lastInitializeFor = initializeFor;
+      clear();
+    } else {
+      return;
+    }
+
     await Future(() async {
       try {
         var dir = await getApplicationDocumentsDirectory();
