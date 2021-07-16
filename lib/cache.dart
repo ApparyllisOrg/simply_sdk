@@ -13,6 +13,7 @@ import 'simply_sdk.dart';
 
 class Cache {
   Map<String, dynamic> _cache = Map<String, dynamic>();
+  List<dynamic> _sync = [];
 
   void removeFromCache(String collection, String id,
       {bool triggerUpdateSubscription: true}) {
@@ -92,8 +93,16 @@ class Cache {
       var dir = await getApplicationDocumentsDirectory();
       await dir.create(recursive: true);
       var dbPath = dir.path + "/simply.db";
+      var syncPath = dir.path + "/simply_sync.db";
+
+      // Save cache
       File file = File(dbPath);
       await file.writeAsString(jsonEncode(_cache, toEncodable: customEncode));
+
+      // Save sync
+      File syncFile = File(syncPath);
+      await syncFile
+          .writeAsString(jsonEncode(_sync, toEncodable: customEncode));
     } catch (e) {
       API().reportError(e);
       print(e);
@@ -108,8 +117,11 @@ class Cache {
         var dir = await getApplicationDocumentsDirectory();
         await dir.create(recursive: true);
         var dbPath = dir.path + "/simply.db";
+        var syncPath = dir.path + "/simply_sync.db";
+
         File file = File(dbPath);
         bool exists = await file.exists();
+
         if (exists) {
           String jsonObjectString = await file.readAsString();
           _cache = jsonDecode(jsonObjectString, reviver: customDecode)
@@ -117,10 +129,22 @@ class Cache {
         } else {
           _cache = Map<String, dynamic>();
         }
+
+        File syncFile = File(syncPath);
+        bool syncEists = await syncFile.exists();
+
+        if (syncEists) {
+          String jsonObjectString = await syncFile.readAsString();
+          _sync = jsonDecode(jsonObjectString, reviver: customDecode)
+              as List<dynamic>;
+        } else {
+          _sync = [];
+        }
       } catch (e) {
         API().reportError(e);
         print(e);
         _cache = Map<String, dynamic>();
+        _sync = [];
       }
 
       await Future.delayed(Duration(seconds: 1));
@@ -157,21 +181,15 @@ class Cache {
     bSyncing = true;
     await Future.delayed(Duration(seconds: 3));
     try {
-      Map<String, dynamic> queue;
-
-      try {
-        queue = getCollectionCache("query");
-      } catch (e) {}
-
-      if (queue == null || queue.isEmpty) {
+      if (_sync == null || _sync.isEmpty) {
         trySyncToServer();
         return;
       }
 
       try {
         List<Future> serverCommands = [];
-        for (int i = 0; i < min(2, queue.length); i++) {
-          var data = queue[queue.keys.toList()[i]];
+        for (int i = 0; i < min(2, _sync.length); i++) {
+          var data = _sync[i];
           switch (data["action"]) {
             case "delete":
               var future = Future(() async {
@@ -188,7 +206,7 @@ class Cache {
                   if (response.statusCode == 400 ||
                       response.statusCode == 200) {
                     print("sent ${data["id"]} to cloud");
-                    removeFromQueue("query", data);
+                    _sync.remove(data);
                   }
                 }
               });
@@ -213,7 +231,7 @@ class Cache {
                   if (response.statusCode == 400 ||
                       response.statusCode == 200) {
                     print("sent ${data["id"]} to cloud");
-                    removeFromQueue("query", data);
+                    _sync.remove(data);
                   }
                 }
               });
@@ -235,7 +253,7 @@ class Cache {
                   if (response.statusCode == 400 ||
                       response.statusCode == 200) {
                     print("sent ${data["id"]} to cloud");
-                    removeFromQueue("query", data);
+                    _sync.remove(data);
                   }
                 }
               });
@@ -255,9 +273,13 @@ class Cache {
     trySyncToServer();
   }
 
+  void enqueueSync(Map<String, dynamic> data) {
+    _sync.add(data);
+  }
+
   void queueDelete(String collection, String id) {
     try {
-      updateToCache("query", id, {
+      enqueueSync({
         "queue": true,
         "id": id,
         "collectionRef": collection,
@@ -271,7 +293,7 @@ class Cache {
 
   void queueUpdate(String collection, String id, Map<String, dynamic> data) {
     try {
-      updateToCache("query", id, {
+      enqueueSync({
         "queue": true,
         "id": id,
         "collectionRef": collection,
@@ -290,7 +312,7 @@ class Cache {
     Map<String, dynamic> data,
   ) {
     try {
-      updateToCache("query", id, {
+      enqueueSync({
         "queue": true,
         "id": id,
         "collectionRef": collection,
