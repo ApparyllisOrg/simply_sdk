@@ -98,12 +98,11 @@ class Cache {
 
       // Save cache
       File file = File(dbPath);
-      await file.writeAsString(jsonEncode(_cache, toEncodable: customEncode));
+      file.writeAsStringSync(jsonEncode(_cache, toEncodable: customEncode));
 
       // Save sync
       File syncFile = File(syncPath);
-      await syncFile
-          .writeAsString(jsonEncode(_sync, toEncodable: customEncode));
+      syncFile.writeAsStringSync(jsonEncode(_sync, toEncodable: customEncode));
     } catch (e) {
       API().reportError(e);
       print(e);
@@ -116,7 +115,6 @@ class Cache {
   Future<void> initialize(String initializeFor) async {
     if (lastInitializeFor != initializeFor) {
       lastInitializeFor = initializeFor;
-      clear();
     } else {
       return;
     }
