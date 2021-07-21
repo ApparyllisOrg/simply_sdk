@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_performance/firebase_performance.dart';
 import 'package:http/http.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:http/http.dart' as http;
@@ -56,6 +57,8 @@ class Document {
     sendData["id"] = id;
     sendData["deleteTime"] = time;
 
+    final HttpMetric metric = getMetric(url, HttpMethod.Delete);
+
     var response;
     try {
       response = await http.delete(url,
@@ -64,6 +67,13 @@ class Document {
     } catch (e) {
       print(e);
     }
+
+    if (response == null) {
+      metricFail(metric);
+    } else {
+      metricSuccess(metric);
+    }
+
     return response;
   }
 
@@ -76,6 +86,8 @@ class Document {
     sendData["content"] = inData;
     sendData["updateTime"] = time;
 
+    final HttpMetric metric = getMetric(url, HttpMethod.Post);
+
     var response;
     try {
       response = await http.patch(url,
@@ -83,6 +95,12 @@ class Document {
           body: jsonEncode(sendData, toEncodable: customEncode));
     } catch (e) {
       print(e);
+    }
+
+    if (response == null) {
+      metricFail(metric);
+    } else {
+      metricSuccess(metric);
     }
 
     return response;

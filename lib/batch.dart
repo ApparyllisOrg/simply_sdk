@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_performance/firebase_performance.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:http/http.dart' as http;
@@ -97,6 +98,8 @@ class Batch {
       }
     }
 
+    final HttpMetric metric = getMetric(url, HttpMethod.Post);
+
     var response;
     try {
       response = await http.post(url,
@@ -110,7 +113,10 @@ class Batch {
 
     if (response == null) {
       enqueueToCache();
+      metricFail(metric);
       return;
+    } else {
+      metricSuccess(metric);
     }
 
     if (response.statusCode == 200) {

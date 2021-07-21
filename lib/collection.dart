@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_performance/firebase_performance.dart';
 import 'package:http/http.dart';
 import 'package:mongo_dart/mongo_dart.dart' as mongo;
 import 'package:simply_sdk/helpers.dart';
@@ -121,6 +122,10 @@ class Collection {
 
       var response;
       if (!forceFromCache) {
+        final HttpMetric metric = getMetric(
+            Uri.parse(API().connection().documentGet() + "?" + "target=$id"),
+            HttpMethod.Get);
+
         try {
           response = await http
               .get(
@@ -129,6 +134,11 @@ class Collection {
               )
               .timeout(Duration(seconds: 5));
         } catch (e) {}
+        if (response == null) {
+          metricFail(metric);
+        } else {
+          metricSuccess(metric);
+        }
       }
 
       if (response == null) {
@@ -225,6 +235,10 @@ class Collection {
         "target=$id${_getOrderBy()}${_getLimit()}${_getStart()}&query=" +
         jsonEncode(_getQueryString(), toEncodable: customEncode));
 
+    final HttpMetric metric = getMetric(
+        Uri.parse(API().connection().collectionGet() + "?" + "target=$id"),
+        HttpMethod.Get);
+
     var response;
     try {
       response = await http
@@ -236,6 +250,7 @@ class Collection {
     } catch (e) {}
 
     if (response == null) {
+      metricFail(metric);
       if (allowCache) {
         var docs = await API().cache().searchForDocuments(id, query, _orderby,
             start: _start,
@@ -244,6 +259,8 @@ class Collection {
         return docs;
       }
       return [];
+    } else {
+      metricSuccess(metric);
     }
 
     if (response.statusCode == 200) {
@@ -284,6 +301,11 @@ class Collection {
           "?" +
           "target=$id&docs=${jsonEncode(docQuery, toEncodable: customEncode)}");
 
+      final HttpMetric metric = getMetric(
+          Uri.parse(
+              API().connection().collectionGetMany() + "?" + "target=$id"),
+          HttpMethod.Get);
+
       var response;
       try {
         response = await http
@@ -296,11 +318,14 @@ class Collection {
       } catch (e) {}
 
       if (response == null) {
+        metricFail(metric);
         if (allowCache) {
           return await API().cache().searchForDocuments(id, query, _orderby,
               start: _start, end: _limit);
         }
         return [];
+      } else {
+        metricSuccess(metric);
       }
 
       if (response.statusCode == 200) {
@@ -331,6 +356,11 @@ class Collection {
           "target=$id${_getOrderBy()}${_getLimit()}${_getStart()}&query=" +
           jsonEncode(query, toEncodable: customEncode));
 
+      final HttpMetric metric = getMetric(
+          Uri.parse(
+              API().connection().collectionGetComplex() + "?" + "target=$id"),
+          HttpMethod.Get);
+
       var response;
       try {
         response = await http
@@ -343,7 +373,10 @@ class Collection {
       } catch (e) {}
 
       if (response == null) {
+        metricFail(metric);
         return [];
+      } else {
+        metricSuccess(metric);
       }
 
       if (response.statusCode == 200) {
@@ -373,6 +406,8 @@ class Collection {
 
     String decode = jsonEncode(postBody, toEncodable: customEncode);
 
+    final HttpMetric metric = getMetric(url, HttpMethod.Post);
+
     var response;
     try {
       response = await http
@@ -381,6 +416,13 @@ class Collection {
     } catch (e) {
       print(e);
     }
+
+    if (response == null) {
+      metricFail(metric);
+    } else {
+      metricSuccess(metric);
+    }
+
     return response;
   }
 

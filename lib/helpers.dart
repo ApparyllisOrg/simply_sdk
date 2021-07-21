@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_performance/firebase_performance.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 
 enum EUpdateType { Add, Update, Remove }
@@ -39,4 +40,21 @@ Object customDecode(dynamic key, dynamic value) {
     }
   }
   return value;
+}
+
+HttpMetric getMetric(Uri url, HttpMethod method) {
+  HttpMetric metric = FirebasePerformance.instance
+      .newHttpMetric(url.toString(), HttpMethod.Post);
+  metric.putAttribute("offline", "false");
+  metric.start();
+  return metric;
+}
+
+void metricSuccess(HttpMetric metric) {
+  metric.stop();
+}
+
+void metricFail(HttpMetric metric) {
+  metric.putAttribute("offline", "true");
+  metric.stop();
 }
