@@ -61,11 +61,11 @@ class Query {
     }
 
     try {
-      if (isEqualTo != null) return property == isEqualTo;
-      if (isNotEqualTo != null) return property != isNotEqualTo;
-      if (isLargerThan != null) return property > isLargerThan;
-      if (isSmallerThan != null) return property < isSmallerThan;
-      if (notNull != null) return property != null;
+      if (isEqualTo != null) return useProperty == isEqualTo;
+      if (isNotEqualTo != null) return useProperty != isNotEqualTo;
+      if (isLargerThan != null) return useProperty > isLargerThan;
+      if (isSmallerThan != null) return useProperty < isSmallerThan;
+      if (notNull != null) return useProperty != null;
       assert(false, "Missing implementation!");
     } catch (e) {
       return false;
