@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart';
 import 'package:mongo_dart/mongo_dart.dart' as mongo;
 import 'package:simply_sdk/helpers.dart';
@@ -50,6 +51,14 @@ class Query {
   }
 
   bool isSatisfied(dynamic property) {
+    dynamic useProperty = property;
+    if (useProperty is Timestamp) {
+      useProperty = useProperty.millisecondsSinceEpoch;
+    }
+    if (useProperty is DateTime) {
+      useProperty = useProperty.millisecondsSinceEpoch;
+    }
+
     try {
       if (isEqualTo != null) return property == isEqualTo;
       if (isNotEqualTo != null) return property != isNotEqualTo;
