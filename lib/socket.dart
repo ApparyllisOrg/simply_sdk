@@ -88,14 +88,11 @@ class Socket {
 
   void updateDocument(
       Subscription sub, Map<String, dynamic> documentData, String docId) async {
-    var docData = sub.documents.firstWhere(
-        (element) => element.id == documentData["id"],
-        orElse: () => null);
+    var docData = sub.documents
+        .firstWhere((element) => element.id == docId, orElse: () => null);
     if (docData != null) {
-      docId = docData.id;
       docData.data = Document.convertTime(documentData["content"]);
     } else {
-      docId = documentData["id"];
       Document newDoc =
           Document(true, docId, sub.target, documentData["content"]);
       sub.documents.add(newDoc);
