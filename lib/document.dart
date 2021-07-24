@@ -8,6 +8,23 @@ import 'package:http/http.dart' as http;
 
 import 'helpers.dart';
 
+class DocumentRef {
+  final String collectionId;
+  final String id;
+
+  DocumentRef(this.id, this.collectionId);
+
+  bool operator ==(other) {
+    return other is DocumentRef &&
+        other.collectionId == collectionId &&
+        other.id == id;
+  }
+
+  int get hashCode {
+    return (collectionId + id).hashCode;
+  }
+}
+
 class Document {
   bool exists;
   final bool fromCache;
@@ -131,6 +148,8 @@ class Document {
     API().socket().beOptimistic(collectionId, EUpdateType.Update, id, data);
 
     API().cache().queueUpdate(collectionId, id, inData);
+
+    API().docSubscriptions().propogateChange(this);
 
     return;
   }

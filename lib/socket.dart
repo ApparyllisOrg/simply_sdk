@@ -163,11 +163,11 @@ class Socket {
   }
 
   void replayCacheOnCollectionSync(String collection) async {
-    var queue = API().cache().getCollectionCache("query");
+    var queue = API().cache().getSyncQueue();
     for (Subscription sub in _subscriptions) {
       if (sub.target == collection) {
         for (int i = 0; i < queue.length; i++) {
-          var queuedDoc = queue[queue.keys.toList()[i]];
+          var queuedDoc = queue[i];
           if (queuedDoc["collectionRef"] == collection) {
             switch (queuedDoc["action"]) {
               case "update":
@@ -202,7 +202,9 @@ class Socket {
 
           if (initial) {
             // Clear the cache, we may have deleted things while on another phone
+
             API().cache().clearCollectionCache(sub.target);
+            replayCacheOnCollectionSync(sub.target);
           }
           for (Map<String, dynamic> result in data["results"]) {
             updateCollectionLocally(sub, result);

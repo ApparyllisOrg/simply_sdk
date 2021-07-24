@@ -68,6 +68,10 @@ class Cache {
     return Map<String, dynamic>();
   }
 
+  List<dynamic> getSyncQueue() {
+    return _sync;
+  }
+
   void clearCollectionCache(String collection) {
     _cache.remove(collection);
   }
