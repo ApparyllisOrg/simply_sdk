@@ -203,10 +203,13 @@ class Socket {
             // Clear the cache, we may have deleted things while on another phone
 
             API().cache().clearCollectionCache(sub.target);
-            replayCacheOnCollectionSync(sub.target);
           }
           for (Map<String, dynamic> result in data["results"]) {
             updateCollectionLocally(sub, result);
+          }
+
+          if (initial) {
+            replayCacheOnCollectionSync(sub.target);
           }
 
           sub.controller.add(sub.documents);

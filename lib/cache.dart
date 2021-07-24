@@ -32,7 +32,7 @@ class Cache {
     if (_cache[collection] != null) {
       if (coll.containsKey(id)) {
         Map<String, dynamic> dat = _cache[collection][id];
-        dat.addAll(_data);
+        dat?.addAll(_data);
         _cache[collection][id] = dat;
       } else {
         _cache[collection][id] = _data;
