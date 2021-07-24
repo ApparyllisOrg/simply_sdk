@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:html';
 
 import 'package:simply_sdk/collection.dart';
 import 'package:simply_sdk/document.dart';
