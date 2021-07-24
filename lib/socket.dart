@@ -87,8 +87,7 @@ class Socket {
   }
 
   void updateDocument(
-      Subscription sub, Map<String, dynamic> documentData) async {
-    var docId = "";
+      Subscription sub, Map<String, dynamic> documentData, String docId) async {
     var docData = sub.documents.firstWhere(
         (element) => element.id == documentData["id"],
         orElse: () => null);
@@ -118,10 +117,10 @@ class Socket {
 
     switch (operation) {
       case "update":
-        updateDocument(sub, change);
+        updateDocument(sub, change, change["id"]);
         return;
       case "insert":
-        updateDocument(sub, change);
+        updateDocument(sub, change, change["id"]);
         return;
       case "delete":
         removeDocument(sub, change["id"]);
@@ -174,10 +173,10 @@ class Socket {
 
             switch (queuedDoc["action"]) {
               case "update":
-                updateDocument(sub, queuedDoc["data"]);
+                updateDocument(sub, queuedDoc["data"], queuedDoc["id"]);
                 return;
               case "add": // We use add, they use insert
-                updateDocument(sub, queuedDoc["data"]);
+                updateDocument(sub, queuedDoc["data"], queuedDoc["id"]);
                 return;
               case "delete":
                 removeDocument(sub, queuedDoc["id"]);
