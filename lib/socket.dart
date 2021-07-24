@@ -170,14 +170,16 @@ class Socket {
 
             switch (queuedDoc["action"]) {
               case "update":
-                updateDocument(sub, queuedDoc["data"], queuedDoc["id"]);
-                return;
+                updateDocument(
+                    sub, {"content": queuedDoc["data"]}, queuedDoc["id"]);
+                break;
               case "add": // We use add, they use insert
-                updateDocument(sub, queuedDoc["data"], queuedDoc["id"]);
-                return;
+                updateDocument(
+                    sub, {"content": queuedDoc["data"]}, queuedDoc["id"]);
+                break;
               case "delete":
                 removeDocument(sub, queuedDoc["id"]);
-                return;
+                break;
             }
           }
         }
