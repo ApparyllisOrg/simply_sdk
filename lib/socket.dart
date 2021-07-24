@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:html';
 
 import 'package:simply_sdk/collection.dart';
 import 'package:simply_sdk/document.dart';
@@ -169,6 +170,9 @@ class Socket {
         for (int i = 0; i < queue.length; i++) {
           var queuedDoc = queue[i];
           if (queuedDoc["collectionRef"] == collection) {
+            print("replaying =>" +
+                jsonEncode(queuedDoc, toEncodable: customEncode));
+
             switch (queuedDoc["action"]) {
               case "update":
                 updateDocument(sub, queuedDoc["data"]);
