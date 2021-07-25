@@ -126,6 +126,8 @@ class Cache {
       // Save sync
       File syncFile = File(syncPath);
       syncFile.writeAsStringSync(jsonEncode(_sync, toEncodable: customEncode));
+
+      print("Saved sync and cache");
     } catch (e) {
       dirty = true;
       API().reportError(e);
@@ -207,7 +209,7 @@ class Cache {
   void trySyncToServer() async {
     bSyncing = true;
     try {
-      if (_sync == null || _sync.isEmpty || bSyncing) {
+      if (bSyncing) {
         markSyncDirty();
         return;
       }
@@ -309,6 +311,7 @@ class Cache {
   void enqueueSync(Map<String, dynamic> data) {
     _sync.add(data);
     markDirty();
+    markSyncDirty();
   }
 
   void queueDelete(String collection, String id) {
