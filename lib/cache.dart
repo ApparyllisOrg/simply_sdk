@@ -207,12 +207,13 @@ class Cache {
 
   bool bSyncing = false;
   void trySyncToServer() async {
-    bSyncing = true;
     try {
       if (bSyncing) {
         markSyncDirty();
         return;
       }
+
+      bSyncing = true;
 
       try {
         List<Future> serverCommands = [];
