@@ -70,7 +70,7 @@ class Socket {
   IOWebSocketChannel getSocket() => _socket;
 
   void createConnection() {
-    print("Create socket connection" + StackTrace.current.toString());
+    print("Create socket connection");
     try {
       _socket = IOWebSocketChannel.connect('wss://api.apparyllis.com:8443',
           pingInterval: Duration(seconds: 10));
@@ -165,8 +165,7 @@ class Socket {
         for (int i = 0; i < queue.length; i++) {
           var queuedDoc = queue[i];
           if (queuedDoc["collectionRef"] == collection) {
-            print("replaying =>" +
-                jsonEncode(queuedDoc, toEncodable: customEncode));
+            print("replaying =>" + queuedDoc["id"]);
 
             switch (queuedDoc["action"]) {
               case "update":
@@ -191,7 +190,6 @@ class Socket {
     Map<String, dynamic> data = jsonDecode(event, reviver: customDecode);
 
     String msg = data["msg"];
-    print(msg);
 
     if (msg == "update") {
       for (Subscription sub in _subscriptions) {
@@ -203,7 +201,6 @@ class Socket {
 
           if (initial) {
             // Clear the cache, we may have deleted things while on another phone
-
             API().cache().clearCollectionCache(sub.target);
           }
           for (Map<String, dynamic> result in data["results"]) {
@@ -215,7 +212,6 @@ class Socket {
           }
 
           sub.controller.add(sub.documents);
-          print("received update");
         }
       }
     }
@@ -290,7 +286,7 @@ class Socket {
         "uniqueId": uniqueConnectionId
       }, toEncodable: customEncode));
     } catch (e) {
-      print(e);
+      API().reportError(e);
       _socket.sink.close();
       _socket = null;
       createConnection();

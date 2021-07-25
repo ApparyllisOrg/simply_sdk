@@ -1,5 +1,6 @@
 library simply_sdk;
 
+import 'package:firebase_performance/firebase_performance.dart';
 import 'package:simply_sdk/auth.dart';
 import 'package:simply_sdk/cache.dart';
 import 'package:simply_sdk/connection.dart';
@@ -51,5 +52,17 @@ class API {
     } catch (e) {}
   }
 
+  void setGetHttpMetric(Function getFunction) {
+    _getHttpMetricFunction = getFunction;
+  }
+
+  HttpMetric getHttpMetric(Uri url, HttpMethod method) {
+    if (_getHttpMetricFunction != null) {
+      return _getHttpMetricFunction(url, method);
+    }
+    return null;
+  }
+
   Function onErrorReported;
+  Function _getHttpMetricFunction;
 }

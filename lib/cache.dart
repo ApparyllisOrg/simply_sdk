@@ -22,6 +22,8 @@ class Cache {
     }
     if (triggerUpdateSubscription)
       API().socket().updateSubscription(collection);
+
+    markDirty();
   }
 
   void updateToCache(String collection, String id, Map<String, dynamic> _data,
@@ -41,6 +43,8 @@ class Cache {
       _cache[collection] = Map<String, dynamic>();
       _cache[collection][id] = _data;
     }
+
+    markDirty();
 
     if (triggerUpdateSubscription)
       API().socket().updateSubscription(collection);
@@ -74,6 +78,7 @@ class Cache {
 
   void clearCollectionCache(String collection) {
     _cache.remove(collection);
+    markDirty();
   }
 
   bool hasDataInCacheForCollection(String collection) {
@@ -86,15 +91,29 @@ class Cache {
       try {
         _cache.clear();
         _sync.clear();
-        await save();
+        markDirty();
       } catch (e) {
         API().reportError(e);
       }
     });
   }
 
+  Timer saveTimer;
+  void markDirty() {
+    dirty = true;
+    if (saveTimer?.isActive == true) saveTimer?.cancel();
+    saveTimer = Timer(Duration(milliseconds: 10), save);
+  }
+
+  bool dirty = false;
   Future<void> save() async {
+    if (!dirty) {
+      return;
+    }
+
     try {
+      dirty = false;
+
       var dir = await getApplicationDocumentsDirectory();
       await dir.create(recursive: true);
       var dbPath = dir.path + "/simply.db";
@@ -108,11 +127,10 @@ class Cache {
       File syncFile = File(syncPath);
       syncFile.writeAsStringSync(jsonEncode(_sync, toEncodable: customEncode));
     } catch (e) {
+      dirty = true;
       API().reportError(e);
       print(e);
     }
-    await Future.delayed(Duration(seconds: 1));
-    save();
   }
 
   String lastInitializeFor = "";
@@ -179,21 +197,18 @@ class Cache {
     return 0;
   }
 
-  void removeFromQueue(String collection, Map<String, dynamic> item) async {
-    try {
-      removeFromCache(collection, item["id"]);
-    } catch (e) {
-      API().reportError(e);
-    }
+  Timer syncTimer;
+  void markSyncDirty() {
+    if (syncTimer?.isActive == true) syncTimer?.cancel();
+    syncTimer = Timer(Duration(milliseconds: 10), trySyncToServer);
   }
 
   bool bSyncing = false;
   void trySyncToServer() async {
     bSyncing = true;
-    await Future.delayed(Duration(seconds: 3));
     try {
-      if (_sync == null || _sync.isEmpty) {
-        trySyncToServer();
+      if (_sync == null || _sync.isEmpty || bSyncing) {
+        markSyncDirty();
         return;
       }
 
@@ -217,7 +232,9 @@ class Cache {
                   if (response.statusCode == 400 ||
                       response.statusCode == 200) {
                     print("sent ${data["id"]} to cloud");
+
                     _sync.remove(data);
+                    markDirty();
                   }
                 }
               });
@@ -243,6 +260,7 @@ class Cache {
                       response.statusCode == 200) {
                     print("sent ${data["id"]} to cloud");
                     _sync.remove(data);
+                    markDirty();
                   }
                 }
               });
@@ -265,6 +283,7 @@ class Cache {
                       response.statusCode == 200) {
                     print("sent ${data["id"]} to cloud");
                     _sync.remove(data);
+                    markDirty();
                   }
                 }
               });
@@ -280,12 +299,16 @@ class Cache {
       API().reportError(e);
     }
 
-    await Future.delayed(Duration(milliseconds: 100));
-    trySyncToServer();
+    bSyncing = false;
+
+    if (_sync.isNotEmpty) {
+      markSyncDirty();
+    }
   }
 
   void enqueueSync(Map<String, dynamic> data) {
     _sync.add(data);
+    markDirty();
   }
 
   void queueDelete(String collection, String id) {

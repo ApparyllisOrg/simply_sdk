@@ -43,6 +43,11 @@ Object customDecode(dynamic key, dynamic value) {
 }
 
 HttpMetric getMetric(Uri url, HttpMethod method) {
+  HttpMetric appMetric = API().getHttpMetric(url, method);
+  if (appMetric != null) {
+    return appMetric;
+  }
+
   HttpMetric metric = FirebasePerformance.instance
       .newHttpMetric(url.toString(), HttpMethod.Post);
   metric.putAttribute("offline", "false");
