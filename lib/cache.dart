@@ -302,6 +302,9 @@ class Cache {
       API().reportError(e);
     }
 
+    await Future.delayed(Duration(milliseconds: 500));
+    print("End sync");
+
     bSyncing = false;
 
     if (_sync.isNotEmpty) {
