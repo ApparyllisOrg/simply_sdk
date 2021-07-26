@@ -107,7 +107,9 @@ class Cache {
 
   bool dirty = false;
   Future<void> save() async {
-    if (!dirty) {
+    // Never-ever save if we haven't even loaded the cached data yet, we don't want to override
+    // our cached data...
+    if (!dirty || !isInitialzed) {
       return;
     }
 
@@ -136,6 +138,7 @@ class Cache {
   }
 
   String lastInitializeFor = "";
+  bool isInitialzed = false;
   Future<void> initialize(String initializeFor) async {
     if (lastInitializeFor != initializeFor) {
       lastInitializeFor = initializeFor;
@@ -179,6 +182,7 @@ class Cache {
       }
 
       await Future.delayed(Duration(seconds: 1));
+      isInitialzed = true;
       save();
     });
     if (!bSyncing) trySyncToServer();
