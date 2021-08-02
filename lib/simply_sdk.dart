@@ -26,7 +26,6 @@ class API {
     _database = Database();
     _socket = Socket();
     _documentSubscriptions = DocumentSubscriptions();
-    _socket.initialize();
     await _cache.initialize("");
   }
 
