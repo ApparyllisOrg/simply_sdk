@@ -286,7 +286,7 @@ class Socket {
         "uniqueId": uniqueConnectionId
       }, toEncodable: customEncode));
     } catch (e) {
-      API().reportError(e);
+      API().reportError(e, StackTrace.current);
       _socket.sink.close();
       _socket = null;
       createConnection();

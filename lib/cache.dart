@@ -93,7 +93,7 @@ class Cache {
         _sync.clear();
         markDirty();
       } catch (e) {
-        API().reportError(e);
+        API().reportError(e, StackTrace.current);
       }
     });
   }
@@ -132,7 +132,7 @@ class Cache {
       print("Saved sync and cache");
     } catch (e) {
       dirty = true;
-      API().reportError(e);
+      API().reportError(e, StackTrace.current);
       print(e);
     }
   }
@@ -175,7 +175,7 @@ class Cache {
           _sync = [];
         }
       } catch (e) {
-        API().reportError(e);
+        API().reportError(e, StackTrace.current);
         print(e);
         _cache = Map<String, dynamic>();
         _sync = [];
@@ -199,7 +199,8 @@ class Cache {
       return data;
     }
     API().reportError(
-        "data in getTime is not int or timestamp!" + data.toString());
+        "data in getTime is not int or timestamp!" + data.toString(),
+        StackTrace.current);
     return 0;
   }
 
@@ -303,7 +304,7 @@ class Cache {
         print(e);
       }
     } catch (e) {
-      API().reportError(e);
+      API().reportError(e, StackTrace.current);
     }
 
     await Future.delayed(Duration(milliseconds: 500));
@@ -332,7 +333,7 @@ class Cache {
         "time": DateTime.now().millisecondsSinceEpoch
       });
     } catch (e) {
-      API().reportError(e);
+      API().reportError(e, StackTrace.current);
     }
   }
 
@@ -347,7 +348,7 @@ class Cache {
         "time": DateTime.now().millisecondsSinceEpoch
       });
     } catch (e) {
-      API().reportError(e);
+      API().reportError(e, StackTrace.current);
     }
   }
 
@@ -366,7 +367,7 @@ class Cache {
         "time": DateTime.now().millisecondsSinceEpoch
       });
     } catch (e) {
-      API().reportError(e);
+      API().reportError(e, StackTrace.current);
     }
   }
 
@@ -379,7 +380,7 @@ class Cache {
       updateToCache(collection, id, dataCopy,
           triggerUpdateSubscription: doTriggerUpdateSubscription);
     } catch (e) {
-      API().reportError(e);
+      API().reportError(e, StackTrace.current);
     }
 
     return id;
@@ -392,7 +393,7 @@ class Cache {
       updateToCache(collection, id, dataCopy,
           triggerUpdateSubscription: doTriggerUpdateSubscription);
     } catch (e) {
-      API().reportError(e);
+      API().reportError(e, StackTrace.current);
     }
   }
 
@@ -402,7 +403,7 @@ class Cache {
       removeFromCache(collection, id,
           triggerUpdateSubscription: doTriggerUpdateSubscription);
     } catch (e) {
-      API().reportError(e);
+      API().reportError(e, StackTrace.current);
     }
   }
 
@@ -431,7 +432,7 @@ class Cache {
       doc.data = sendData;
       doc.exists = true;
     } catch (e) {
-      API().reportError(e);
+      API().reportError(e, StackTrace.current);
     }
 
     return doc;
@@ -481,7 +482,7 @@ class Cache {
         return returnDocs;
       }
     } catch (e) {
-      API().reportError(e);
+      API().reportError(e, StackTrace.current);
     }
 
     return docs;

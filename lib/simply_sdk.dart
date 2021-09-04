@@ -45,9 +45,9 @@ class API {
   Socket socket() => _socket;
   DocumentSubscriptions docSubscriptions() => _documentSubscriptions;
 
-  void reportError(e) {
+  void reportError(e, StackTrace trace) {
     try {
-      if (onErrorReported != null) onErrorReported(e);
+      if (onErrorReported != null) onErrorReported(e, trace);
     } catch (e) {}
   }
 

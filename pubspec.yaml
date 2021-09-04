@@ -1,6 +1,6 @@
 name: simply_sdk
-description: A new Flutter package project.
-version: 0.0.25
+description: SDK for Apparyllis API
+version: 0.1.0
 author:
 
 publish_to: none
