@@ -1,6 +1,6 @@
 name: simply_sdk
 description: SDK for Apparyllis API
-version: 0.1.0
+version: 0.1.1
 author:
 
 publish_to: none
@@ -10,8 +10,8 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
-  firebase_auth: ^1.1.2
-  firebase_core: ^1.1.0
+  firebase_auth: ^3.1.0
+  firebase_core: ^1.6.0
   flutter:
     sdk: flutter
   http: ^0.13.2
@@ -21,7 +21,7 @@ dependencies:
   mongo_dart: ^0.7.0+2
 
   cloud_firestore: ^1.0.1
-  firebase_performance: ^0.7.0+7
+  firebase_performance: ^0.7.0+9
 
 
 dev_dependencies:
