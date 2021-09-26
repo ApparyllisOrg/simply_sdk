@@ -297,6 +297,29 @@ class Cache {
               });
               serverCommands.add(future);
               break;
+            case "deleteField":
+              var future = Future(() async {
+                var response;
+                try {
+                  String field = data["field"];
+
+                  response = await API()
+                      .database()
+                      .collection(data["collectionRef"])
+                      .deleteField_Impl(field);
+                } catch (e) {}
+
+                if (response != null) {
+                  if (response.statusCode == 400 ||
+                      response.statusCode == 200) {
+                    print("sent ${data["id"]} to cloud");
+                    _sync.remove(data);
+                    markDirty();
+                  }
+                }
+              });
+              serverCommands.add(future);
+              break;
           }
         }
         await Future.wait(serverCommands);
@@ -345,6 +368,20 @@ class Cache {
         "collectionRef": collection,
         "action": "update",
         "data": data,
+        "time": DateTime.now().millisecondsSinceEpoch
+      });
+    } catch (e) {
+      API().reportError(e, StackTrace.current);
+    }
+  }
+
+  void queueDeleteField(String collection, String field) {
+    try {
+      enqueueSync({
+        "queue": true,
+        "collectionRef": collection,
+        "action": "deleteField",
+        "field": field,
         "time": DateTime.now().millisecondsSinceEpoch
       });
     } catch (e) {

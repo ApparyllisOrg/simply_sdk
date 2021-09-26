@@ -28,6 +28,7 @@ class Connection {
   }
 
   String collectionGet() => "$currentHost/collection/get";
+  String collectionDeleteField() => "$currentHost/collection/deleteField";
   String collectionGetMany() => "$currentHost/collection/getMany";
   String collectionGetComplex() => "$currentHost/collection/getComplex";
   String documentGet() => "$currentHost/document/get";

@@ -439,4 +439,42 @@ class Collection {
 
     return Document(true, docID, id, data);
   }
+
+  Future<void> deleteField(String field) async {
+    await API().auth().isAuthenticated();
+
+    API().cache().queueDeleteField(id, field);
+
+    return;
+  }
+
+  Future<Response> deleteField_Impl(String field) async {
+    var url = Uri.parse(API().connection().collectionDeleteField());
+
+    Map<String, dynamic> postBody = {
+      "target": id,
+      "field": field,
+    };
+
+    String decode = jsonEncode(postBody, toEncodable: customEncode);
+
+    final HttpMetric metric = getMetric(url, HttpMethod.Delete);
+
+    var response;
+    try {
+      response = await http
+          .delete(url, body: decode, headers: getHeader())
+          .timeout(Duration(seconds: 5));
+    } catch (e) {
+      print(e);
+    }
+
+    if (response == null) {
+      metricFail(metric);
+    } else {
+      metricSuccess(metric);
+    }
+
+    return response;
+  }
 }

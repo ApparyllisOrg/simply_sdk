@@ -142,12 +142,12 @@ class Document {
 
     data.addAll(inData);
 
-    API().cache().updateDocument(collectionId, id, inData,
+    API().cache().updateDocument(collectionId, id, data,
         doTriggerUpdateSubscription: false);
 
     API().socket().beOptimistic(collectionId, EUpdateType.Update, id, data);
 
-    API().cache().queueUpdate(collectionId, id, inData);
+    API().cache().queueUpdate(collectionId, id, data);
 
     API().docSubscriptions().propogateChange(this);
 

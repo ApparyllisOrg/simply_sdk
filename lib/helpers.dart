@@ -63,3 +63,17 @@ void metricFail(HttpMetric metric) {
   metric.putAttribute("offline", "true");
   metric.stop();
 }
+
+void removeField(String field, Map<String, dynamic> data) {
+  List<String> fields = field.split(".");
+
+  Map<String, dynamic> local = data;
+
+  for (int i = 0; i < fields.length; i++) {
+    if (i == fields.length - 1) {
+      local.remove(fields[i]);
+    } else {
+      local = local[fields[i]];
+    }
+  }
+}
