@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:html' as html;
 import 'dart:io';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart' as fir;
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/socket.dart';
@@ -113,27 +115,47 @@ class Cache {
       return;
     }
 
-    try {
-      dirty = false;
+    if (kIsWeb) {
+      try {
+        dirty = false;
+        // Save cache
+        html.window.localStorage["db"] =
+            jsonEncode(_cache, toEncodable: customEncode);
 
-      var dir = await getApplicationDocumentsDirectory();
-      await dir.create(recursive: true);
-      var dbPath = dir.path + "/simply.db";
-      var syncPath = dir.path + "/simply_sync.db";
+        // Save sync
+        html.window.localStorage["sync"] =
+            jsonEncode(_sync, toEncodable: customEncode);
 
-      // Save cache
-      File file = File(dbPath);
-      file.writeAsStringSync(jsonEncode(_cache, toEncodable: customEncode));
+        print("Saved sync and cache");
+      } catch (e) {
+        dirty = true;
+        API().reportError(e, StackTrace.current);
+        print(e);
+      }
+    } else {
+      try {
+        dirty = false;
 
-      // Save sync
-      File syncFile = File(syncPath);
-      syncFile.writeAsStringSync(jsonEncode(_sync, toEncodable: customEncode));
+        var dir = await getApplicationDocumentsDirectory();
+        await dir.create(recursive: true);
+        var dbPath = dir.path + "/simply.db";
+        var syncPath = dir.path + "/simply_sync.db";
 
-      print("Saved sync and cache");
-    } catch (e) {
-      dirty = true;
-      API().reportError(e, StackTrace.current);
-      print(e);
+        // Save cache
+        File file = File(dbPath);
+        file.writeAsStringSync(jsonEncode(_cache, toEncodable: customEncode));
+
+        // Save sync
+        File syncFile = File(syncPath);
+        syncFile
+            .writeAsStringSync(jsonEncode(_sync, toEncodable: customEncode));
+
+        print("Saved sync and cache");
+      } catch (e) {
+        dirty = true;
+        API().reportError(e, StackTrace.current);
+        print(e);
+      }
     }
   }
 
@@ -147,38 +169,49 @@ class Cache {
     }
 
     await Future(() async {
-      try {
-        var dir = await getApplicationDocumentsDirectory();
-        await dir.create(recursive: true);
-        var dbPath = dir.path + "/simply.db";
-        var syncPath = dir.path + "/simply_sync.db";
+      if (kIsWeb) {
+        bool syncExists = html.window.localStorage.containsKey("sync");
+        bool dbExists = html.window.localStorage.containsKey("db");
 
-        File file = File(dbPath);
-        bool exists = await file.exists();
+        _sync = syncExists
+            ? html.window.localStorage["sync"]
+            : Map<String, dynamic>();
+        _cache =
+            dbExists ? html.window.localStorage["db"] : Map<String, dynamic>();
+      } else {
+        try {
+          var dir = await getApplicationDocumentsDirectory();
+          await dir.create(recursive: true);
+          var dbPath = dir.path + "/simply.db";
+          var syncPath = dir.path + "/simply_sync.db";
 
-        if (exists) {
-          String jsonObjectString = await file.readAsString();
-          _cache = jsonDecode(jsonObjectString, reviver: customDecode)
-              as Map<String, dynamic>;
-        } else {
+          File file = File(dbPath);
+          bool exists = await file.exists();
+
+          if (exists) {
+            String jsonObjectString = await file.readAsString();
+            _cache = jsonDecode(jsonObjectString, reviver: customDecode)
+                as Map<String, dynamic>;
+          } else {
+            _cache = Map<String, dynamic>();
+          }
+
+          File syncFile = File(syncPath);
+          bool syncEists = await syncFile.exists();
+
+          if (syncEists) {
+            String jsonObjectString = await syncFile.readAsString();
+            _sync = jsonDecode(jsonObjectString, reviver: customDecode)
+                as List<dynamic>;
+          } else {
+            _sync = [];
+          }
+        } catch (e) {
+          API().reportError(e, StackTrace.current);
+          print(e);
           _cache = Map<String, dynamic>();
-        }
-
-        File syncFile = File(syncPath);
-        bool syncEists = await syncFile.exists();
-
-        if (syncEists) {
-          String jsonObjectString = await syncFile.readAsString();
-          _sync = jsonDecode(jsonObjectString, reviver: customDecode)
-              as List<dynamic>;
-        } else {
           _sync = [];
         }
-      } catch (e) {
-        API().reportError(e, StackTrace.current);
-        print(e);
-        _cache = Map<String, dynamic>();
-        _sync = [];
       }
 
       await Future.delayed(Duration(seconds: 1));
