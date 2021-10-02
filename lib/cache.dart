@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:html' as html;
+import "package:universal_html/html.dart" as html;
 import 'dart:io';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart' as fir;
@@ -173,8 +173,10 @@ class Cache {
         bool syncExists = html.window.localStorage.containsKey("sync");
         bool dbExists = html.window.localStorage.containsKey("db");
 
-        _sync =
-            syncExists ? jsonDecode(html.window.localStorage["sync"], reviver: customDecode) as List<dynamic> : [];
+        _sync = syncExists
+            ? jsonDecode(html.window.localStorage["sync"],
+                reviver: customDecode) as List<dynamic>
+            : [];
 
         _cache = dbExists
             ? jsonDecode(html.window.localStorage["db"], reviver: customDecode)
