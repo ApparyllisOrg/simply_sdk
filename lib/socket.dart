@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:simply_sdk/collection.dart';
 import 'package:simply_sdk/document.dart';
-import 'package:web_socket_channel/html.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
