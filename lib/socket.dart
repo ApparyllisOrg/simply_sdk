@@ -3,8 +3,10 @@ import 'dart:convert';
 
 import 'package:simply_sdk/collection.dart';
 import 'package:simply_sdk/document.dart';
+import 'package:web_socket_channel/html.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:uuid/uuid.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'helpers.dart';
 import 'simply_sdk.dart';
@@ -19,7 +21,7 @@ class Subscription {
 }
 
 class Socket {
-  IOWebSocketChannel _socket;
+  WebSocketChannel _socket;
   List<Subscription> _subscriptions = [];
   List<StreamController> pendingSubscriptions = [];
   String uniqueConnectionId;
@@ -71,9 +73,10 @@ class Socket {
 
   void createConnection() {
     print("Create socket connection");
+
     try {
-      _socket = IOWebSocketChannel.connect('wss://api.apparyllis.com:8443',
-          pingInterval: Duration(seconds: 10));
+      _socket = WebSocketChannel.connect(
+          Uri.tryParse('wss://api.apparyllis.com:8443'));
 
       _socket.stream.handleError((err) => print(err));
       _socket.stream.listen(onReceivedData).onError((err) => print(err));
