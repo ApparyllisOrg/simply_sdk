@@ -174,9 +174,11 @@ class Cache {
         bool dbExists = html.window.localStorage.containsKey("db");
 
         _sync =
-            syncExists ? html.window.localStorage["sync"] as List<dynamic> : [];
+            syncExists ? jsonDecode(html.window.localStorage["sync"], reviver: customDecode) as List<dynamic> : [];
+
         _cache = dbExists
-            ? html.window.localStorage["db"] as Map<String, dynamic>
+            ? jsonDecode(html.window.localStorage["db"], reviver: customDecode)
+                as Map<String, dynamic>
             : Map<String, dynamic>();
       } else {
         try {
