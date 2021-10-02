@@ -173,11 +173,11 @@ class Cache {
         bool syncExists = html.window.localStorage.containsKey("sync");
         bool dbExists = html.window.localStorage.containsKey("db");
 
-        _sync = syncExists
-            ? html.window.localStorage["sync"]
+        _sync =
+            syncExists ? html.window.localStorage["sync"] as List<dynamic> : [];
+        _cache = dbExists
+            ? html.window.localStorage["db"] as Map<String, dynamic>
             : Map<String, dynamic>();
-        _cache =
-            dbExists ? html.window.localStorage["db"] : Map<String, dynamic>();
       } else {
         try {
           var dir = await getApplicationDocumentsDirectory();
