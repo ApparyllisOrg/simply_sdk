@@ -49,7 +49,7 @@ class RemoteConfig {
 
     Response response;
     try {
-      response = await get(url, headers: getHeader());
+      response = await get(url);
       _sharedPrefs.setInt(_configSync, now.millisecondsSinceEpoch);
       _sharedPrefs.setString(_remoteConfig, response.body);
     } catch (e) {
