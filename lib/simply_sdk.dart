@@ -3,6 +3,7 @@ library simply_sdk;
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:simply_sdk/auth.dart';
 import 'package:simply_sdk/cache.dart';
+import 'package:simply_sdk/config.dart';
 import 'package:simply_sdk/connection.dart';
 import 'package:simply_sdk/database.dart';
 import 'package:simply_sdk/socket.dart';
@@ -26,6 +27,7 @@ class API {
     _database = Database();
     _socket = Socket();
     _documentSubscriptions = DocumentSubscriptions();
+    _remoteConfig = RemoteConfig();
     await _cache.initialize("");
   }
 
@@ -36,6 +38,7 @@ class API {
   Database _database;
   Socket _socket;
   DocumentSubscriptions _documentSubscriptions;
+  RemoteConfig _remoteConfig;
 
   // Declare global getters
   Auth auth() => _auth;
@@ -44,6 +47,7 @@ class API {
   Database database() => _database;
   Socket socket() => _socket;
   DocumentSubscriptions docSubscriptions() => _documentSubscriptions;
+  RemoteConfig remoteConfig() => _remoteConfig;
 
   void reportError(e, StackTrace trace) {
     try {

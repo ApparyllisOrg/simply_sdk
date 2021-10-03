@@ -36,4 +36,5 @@ class Connection {
   String documentUpdate() => "$currentHost/document/update";
   String documentDelete() => "$currentHost/document/delete";
   String batch() => "$currentHost/collection/batch";
+  String configGet() => "$currentHost/config/get";
 }

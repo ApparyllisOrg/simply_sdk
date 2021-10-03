@@ -1,6 +1,6 @@
 name: simply_sdk
 description: SDK for Apparyllis API
-version: 0.3.0
+version: 0.4.0
 author:
 
 publish_to: none
@@ -22,6 +22,7 @@ dependencies:
   universal_html: ^2.0.8
   cloud_firestore: ^1.0.1
   firebase_performance: ^0.7.0+9
+  shared_preferences: ^2.0.8
 
 
 dev_dependencies:
