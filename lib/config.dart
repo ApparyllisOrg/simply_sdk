@@ -41,6 +41,8 @@ class RemoteConfig {
   void fetchConfig() async {
     Timestamp now = Timestamp.now();
 
+    _loadConfig();
+
     Uri url = Uri.parse(API().connection().configGet());
 
     final HttpMetric metric = getMetric(url, HttpMethod.Post);
