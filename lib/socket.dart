@@ -38,6 +38,10 @@ class Socket {
     if (isSocketLive()) {
       _socket.sink.close();
     }
+    if (pingTimer != null && pingTimer.isActive) {
+      pingTimer.cancel();
+      pingTimer = null;
+    }
   }
 
   void reconnect() async {
@@ -67,6 +71,7 @@ class Socket {
     reconnect();
   }
 
+  Timer pingTimer;
   bool isSocketLive() => _socket != null && _socket.closeCode == null;
   IOWebSocketChannel getSocket() => _socket;
 
@@ -81,11 +86,23 @@ class Socket {
       _socket.stream.listen(onReceivedData).onError((err) => print(err));
 
       _socket.sink.done.then((value) => createConnection());
+
+      if (pingTimer != null && pingTimer.isActive) {
+        pingTimer.cancel();
+      }
+
+      pingTimer = Timer.periodic(Duration(seconds: 10), ping);
     } catch (e) {}
 
     for (Subscription sub in _subscriptions) {
       pendingSubscriptions.add(sub.controller);
     }
+  }
+
+  void ping(Timer timer) {
+    try {
+      _socket.sink.add("ping");
+    } catch (e) {}
   }
 
   void updateDocument(
