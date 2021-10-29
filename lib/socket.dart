@@ -75,6 +75,12 @@ class Socket {
   bool isSocketLive() => _socket != null && _socket.closeCode == null;
   IOWebSocketChannel getSocket() => _socket;
 
+  void disconnected() async {
+    _socket = null;
+    await Future.delayed(Duration(seconds: 1));
+    createConnection();
+  }
+
   void createConnection() {
     print("Create socket connection");
 
@@ -82,8 +88,8 @@ class Socket {
       _socket = WebSocketChannel.connect(
           Uri.tryParse('wss://api.apparyllis.com:8443'));
 
-      _socket.stream.handleError((err) => print(err));
-      _socket.stream.listen(onReceivedData).onError((err) => print(err));
+      _socket.stream.handleError((err) => disconnected());
+      _socket.stream.listen(onReceivedData).onError((err) => disconnected());
 
       _socket.sink.done.then((value) => createConnection());
 
@@ -92,7 +98,9 @@ class Socket {
       }
 
       pingTimer = Timer.periodic(Duration(seconds: 10), ping);
-    } catch (e) {}
+    } catch (e) {
+      disconnected();
+    }
 
     for (Subscription sub in _subscriptions) {
       pendingSubscriptions.add(sub.controller);
@@ -102,7 +110,9 @@ class Socket {
   void ping(Timer timer) {
     try {
       _socket.sink.add("ping");
-    } catch (e) {}
+    } catch (e) {
+      disconnected();
+    }
   }
 
   void updateDocument(
@@ -306,9 +316,7 @@ class Socket {
       }, toEncodable: customEncode));
     } catch (e) {
       API().reportError(e, StackTrace.current);
-      _socket.sink.close();
-      _socket = null;
-      createConnection();
+      disconnected();
     }
   }
 }
