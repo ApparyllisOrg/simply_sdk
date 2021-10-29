@@ -72,7 +72,8 @@ class Socket {
   }
 
   Timer pingTimer;
-  bool isSocketLive() => _socket != null && _socket.closeCode == null;
+  bool isSocketLive() =>
+      _socket != null && _socket.closeCode == null && _socket.protocol != null;
   IOWebSocketChannel getSocket() => _socket;
 
   void disconnected() async {
@@ -109,6 +110,9 @@ class Socket {
   }
 
   void ping(Timer timer) {
+    if (!isSocketLive()) {
+      disconnected();
+    }
     try {
       _socket.sink.add("ping");
     } catch (e) {
