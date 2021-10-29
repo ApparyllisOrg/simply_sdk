@@ -6,6 +6,7 @@ import 'package:simply_sdk/collection.dart';
 import 'package:simply_sdk/document.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:mongo_dart/mongo_dart.dart';
+import 'package:simply_sdk/socket.dart';
 
 void setAuth() async {
   await API().initialize();
@@ -61,6 +62,15 @@ void main() async {
   test('Set auth token', () async {
     await API().initialize();
     auth();
+  });
+
+  test('test socket protocol', () async {
+    var _socket = Socket();
+    _socket.createConnection();
+    for (int i = 0; i < 10; i++) {
+      await Future.delayed(Duration(seconds: 2));
+      expect(_socket.isSocketLive(), true);
+    }
   });
 
   test('Intialize db', () async {

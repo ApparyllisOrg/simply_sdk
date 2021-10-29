@@ -72,12 +72,13 @@ class Socket {
   }
 
   Timer pingTimer;
+  bool gotHello = false;
   bool isSocketLive() =>
-      _socket != null && _socket.closeCode == null && _socket.protocol != null;
+      _socket != null && _socket.closeCode == null && gotHello;
   IOWebSocketChannel getSocket() => _socket;
 
   void disconnected() async {
-    _socket.sink.close();
+    _socket?.sink?.close();
     _socket = null;
     await Future.delayed(Duration(seconds: 1));
     createConnection();
@@ -85,10 +86,9 @@ class Socket {
 
   void createConnection() {
     print("Create socket connection");
-
+    gotHello = false;
     try {
-      _socket = WebSocketChannel.connect(
-          Uri.tryParse('wss://api.apparyllis.com:8443'));
+      _socket = WebSocketChannel.connect(Uri.tryParse('ws://localhost:3000'));
 
       _socket.stream.handleError((err) => disconnected());
       _socket.stream.listen(onReceivedData).onError((err) => disconnected());
@@ -222,6 +222,11 @@ class Socket {
 
   void onReceivedData(event) async {
     Map<String, dynamic> data = jsonDecode(event, reviver: customDecode);
+
+    if (data["initial"] == true) {
+      gotHello = true;
+      return;
+    }
 
     String msg = data["msg"];
 

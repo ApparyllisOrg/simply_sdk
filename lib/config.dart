@@ -44,9 +44,6 @@ class RemoteConfig {
     _loadConfig();
 
     Uri url = Uri.parse(API().connection().configGet());
-
-    final HttpMetric metric = getMetric(url, HttpMethod.Post);
-
     Response response;
     try {
       response = await get(url);
@@ -54,12 +51,6 @@ class RemoteConfig {
       _sharedPrefs.setString(_remoteConfig, response.body);
     } catch (e) {
       print(e);
-    }
-
-    if (response == null) {
-      metricFail(metric);
-    } else {
-      metricSuccess(metric);
     }
 
     _loadConfig();
