@@ -88,7 +88,8 @@ class Socket {
     print("Create socket connection");
     gotHello = false;
     try {
-      _socket = WebSocketChannel.connect(Uri.tryParse('ws://localhost:3000'));
+      _socket = WebSocketChannel.connect(
+          Uri.tryParse('wss://api.apparyllis.com:8443'));
 
       _socket.stream.handleError((err) => disconnected());
       _socket.stream.listen(onReceivedData).onError((err) => disconnected());
