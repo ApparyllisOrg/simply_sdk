@@ -76,6 +76,7 @@ class Socket {
   IOWebSocketChannel getSocket() => _socket;
 
   void disconnected() async {
+    _socket.sink.close();
     _socket = null;
     await Future.delayed(Duration(seconds: 1));
     createConnection();
