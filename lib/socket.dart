@@ -48,9 +48,7 @@ class Socket {
     if (_subscriptions.isNotEmpty) {
       if (!isSocketLive()) {
         if (_socket != null) {
-          print("Socket closed: " +
-              _socket.closeCode.toString() +
-              _socket.closeReason);
+          print("Socket closed");
         }
         createConnection();
       }
