@@ -90,7 +90,7 @@ class Socket {
           Uri.tryParse('wss://api.apparyllis.com:8443'));
 
       _socket.stream.handleError((err) => disconnected());
-      _socket.stream.listen(onReceivedData).onError((err) => disconnected());
+      _socket.stream.listen(onData).onError((err) => disconnected());
 
       _socket.sink.done.then((value) => createConnection());
 
@@ -219,10 +219,13 @@ class Socket {
     }
   }
 
+  void onData(event) {
+    gotHello = true;
+    onReceivedData(event);
+  }
+
   void onReceivedData(event) async {
     Map<String, dynamic> data = jsonDecode(event, reviver: customDecode);
-
-    gotHello = true;
 
     String msg = data["msg"];
 
