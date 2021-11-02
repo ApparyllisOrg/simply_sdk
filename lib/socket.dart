@@ -222,10 +222,7 @@ class Socket {
   void onReceivedData(event) async {
     Map<String, dynamic> data = jsonDecode(event, reviver: customDecode);
 
-    if (data["initial"] == true) {
-      gotHello = true;
-      return;
-    }
+    gotHello = true;
 
     String msg = data["msg"];
 
