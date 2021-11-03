@@ -75,7 +75,10 @@ class Socket {
       _socket != null && _socket.closeCode == null && gotHello;
   IOWebSocketChannel getSocket() => _socket;
 
+  bool isDisconnected = true;
   void disconnected() async {
+    if (isDisconnected) return;
+    isDisconnected = true;
     _socket?.sink?.close();
     _socket = null;
     await Future.delayed(Duration(seconds: 1));
@@ -85,12 +88,13 @@ class Socket {
   void createConnection() {
     print("Create socket connection");
     gotHello = false;
+    isDisconnected = false;
     try {
       _socket = WebSocketChannel.connect(
           Uri.tryParse('wss://api.apparyllis.com:8443'));
 
       _socket.stream.handleError((err) => disconnected());
-      _socket.stream.listen(onData).onError((err) => disconnected());
+      _socket.stream.listen(onData);
 
       _socket.sink.done.then((value) => createConnection());
 
