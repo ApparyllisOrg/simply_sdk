@@ -14,6 +14,10 @@ class Connection {
     }
   }
 
+  String getRequestUrl(String path, String query) {
+    return "$currentHost/$path?$query";
+  }
+
   void setDebugMode(bool debug) {
     if (debug)
       currentHost = localHost;
@@ -27,14 +31,5 @@ class Connection {
     currentHost = host;
   }
 
-  String collectionGet() => "$currentHost/collection/get";
-  String collectionDeleteField() => "$currentHost/collection/deleteField";
-  String collectionGetMany() => "$currentHost/collection/getMany";
-  String collectionGetComplex() => "$currentHost/collection/getComplex";
-  String documentGet() => "$currentHost/document/get";
-  String documentAdd() => "$currentHost/document/add";
-  String documentUpdate() => "$currentHost/document/update";
-  String documentDelete() => "$currentHost/document/delete";
-  String batch() => "$currentHost/collection/batch";
   String configGet() => "$currentHost/config/conf.json";
 }

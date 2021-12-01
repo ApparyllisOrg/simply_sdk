@@ -1,4 +1,4 @@
-import 'package:simply_sdk/document.dart';
+import 'package:simply_sdk/types/document.dart';
 
 class DocumentSubscriptions {
   Map<DocumentRef, List<Function>> _callbacks = {};

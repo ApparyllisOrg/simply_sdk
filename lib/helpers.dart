@@ -42,38 +42,18 @@ Object customDecode(dynamic key, dynamic value) {
   return value;
 }
 
-HttpMetric getMetric(Uri url, HttpMethod method) {
-  HttpMetric appMetric = API().getHttpMetric(url, method);
-  if (appMetric != null) {
-    return appMetric;
+void insertData(String propertyName, dynamic dataToInsert,
+    Map<String, dynamic> dataObject) {
+  assert(propertyName != null);
+  if (dataToInsert != null) {
+    dataObject[propertyName] = dataToInsert;
   }
-
-  HttpMetric metric = FirebasePerformance.instance
-      .newHttpMetric(url.toString(), HttpMethod.Post);
-  metric.putAttribute("offline", "false");
-  metric.start();
-  return metric;
 }
 
-void metricSuccess(HttpMetric metric) {
-  metric.stop();
-}
-
-void metricFail(HttpMetric metric) {
-  metric.putAttribute("offline", "true");
-  metric.stop();
-}
-
-void removeField(String field, Map<String, dynamic> data) {
-  List<String> fields = field.split(".");
-
-  Map<String, dynamic> local = data;
-
-  for (int i = 0; i < fields.length; i++) {
-    if (i == fields.length - 1) {
-      local.remove(fields[i]);
-    } else {
-      local = local[fields[i]];
-    }
+T readDataFromJson<T>(String propertyName, Map<String, dynamic> json) {
+  assert(propertyName != null);
+  if (json[propertyName] != null) {
+    return json[propertyName];
   }
+  return null;
 }

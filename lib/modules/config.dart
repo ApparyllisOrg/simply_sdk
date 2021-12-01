@@ -1,10 +1,8 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_performance/firebase_performance.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 
 String _configSync = "lastConfigSync";

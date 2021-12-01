@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:simply_sdk/types/document.dart';
 import "package:universal_html/html.dart" as html;
 import 'dart:io';
 import 'dart:math';
@@ -7,11 +8,9 @@ import 'package:cloud_firestore/cloud_firestore.dart' as fir;
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:simply_sdk/helpers.dart';
-import 'package:simply_sdk/socket.dart';
+import 'package:simply_sdk/modules/socket.dart';
 
-import 'collection.dart';
-import 'document.dart';
-import 'simply_sdk.dart';
+import '../simply_sdk.dart';
 
 class Cache {
   Map<String, dynamic> _cache = Map<String, dynamic>();
@@ -261,103 +260,7 @@ class Cache {
         List<Future> serverCommands = [];
         for (int i = 0; i < min(2, _sync.length); i++) {
           var data = _sync[i];
-          switch (data["action"]) {
-            case "delete":
-              var future = Future(() async {
-                var doc = await API()
-                    .database()
-                    .collection(data["collectionRef"])
-                    .document(data["id"],
-                        addToCache: false, forceFromCache: true);
-                var response;
-                try {
-                  response = await doc.deleteImpl(getTime(data["time"]));
-                } catch (e) {}
-                if (response != null) {
-                  if (response.statusCode == 400 ||
-                      response.statusCode == 200) {
-                    print("sent ${data["id"]} to cloud");
-
-                    _sync.remove(data);
-                    markDirty();
-                  }
-                }
-              });
-              serverCommands.add(future);
-
-              break;
-            case "update":
-              var future = Future(() async {
-                var doc = await API()
-                    .database()
-                    .collection(data["collectionRef"])
-                    .document(data["id"],
-                        addToCache: false, forceFromCache: true);
-                var response;
-                try {
-                  Map<String, dynamic> sendData = data["data"];
-                  sendData.remove("uid");
-                  response =
-                      await doc.updateImpl(sendData, getTime(data["time"]));
-                } catch (e) {}
-                if (response != null) {
-                  if (response.statusCode == 400 ||
-                      response.statusCode == 200) {
-                    print("sent ${data["id"]} to cloud");
-                    _sync.remove(data);
-                    markDirty();
-                  }
-                }
-              });
-              serverCommands.add(future);
-              break;
-            case "add":
-              var future = Future(() async {
-                var response;
-                try {
-                  Map<String, dynamic> sendData = data["data"];
-                  sendData.remove("uid");
-                  response = await API()
-                      .database()
-                      .collection(data["collectionRef"])
-                      .addImpl(data["id"], sendData, getTime(data["time"]));
-                } catch (e) {}
-
-                if (response != null) {
-                  if (response.statusCode == 400 ||
-                      response.statusCode == 200) {
-                    print("sent ${data["id"]} to cloud");
-                    _sync.remove(data);
-                    markDirty();
-                  }
-                }
-              });
-              serverCommands.add(future);
-              break;
-            case "deleteField":
-              var future = Future(() async {
-                var response;
-                try {
-                  String field = data["field"];
-
-                  response = await API()
-                      .database()
-                      .collection(data["collectionRef"])
-                      .deleteField_Impl(field);
-                } catch (e) {}
-
-                if (response != null) {
-                  if (response.statusCode == 400 ||
-                      response.statusCode == 200) {
-                    print("sent ${data["id"]} to cloud");
-                    _sync.remove(data);
-                    markDirty();
-                  }
-                }
-              });
-              serverCommands.add(future);
-              break;
-          }
+          // Todo: Tick the network
         }
         await Future.wait(serverCommands);
       } catch (e) {
@@ -511,7 +414,7 @@ class Cache {
 
     return doc;
   }
-
+ /*
   Future<List<Document>> searchForDocuments(
       String collection, Map<String, Query> queries, String orderBy,
       {int start, int end, bool orderUp = true}) async {
@@ -561,4 +464,5 @@ class Cache {
 
     return docs;
   }
+  */
 }

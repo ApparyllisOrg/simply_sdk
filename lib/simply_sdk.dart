@@ -1,13 +1,14 @@
 library simply_sdk;
 
 import 'package:firebase_performance/firebase_performance.dart';
-import 'package:simply_sdk/auth.dart';
-import 'package:simply_sdk/cache.dart';
-import 'package:simply_sdk/config.dart';
-import 'package:simply_sdk/connection.dart';
-import 'package:simply_sdk/database.dart';
-import 'package:simply_sdk/socket.dart';
-import 'package:simply_sdk/subscriptions.dart';
+import 'package:simply_sdk/modules/auth.dart';
+import 'package:simply_sdk/modules/cache.dart';
+import 'package:simply_sdk/modules/config.dart';
+import 'package:simply_sdk/modules/connection.dart';
+import 'package:simply_sdk/modules/socket.dart';
+import 'package:simply_sdk/modules/subscriptions.dart';
+
+import 'modules/network.dart';
 
 class APISettings {}
 
@@ -24,8 +25,8 @@ class API {
     _auth = Auth();
     _cache = Cache();
     _connection = Connection();
-    _database = Database();
     _socket = Socket();
+    _network = Network();
     _documentSubscriptions = DocumentSubscriptions();
     _remoteConfig = RemoteConfig();
     await _cache.initialize("");
@@ -35,7 +36,7 @@ class API {
   Auth _auth;
   Cache _cache;
   Connection _connection;
-  Database _database;
+  Network _network;
   Socket _socket;
   DocumentSubscriptions _documentSubscriptions;
   RemoteConfig _remoteConfig;
@@ -44,7 +45,7 @@ class API {
   Auth auth() => _auth;
   Cache cache() => _cache;
   Connection connection() => _connection;
-  Database database() => _database;
+  Network network() => _network;
   Socket socket() => _socket;
   DocumentSubscriptions docSubscriptions() => _documentSubscriptions;
   RemoteConfig remoteConfig() => _remoteConfig;
@@ -55,17 +56,5 @@ class API {
     } catch (e) {}
   }
 
-  void setGetHttpMetric(Function getFunction) {
-    _getHttpMetricFunction = getFunction;
-  }
-
-  HttpMetric getHttpMetric(Uri url, HttpMethod method) {
-    if (_getHttpMetricFunction != null) {
-      return _getHttpMetricFunction(url, method);
-    }
-    return null;
-  }
-
   Function onErrorReported;
-  Function _getHttpMetricFunction;
 }

@@ -1,10 +1,8 @@
 import 'package:flutter/cupertino.dart';
-import 'package:simply_sdk/collection.dart';
-
-import 'document.dart';
+import '../types/document.dart';
 
 class Paginate extends StatefulWidget {
-  final Collection collection;
+  final String collection;
   final Function itemBuilder;
   final Function getLoader;
   final Function emptyView;
@@ -27,7 +25,6 @@ class PaginateState extends State<Paginate> {
   int currentOffset = 0;
   bool isLoading = false;
   bool reachedEnd = false;
-  Collection _localCollection;
 
   ScrollController _scrollController = ScrollController();
 
@@ -46,7 +43,6 @@ class PaginateState extends State<Paginate> {
     });
 
     currentOffset = 0;
-    _localCollection = widget.collection;
     getNextBatch();
   }
 
@@ -60,8 +56,9 @@ class PaginateState extends State<Paginate> {
       setState(() {});
     }
 
-    _localCollection.start(currentOffset);
-    _localCollection.limit(widget.stepSize);
+/*
+   // _localCollection.start(currentOffset);
+    //_localCollection.limit(widget.stepSize);
     List<Document> newDocs = await _localCollection.get();
     docs.addAll(newDocs);
 
@@ -74,6 +71,7 @@ class PaginateState extends State<Paginate> {
     if (mounted) {
       setState(() {});
     }
+    */
   }
 
   Widget build(BuildContext context) {

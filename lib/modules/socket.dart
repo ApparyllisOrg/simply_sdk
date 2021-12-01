@@ -1,22 +1,20 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:simply_sdk/collection.dart';
-import 'package:simply_sdk/document.dart';
+import 'package:simply_sdk/types/document.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import 'helpers.dart';
-import 'simply_sdk.dart';
+import '../helpers.dart';
+import '../simply_sdk.dart';
 
 class Subscription {
   final String target;
-  final Map<String, Query> query;
   final StreamController controller;
   List<Document> documents = [];
 
-  Subscription(this.target, this.query, this.controller);
+  Subscription(this.target, this.controller);
 }
 
 class Socket {
@@ -188,9 +186,11 @@ class Socket {
   void updateSubscription(String collection) async {
     for (Subscription sub in _subscriptions) {
       if (sub.target == collection) {
+        /*
         sub.documents =
             await API().cache().searchForDocuments(collection, {}, "");
         sub.controller.add(sub.documents);
+        */
       }
     }
   }
@@ -279,21 +279,23 @@ class Socket {
     sub.controller.onResume?.call();
     sub.controller.onListen?.call();
 
+    // Todo: Offline search
+    /*
     List<Document> initialDocs =
         await API().cache().searchForDocuments(sub.target, sub.query, "");
-
+  
     if (sub.documents.isEmpty) {
       sub.documents = initialDocs;
     }
-
+    */
     sub.controller.add(sub.documents);
   }
 
   Future<StreamController> subscribeToCollection(
-      String target, Map<String, Query> query) {
+      String target, String collection) {
     return Future(() {
       StreamController controller = StreamController();
-      Subscription sub = Subscription(target, query, controller);
+      Subscription sub = Subscription(target, controller);
       _subscriptions.add(sub);
       if (isSocketLive()) {
         pendingSubscriptions.add(sub.controller);
@@ -305,26 +307,10 @@ class Socket {
 
   void requestDataListen(Subscription subscription) async {
     assert(isSocketLive());
-    Map<String, dynamic> queries = {};
-
-    bool hasUid = false;
-
-    subscription.query.forEach((key, value) {
-      assert(value != null);
-      if (key == "uid") hasUid = true;
-      queries[key] = value.getQueryMap();
-    });
-
-    // If we aren't requesting the data of someone else, default to our data
-    if (!hasUid) {
-      queries["uid"] = {"method": "isEqualTo", "value": API().auth().getUid()};
-    }
-
     try {
       _socket.sink.add(jsonEncode({
         "target": subscription.target,
         "jwt": API().auth().getToken(),
-        "query": queries,
         "uniqueId": uniqueConnectionId
       }, toEncodable: customEncode));
     } catch (e) {
