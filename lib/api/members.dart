@@ -1,11 +1,7 @@
-import 'package:firebase_performance/firebase_performance.dart';
 import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
-import 'package:simply_sdk/modules/network.dart';
 import 'package:simply_sdk/types/document.dart';
-import '../simply_sdk.dart';
-
 class MembersData implements DocumentData {
   String? name;
   String? pronouns;

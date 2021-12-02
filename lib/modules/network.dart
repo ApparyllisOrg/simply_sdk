@@ -2,13 +2,19 @@ import 'dart:async';
 
 import 'dart:math';
 
-import 'package:firebase_performance/firebase_performance.dart';
 import 'package:http/http.dart' as http;
 
 import '../simply_sdk.dart';
 
+enum HttpRequestMethod
+{
+  Post,
+  Patch,
+  Delete
+}
+
 class NetworkRequest {
-  final HttpMethod method;
+  final HttpRequestMethod method;
   final String path;
   final String? query;
   final Map<String, dynamic>? payload;
@@ -43,21 +49,21 @@ class Network {
 
           try {
             switch (request.method) {
-              case HttpMethod.Delete:
+              case HttpRequestMethod.Delete:
                 {
                   response = await http.delete(uri,
                       headers: {"Operation-Time": request.timestamp.toString()},
                       body: request.payload);
                   break;
                 }
-              case HttpMethod.Patch:
+              case HttpRequestMethod.Patch:
                 {
                   response = await http.patch(uri,
                       headers: {"Operation-Time": request.timestamp.toString()},
                       body: request.payload);
                   break;
                 }
-              case HttpMethod.Post:
+              case HttpRequestMethod.Post:
                 {
                   response = await http.post(uri,
                       headers: {"Operation-Time": request.timestamp.toString()},

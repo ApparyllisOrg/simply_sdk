@@ -1,6 +1,5 @@
 library simply_sdk;
 
-import 'package:firebase_performance/firebase_performance.dart';
 import 'package:simply_sdk/modules/auth.dart';
 import 'package:simply_sdk/modules/cache.dart';
 import 'package:simply_sdk/modules/config.dart';

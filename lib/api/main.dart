@@ -1,7 +1,6 @@
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/modules/network.dart';
-import 'package:firebase_performance/firebase_performance.dart';
 import '../simply_sdk.dart';
 
 void addSimpleDocument(String type, String path, DocumentData data) {
@@ -10,7 +9,7 @@ void addSimpleDocument(String type, String path, DocumentData data) {
   Map<String, dynamic> jsonPayload = data.toJson();
 
   API().network().request(new NetworkRequest(
-      HttpMethod.Post, "$path/$generatedId", DateTime.now().millisecondsSinceEpoch,
+      HttpRequestMethod.Post, "$path/$generatedId", DateTime.now().millisecondsSinceEpoch,
       payload: jsonPayload));
 
   API().cache().insertDocument(type, generatedId, jsonPayload);
@@ -21,7 +20,7 @@ void updateSimpleDocument(String type, String path, String documentId, DocumentD
   Map<String, dynamic> jsonPayload = data.toJson();
 
   API().network().request(new NetworkRequest(
-      HttpMethod.Patch, "$path/$documentId", DateTime.now().millisecondsSinceEpoch,
+      HttpRequestMethod.Patch, "$path/$documentId", DateTime.now().millisecondsSinceEpoch,
       payload: jsonPayload));
 
   API().cache().updateDocument(type, documentId, jsonPayload);
@@ -30,7 +29,7 @@ void updateSimpleDocument(String type, String path, String documentId, DocumentD
 void deleteSimpleDocument(String type, String path, String id)
 {
  API().network().request(new NetworkRequest(
-    HttpMethod.Delete,
+    HttpRequestMethod.Delete,
     "$path/$id",
     DateTime.now().millisecondsSinceEpoch,
   ));
