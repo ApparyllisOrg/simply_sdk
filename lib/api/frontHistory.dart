@@ -3,47 +3,50 @@ import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/types/document.dart';
-class FronterData implements DocumentData {
+class FrontHistoryData implements DocumentData {
+  bool? custom;
   Timestamp? startTime;
-  String? uuid;
+  Timestamp? endTime;
+  String? member;
 
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
 
+    insertData("custom", custom, payload);
     insertData("startTime", startTime, payload);
-    insertData("uuid", uuid, payload);
+    insertData("endTime", endTime, payload);
+    insertData("member", member, payload);
 
     return payload;
   }
 
   @override
   constructFromJson(Map<String, dynamic> json) {
+    custom = readDataFromJson("custom", json);
     startTime = readDataFromJson("startTime", json);
-    uuid = readDataFromJson("uuid", json);
+    endTime = readDataFromJson("endTime", json);
+    member = readDataFromJson("member", json);
   }
 }
 
-class Fronters extends Collection {
+class FrontHistory extends Collection {
   @override
-  String get type => "Fronters";
+  String get type => "FrontHistory";
 
-  @Deprecated("Use addToFront instead")
   @override
-  void add(DocumentData values) {}
-
-  void addToFront(String documentId, DocumentData values) {
-    addSimpleDocument(type, "v1/front", values, overrideId: documentId);
+  void add(DocumentData values) {
+    addSimpleDocument(type, "v1/frontHistory", values);
   }
 
   @override
   void delete(String documentId) {
-    deleteSimpleDocument(type, "v1/front", documentId);
+    deleteSimpleDocument(type, "v1/frontHistory", documentId);
   }
 
   @override
   Future<Document> get(String id) async {
-    return Document(true, "", FronterData(), type);
+    return Document(true, "", FrontHistoryData(), type);
   }
 
   @override
@@ -53,6 +56,6 @@ class Fronters extends Collection {
 
   @override
   void update(String documentId, DocumentData values) {
-    updateSimpleDocument(type, "v1/front", documentId, values);
+    updateSimpleDocument(type, "v1/frontHistory", documentId, values);
   }
 }
