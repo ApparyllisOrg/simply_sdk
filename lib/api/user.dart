@@ -4,6 +4,7 @@ import 'package:mongo_dart/mongo_dart.dart';
 import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
+import 'package:simply_sdk/modules/http.dart';
 import 'package:simply_sdk/modules/network.dart';
 import 'package:simply_sdk/types/document.dart';
 
@@ -105,12 +106,17 @@ class User extends Collection {
 
   Future<void> setUsername(String newUsername, String userId) async {
     try {
-      await patch(
+      await SimplyHttpClient().patch(
           Uri.parse(
               API().connection().getRequestUrl("v1/user/username/$userId", "")),
           body: {"username": newUsername});
     } catch (e) {}
     return;
+  }
+
+  Future<void> deleteAccount() async
+  {
+    // Todo: Implement this
   }
 
   //Todo: Add generate user report

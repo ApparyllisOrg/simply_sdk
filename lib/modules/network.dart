@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:http/http.dart' as http;
+import 'package:simply_sdk/modules/http.dart';
 
 import '../simply_sdk.dart';
 
@@ -52,21 +53,21 @@ class Network {
             switch (request.method) {
               case HttpRequestMethod.Delete:
                 {
-                  response = await http.delete(uri,
+                  response = await SimplyHttpClient().delete(uri,
                       headers: {"Operation-Time": request.timestamp.toString()},
                       body: request.payload);
                   break;
                 }
               case HttpRequestMethod.Patch:
                 {
-                  response = await http.patch(uri,
+                  response = await SimplyHttpClient().patch(uri,
                       headers: {"Operation-Time": request.timestamp.toString()},
                       body: request.payload);
                   break;
                 }
               case HttpRequestMethod.Post:
                 {
-                  response = await http.post(uri,
+                  response = await SimplyHttpClient().post(uri,
                       headers: {"Operation-Time": request.timestamp.toString()},
                       body: request.payload);
                   break;

@@ -32,7 +32,7 @@ class AutomatedTimerData implements DocumentData {
   }
 }
 
-class Members extends Collection {
+class AutomatedTimers extends Collection {
   @override
   String get type => "AutomatedTimers";
 
