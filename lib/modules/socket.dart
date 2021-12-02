@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/types/document.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:uuid/uuid.dart';
@@ -18,10 +19,10 @@ class Subscription {
 }
 
 class Socket {
-  WebSocketChannel _socket;
+  WebSocketChannel? _socket;
   List<Subscription> _subscriptions = [];
   List<StreamController> pendingSubscriptions = [];
-  String uniqueConnectionId;
+  late String uniqueConnectionId;
 
   void initialize() {
     uniqueConnectionId = Uuid().v4();
@@ -34,10 +35,10 @@ class Socket {
     _subscriptions.clear();
     pendingSubscriptions.clear();
     if (isSocketLive()) {
-      _socket.sink.close();
+      _socket?.sink.close();
     }
-    if (pingTimer != null && pingTimer.isActive) {
-      pingTimer.cancel();
+    if (pingTimer!.isActive) {
+      pingTimer!.cancel();
       pingTimer = null;
     }
   }
@@ -67,11 +68,11 @@ class Socket {
     reconnect();
   }
 
-  Timer pingTimer;
+  Timer? pingTimer;
   bool gotHello = false;
   bool isSocketLive() =>
-      _socket != null && _socket.closeCode == null && gotHello;
-  IOWebSocketChannel getSocket() => _socket;
+      _socket != null && _socket!.closeCode == null && gotHello;
+  WebSocketChannel? getSocket() => _socket;
 
   bool isDisconnected = true;
   void disconnected() async {
@@ -88,16 +89,16 @@ class Socket {
     gotHello = false;
     isDisconnected = false;
     try {
-      _socket = WebSocketChannel.connect(
-          Uri.tryParse('wss://api.apparyllis.com:8443'));
+      _socket =
+          WebSocketChannel.connect(Uri.parse('wss://api.apparyllis.com:8443'));
 
-      _socket.stream.handleError((err) => disconnected());
-      _socket.stream.listen(onData);
+      _socket!.stream.handleError((err) => disconnected());
+      _socket!.stream.listen(onData);
 
-      _socket.sink.done.then((value) => createConnection());
+      _socket!.sink.done.then((value) => createConnection());
 
-      if (pingTimer != null && pingTimer.isActive) {
-        pingTimer.cancel();
+      if (pingTimer != null && pingTimer!.isActive) {
+        pingTimer!.cancel();
       }
 
       pingTimer = Timer.periodic(Duration(seconds: 10), ping);
@@ -115,7 +116,7 @@ class Socket {
       disconnected();
     }
     try {
-      _socket.sink.add("ping");
+      _socket!.sink.add("ping");
     } catch (e) {
       disconnected();
     }
@@ -123,16 +124,19 @@ class Socket {
 
   void updateDocument(
       Subscription sub, Map<String, dynamic> documentData, String docId) async {
-    var docData = sub.documents
-        .firstWhere((element) => element.id == docId, orElse: () => null);
-    if (docData != null) {
-      docData.data = Document.convertTime(documentData["content"]);
-    } else {
-      Document newDoc =
-          Document(true, docId, sub.target, documentData["content"]);
-      sub.documents.add(newDoc);
+    int docIndex = sub.documents.indexWhere((element) => element.id == docId);
+
+    if (docIndex < 0) {
+      DocumentData? data = convertJsonToDataObject(documentData, sub.target);
+      if (data != null) {
+        Document newDoc = Document(true, docId, data, sub.target);
+        sub.documents.add(newDoc);
+      }
+      docIndex = sub.documents.length - 1;
     }
 
+    Document doc = sub.documents[docIndex];
+    doc.data = Document.convertTime(documentData["content"]);
     API().cache().updateDocument(sub.target, docId, documentData["content"],
         doTriggerUpdateSubscription: false);
   }
@@ -167,8 +171,8 @@ class Socket {
     sendData["id"] = id;
     sendData["content"] = data;
 
-    var cacheDoc = await API().cache().getDocument(targetCollection, id);
-    if (cacheDoc.exists) {
+    Document? cacheDoc = await API().cache().getDocument(targetCollection, id);
+    if (cacheDoc!.exists) {
       Map<String, dynamic> cacheData = cacheDoc.data;
       cacheData.addAll(data);
       sendData["content"] = cacheData;
@@ -243,7 +247,7 @@ class Socket {
 
           if (initial) {
             // Clear the cache, we may have deleted things while on another phone
-            API().cache().clearCollectionCache(sub.target);
+            API().cache().clearTypeCache(sub.target);
           }
           for (Map<String, dynamic> result in data["results"]) {
             updateCollectionLocally(sub, result);
@@ -308,7 +312,7 @@ class Socket {
   void requestDataListen(Subscription subscription) async {
     assert(isSocketLive());
     try {
-      _socket.sink.add(jsonEncode({
+      _socket!.sink.add(jsonEncode({
         "target": subscription.target,
         "jwt": API().auth().getToken(),
         "uniqueId": uniqueConnectionId

@@ -2,19 +2,17 @@ import 'package:flutter/cupertino.dart';
 import '../types/document.dart';
 
 class Paginate extends StatefulWidget {
-  final String collection;
   final Function itemBuilder;
   final Function getLoader;
   final Function emptyView;
   final int stepSize;
 
   const Paginate(
-      {Key key,
-      this.collection,
-      this.itemBuilder,
+      {Key? key,
+      required this.itemBuilder,
       this.stepSize = 10,
-      this.getLoader,
-      this.emptyView})
+      required this.getLoader,
+      required this.emptyView})
       : super(key: key);
 
   @override

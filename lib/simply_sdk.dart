@@ -13,15 +13,13 @@ import 'modules/network.dart';
 class APISettings {}
 
 class API {
-  static final API _singleton = API._internal();
+  static API _singleton = API();
 
   factory API() {
     return _singleton;
   }
 
-  API._internal();
-
-  Future<void> initialize({APISettings settings}) async {
+  Future<void> initialize({APISettings? settings}) async {
     _auth = Auth();
     _cache = Cache();
     _connection = Connection();
@@ -33,13 +31,13 @@ class API {
   }
 
   // Declare globals
-  Auth _auth;
-  Cache _cache;
-  Connection _connection;
-  Network _network;
-  Socket _socket;
-  DocumentSubscriptions _documentSubscriptions;
-  RemoteConfig _remoteConfig;
+  late Auth _auth;
+  late Cache _cache;
+  late Connection _connection;
+  late Network _network;
+  late Socket _socket;
+  late DocumentSubscriptions _documentSubscriptions;
+  late RemoteConfig _remoteConfig;
 
   // Declare global getters
   Auth auth() => _auth;
@@ -52,9 +50,9 @@ class API {
 
   void reportError(e, StackTrace trace) {
     try {
-      if (onErrorReported != null) onErrorReported(e, trace);
+      onErrorReported!(e, trace);
     } catch (e) {}
   }
 
-  Function onErrorReported;
+  Function? onErrorReported;
 }

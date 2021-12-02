@@ -1,34 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:simply_sdk/api/main.dart';
+import 'package:simply_sdk/modules/collection.dart';
+
+typedef DocumentId = String;
+
 class DocumentRef {
-  final String collectionId;
+  final String type;
   final String id;
 
-  DocumentRef(this.id, this.collectionId);
+  DocumentRef(this.id, this.type);
 
   bool operator ==(other) {
-    return other is DocumentRef &&
-        other.collectionId == collectionId &&
-        other.id == id;
+    return other is DocumentRef && other.type == type && other.id == id;
   }
 
   int get hashCode {
-    return (collectionId + id).hashCode;
+    return (type + id).hashCode;
   }
 }
 
 class Document {
-  bool exists;
-  final bool fromCache;
-  Map<String, dynamic> data;
-  final String collectionId;
   final String id;
+  final String type;
+  final bool fromCache;
+  final DocumentData dataObject;
+  late Map<String, dynamic> data;
+
+  bool exists;
 
   T value<T>(String field, T fallback) {
-    // This really shouldn't be null, investigate.
-    if (data == null) {
-      return fallback;
-    }
-
     var value = data[field];
     if (value != null) {
       // Special case where every DateTime needs to be converted to Timestamp, as
@@ -50,11 +50,8 @@ class Document {
     return data;
   }
 
-  Document(this.exists, this.id, this.collectionId, this.data,
-      {this.fromCache = false}) {
-    assert(id != null);
-    assert(collectionId != null);
-    if (data == null) data = {};
+  Document(this.exists, this.id, this.dataObject, this.type, {this.fromCache = false}) {
+    data = dataObject.toJson();
     data = convertTime(this.data);
   }
 }

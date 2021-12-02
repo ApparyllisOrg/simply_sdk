@@ -10,18 +10,13 @@ import '../simply_sdk.dart';
 class NetworkRequest {
   final HttpMethod method;
   final String path;
-  final String query;
-  final Map<String, dynamic> payload;
+  final String? query;
+  final Map<String, dynamic>? payload;
   final int timestamp;
-  final Function onDone;
+  final Function? onDone;
 
-  NetworkRequest(
-      this.method,
-      this.path,
-      this.timestamp,
-      {this.query,
-      this.payload,
-      this.onDone});
+  NetworkRequest(this.method, this.path, this.timestamp,
+      {this.query, this.payload, this.onDone});
 }
 
 class Network {
@@ -38,12 +33,13 @@ class Network {
         NetworkRequest request = _pendingRequests[i];
 
         requestsToSend.add(Future(() async {
-          String url =
-              API().connection().getRequestUrl(request.path, request.query);
+          String url = API()
+              .connection()
+              .getRequestUrl(request.path, request.query ?? "");
 
           Uri uri = Uri.parse(url);
 
-          http.Response response;
+          http.Response? response;
 
           try {
             switch (request.method) {
@@ -77,9 +73,9 @@ class Network {
                 }
             }
 
-            if (response != null && response.statusCode == 200) {
+            if (response?.statusCode == 200) {
               _pendingRequests.remove(request);
-              request.onDone();
+              request.onDone!();
             }
           } catch (e) {}
         }));

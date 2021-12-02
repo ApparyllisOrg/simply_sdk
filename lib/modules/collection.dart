@@ -6,11 +6,11 @@ abstract class DocumentData {
 }
 
 abstract class Collection {
-  String collection;
+  String type = "NONE";
 
   Future<Document> get(String id);
   Future<List<Document>> getAll();
-  Future<void> add(DocumentData values);
-  Future<void> update(String documentId, DocumentData values);
-  Future<void> delete(String documentId);
+  void add(DocumentData values);
+  void update(String documentId, DocumentData values);
+  void delete(String documentId);
 }

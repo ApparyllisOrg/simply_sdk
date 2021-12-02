@@ -15,13 +15,11 @@ class DocumentSubscriptions {
     _callbacks[ref] = functions;
   }
 
-  void propogateChange(Document doc) {
+  void propogateChange(Document doc, String type) {
     List<Function> functions =
-        _callbacks[DocumentRef(doc.id, doc.collectionId)] ?? [];
+        _callbacks[DocumentRef(doc.id, type)] ?? [];
     functions.forEach((element) {
-      if (element != null) {
         element(doc);
-      }
     });
   }
 }

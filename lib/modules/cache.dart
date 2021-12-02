@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:simply_sdk/api/main.dart';
+import 'package:simply_sdk/api/members.dart';
+import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/types/document.dart';
 import "package:universal_html/html.dart" as html;
 import 'dart:io';
@@ -16,45 +19,43 @@ class Cache {
   Map<String, dynamic> _cache = Map<String, dynamic>();
   List<dynamic> _sync = [];
 
-  void removeFromCache(String collection, String id,
+  void removeFromCache(String type, String id,
       {bool triggerUpdateSubscription: true}) {
-    if (_cache[collection] != null) {
-      _cache[collection].remove(id);
+    if (_cache[type] != null) {
+      _cache[type].remove(id);
     }
-    if (triggerUpdateSubscription)
-      API().socket().updateSubscription(collection);
+    if (triggerUpdateSubscription) API().socket().updateSubscription(type);
 
     markDirty();
   }
 
-  void updateToCache(String collection, String id, Map<String, dynamic> _data,
+  void updateToCache(String type, String id, Map<String, dynamic> _data,
       {bool triggerUpdateSubscription: true}) {
     if (_data == null) return;
 
-    Map<String, dynamic> coll = _cache[collection];
-    if (_cache[collection] != null) {
+    Map<String, dynamic> coll = _cache[type];
+    if (_cache[type] != null) {
       if (coll.containsKey(id)) {
-        Map<String, dynamic> dat = _cache[collection][id];
+        Map<String, dynamic> dat = _cache[type][id];
         dat?.addAll(_data);
-        _cache[collection][id] = dat;
+        _cache[type][id] = dat;
       } else {
-        _cache[collection][id] = _data;
+        _cache[type][id] = _data;
       }
     } else {
-      _cache[collection] = Map<String, dynamic>();
-      _cache[collection][id] = _data;
+      _cache[type] = Map<String, dynamic>();
+      _cache[type][id] = _data;
     }
 
     markDirty();
 
-    if (triggerUpdateSubscription)
-      API().socket().updateSubscription(collection);
+    if (triggerUpdateSubscription) API().socket().updateSubscription(type);
   }
 
-  Map<String, dynamic> getItemFromCollection(String collection, String id) {
-    Map<String, dynamic> data = _cache[collection] as Map<String, dynamic>;
+  Map<String, dynamic>? getItemFromType(String type, String id) {
+    Map<String, dynamic>? data = _cache[type] as Map<String, dynamic>?;
     if (data != null) {
-      Map<String, dynamic> docData = data[id] as Map<String, dynamic>;
+      Map<String, dynamic>? docData = data[id] as Map<String, dynamic>?;
       if (docData != null) {
         docData.remove("id");
         return docData;
@@ -63,9 +64,9 @@ class Cache {
     return null;
   }
 
-  Map<String, dynamic> getCollectionCache(String collection) {
-    if (_cache.containsKey(collection)) {
-      Map<String, dynamic> data = _cache[collection];
+  Map<String, dynamic> getTypeCache(String type) {
+    if (_cache.containsKey(type)) {
+      Map<String, dynamic> data = _cache[type];
       if (data != null) {
         return data;
       }
@@ -77,14 +78,14 @@ class Cache {
     return _sync;
   }
 
-  void clearCollectionCache(String collection) {
-    _cache.remove(collection);
+  void clearTypeCache(String type) {
+    _cache.remove(type);
     markDirty();
   }
 
-  bool hasDataInCacheForCollection(String collection) {
-    return _cache.containsKey(collection) &&
-        (_cache[collection] as Map<String, dynamic>).length > 0;
+  bool hasDataInCacheForType(String type) {
+    return _cache.containsKey(type) &&
+        (_cache[type] as Map<String, dynamic>).length > 0;
   }
 
   Future<void> clear() {
@@ -99,7 +100,7 @@ class Cache {
     });
   }
 
-  Timer saveTimer;
+  Timer? saveTimer;
   void markDirty() {
     dirty = true;
     if (saveTimer?.isActive == true) saveTimer?.cancel();
@@ -173,13 +174,13 @@ class Cache {
         bool dbExists = html.window.localStorage.containsKey("db");
 
         _sync = syncExists
-            ? jsonDecode(html.window.localStorage["sync"],
+            ? jsonDecode(html.window.localStorage["sync"] ?? "",
                 reviver: customDecode) as List<dynamic>
             : [];
 
         _cache = dbExists
-            ? jsonDecode(html.window.localStorage["db"], reviver: customDecode)
-                as Map<String, dynamic>
+            ? jsonDecode(html.window.localStorage["db"] ?? "",
+                reviver: customDecode) as Map<String, dynamic>
             : Map<String, dynamic>();
       } else {
         try {
@@ -221,7 +222,6 @@ class Cache {
       isInitialzed = true;
       save();
     });
-    if (!bSyncing) trySyncToServer();
   }
 
   int getTime(var data) {
@@ -240,58 +240,17 @@ class Cache {
     return 0;
   }
 
-  Timer syncTimer;
-  void markSyncDirty() {
-    if (syncTimer?.isActive == true) syncTimer?.cancel();
-    syncTimer = Timer(Duration(milliseconds: 10), trySyncToServer);
-  }
-
-  bool bSyncing = false;
-  void trySyncToServer() async {
-    try {
-      if (bSyncing) {
-        markSyncDirty();
-        return;
-      }
-
-      bSyncing = true;
-
-      try {
-        List<Future> serverCommands = [];
-        for (int i = 0; i < min(2, _sync.length); i++) {
-          var data = _sync[i];
-          // Todo: Tick the network
-        }
-        await Future.wait(serverCommands);
-      } catch (e) {
-        print(e);
-      }
-    } catch (e) {
-      API().reportError(e, StackTrace.current);
-    }
-
-    await Future.delayed(Duration(milliseconds: 500));
-    print("End sync");
-
-    bSyncing = false;
-
-    if (_sync.isNotEmpty) {
-      markSyncDirty();
-    }
-  }
-
   void enqueueSync(Map<String, dynamic> data) {
     _sync.add(data);
     markDirty();
-    markSyncDirty();
   }
 
-  void queueDelete(String collection, String id) {
+  void queueDelete(String type, String id) {
     try {
       enqueueSync({
         "queue": true,
         "id": id,
-        "collectionRef": collection,
+        "type": type,
         "action": "delete",
         "time": DateTime.now().millisecondsSinceEpoch
       });
@@ -300,12 +259,12 @@ class Cache {
     }
   }
 
-  void queueUpdate(String collection, String id, Map<String, dynamic> data) {
+  void queueUpdate(String type, String id, Map<String, dynamic> data) {
     try {
       enqueueSync({
         "queue": true,
         "id": id,
-        "collectionRef": collection,
+        "type": type,
         "action": "update",
         "data": data,
         "time": DateTime.now().millisecondsSinceEpoch
@@ -315,22 +274,8 @@ class Cache {
     }
   }
 
-  void queueDeleteField(String collection, String field) {
-    try {
-      enqueueSync({
-        "queue": true,
-        "collectionRef": collection,
-        "action": "deleteField",
-        "field": field,
-        "time": DateTime.now().millisecondsSinceEpoch
-      });
-    } catch (e) {
-      API().reportError(e, StackTrace.current);
-    }
-  }
-
   void queueAdd(
-    String collection,
+    String type,
     String id,
     Map<String, dynamic> data,
   ) {
@@ -338,7 +283,7 @@ class Cache {
       enqueueSync({
         "queue": true,
         "id": id,
-        "collectionRef": collection,
+        "type": type,
         "action": "add",
         "data": data,
         "time": DateTime.now().millisecondsSinceEpoch
@@ -348,13 +293,13 @@ class Cache {
     }
   }
 
-  String insertDocument(String collection, String id, Map<String, dynamic> data,
+  String insertDocument(String type, String id, Map<String, dynamic> data,
       {bool doTriggerUpdateSubscription: true}) {
     try {
       Map<String, dynamic> dataCopy = Map.from(data);
-      dataCopy["collection"] = collection;
+      dataCopy["type"] = type;
       dataCopy["id"] = id;
-      updateToCache(collection, id, dataCopy,
+      updateToCache(type, id, dataCopy,
           triggerUpdateSubscription: doTriggerUpdateSubscription);
     } catch (e) {
       API().reportError(e, StackTrace.current);
@@ -363,58 +308,65 @@ class Cache {
     return id;
   }
 
-  void updateDocument(String collection, String id, Map<String, dynamic> data,
+  void updateDocument(String type, String id, Map<String, dynamic> data,
       {bool doTriggerUpdateSubscription: true}) async {
     try {
       Map<String, dynamic> dataCopy = Map.from(data);
-      updateToCache(collection, id, dataCopy,
+      updateToCache(type, id, dataCopy,
           triggerUpdateSubscription: doTriggerUpdateSubscription);
     } catch (e) {
       API().reportError(e, StackTrace.current);
     }
   }
 
-  Future<void> removeDocument(String collection, String id,
+  Future<void> removeDocument(String type, String id,
       {bool doTriggerUpdateSubscription: true}) async {
     try {
-      removeFromCache(collection, id,
+      removeFromCache(type, id,
           triggerUpdateSubscription: doTriggerUpdateSubscription);
     } catch (e) {
       API().reportError(e, StackTrace.current);
     }
   }
 
-  Document getDocument(String collection, String id) {
-    Document doc = Document(false, id, collection, {}, fromCache: true);
 
+
+  Document? getDocument(String type, String id) {
     try {
       Map<String, dynamic> docData;
 
       try {
-        docData = getItemFromCollection(collection, id);
+        docData = getItemFromType(type, id) ?? {};
+        if (docData.isEmpty) {
+          return null;
+        }
+
+        Map<String, dynamic> sendData = Map<String, dynamic>();
+        docData.forEach((key, value) {
+          if (key != "id" && key != "type") {
+            sendData[key] = value;
+          }
+        });
+
+        DocumentData? docDataObject = convertJsonToDataObject(docData, type);
+        if (docDataObject != null) {
+          return Document(true, id, docDataObject, type, fromCache: true);
+        } else {
+          API().reportError(
+              "Unable to convert cached document data to a document data object. Attempt to convert type: $type",
+              StackTrace.current);
+        }
+        return null;
       } catch (e) {
         print(e);
       }
-
-      if (docData == null || docData.isEmpty) {
-        return doc;
-      }
-
-      Map<String, dynamic> sendData = Map<String, dynamic>();
-      docData.forEach((key, value) {
-        if (key != "id" && key != "collection") {
-          sendData[key] = value;
-        }
-      });
-      doc.data = sendData;
-      doc.exists = true;
     } catch (e) {
       API().reportError(e, StackTrace.current);
     }
 
-    return doc;
+    return null;
   }
- /*
+  /*
   Future<List<Document>> searchForDocuments(
       String collection, Map<String, Query> queries, String orderBy,
       {int start, int end, bool orderUp = true}) async {

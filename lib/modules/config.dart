@@ -10,7 +10,7 @@ String _remoteConfig = "remoteConfig";
 
 class RemoteConfig {
   Map<String, dynamic> _currentConfig = Map<String, dynamic>();
-  SharedPreferences _sharedPrefs;
+  late SharedPreferences _sharedPrefs;
 
   RemoteConfig() {
     _initialize();
@@ -20,7 +20,7 @@ class RemoteConfig {
     _sharedPrefs = await SharedPreferences.getInstance();
     if (_sharedPrefs.containsKey(_configSync)) {
       Timestamp lastSync = Timestamp.fromMillisecondsSinceEpoch(
-          _sharedPrefs.getInt(_configSync));
+          _sharedPrefs.getInt(_configSync)!);
       Timestamp now = Timestamp.now();
 
       int diff = now.compareTo(lastSync);
@@ -56,7 +56,7 @@ class RemoteConfig {
 
   void _loadConfig() {
     if (_sharedPrefs.containsKey(_remoteConfig)) {
-      _currentConfig = jsonDecode(_sharedPrefs.getString(_remoteConfig))
+      _currentConfig = jsonDecode(_sharedPrefs.getString(_remoteConfig)!)
           as Map<String, dynamic>;
     } else {
       _currentConfig = Map<String, dynamic>();

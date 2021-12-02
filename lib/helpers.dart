@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 
+import 'api/members.dart';
+import 'modules/collection.dart';
+
 enum EUpdateType { Add, Update, Remove }
 
 String updateTypeToString(EUpdateType type) {
@@ -44,16 +47,20 @@ Object customDecode(dynamic key, dynamic value) {
 
 void insertData(String propertyName, dynamic dataToInsert,
     Map<String, dynamic> dataObject) {
-  assert(propertyName != null);
   if (dataToInsert != null) {
     dataObject[propertyName] = dataToInsert;
   }
 }
 
 T readDataFromJson<T>(String propertyName, Map<String, dynamic> json) {
-  assert(propertyName != null);
-  if (json[propertyName] != null) {
+
     return json[propertyName];
+}
+
+
+DocumentData? convertJsonToDataObject(
+    Map<String, dynamic> json, String type) {
+  if (type == "Members") {
+    return MembersData().constructFromJson(json);
   }
-  return null;
 }

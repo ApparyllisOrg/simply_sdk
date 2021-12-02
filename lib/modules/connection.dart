@@ -26,7 +26,6 @@ class Connection {
   }
 
   void setCurrentHost(String host) {
-    assert(host != null);
     assert(host.isNotEmpty);
     currentHost = host;
   }

@@ -3,21 +3,20 @@ import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/modules/network.dart';
 import 'package:simply_sdk/types/document.dart';
-
 import '../simply_sdk.dart';
 
 class MembersData implements DocumentData {
-  String name;
-  String pronouns;
-  String avatarUrl;
-  String avatarUuid;
-  String desc;
-  String pkId;
-  String color;
-  bool private;
-  bool preventTrusted;
-  bool preventFrontNotifs;
-  Map<String, String> info;
+  String? name;
+  String? pronouns;
+  String? avatarUrl;
+  String? avatarUuid;
+  String? desc;
+  String? pkId;
+  String? color;
+  bool? private;
+  bool? preventTrusted;
+  bool? preventFrontNotifs;
+  Map<String, String>? info;
 
   @override
   Map<String, dynamic> toJson() {
@@ -55,38 +54,38 @@ class MembersData implements DocumentData {
 
 class Members extends Collection {
   @override
-  String get collection => "Members";
+  String get type => "Members";
 
   @override
-  Future<void> add(DocumentData values) {
+  void add(DocumentData values) {
     API().network().request(new NetworkRequest(
-      HttpMethod.Post, 
-      "v1/member", 
-      DateTime.now().millisecondsSinceEpoch, 
-      payload: values.toJson()));
+        HttpMethod.Post, "v1/member", DateTime.now().millisecondsSinceEpoch,
+        payload: values.toJson()));
   }
 
   @override
-  Future<void> delete(String documentId) {
-     API().network().request(new NetworkRequest(
-      HttpMethod.Delete, 
-      "v1/member/$documentId", 
-      DateTime.now().millisecondsSinceEpoch, 
-      ));
+  void delete(String documentId) {
+    API().network().request(new NetworkRequest(
+          HttpMethod.Delete,
+          "v1/member/$documentId",
+          DateTime.now().millisecondsSinceEpoch,
+        ));
   }
 
   @override
-  Future<Document> get(String id) {}
+  Future<Document> get(String id) async {
+    return Document(true, "", MembersData(), type);
+  }
 
   @override
-  Future<List<Document>> getAll() {}
+  Future<List<Document>> getAll() async {
+    return [];
+  }
 
   @override
-  Future<void> update(String documentId, DocumentData values) {
-     API().network().request(new NetworkRequest(
-      HttpMethod.Patch, 
-      "v1/member/$documentId", 
-      DateTime.now().millisecondsSinceEpoch, 
-      payload: values.toJson()));
+  void update(String documentId, DocumentData values) {
+    API().network().request(new NetworkRequest(HttpMethod.Patch,
+        "v1/member/$documentId", DateTime.now().millisecondsSinceEpoch,
+        payload: values.toJson()));
   }
 }
