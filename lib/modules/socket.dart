@@ -78,7 +78,7 @@ class Socket {
   void disconnected() async {
     if (isDisconnected) return;
     isDisconnected = true;
-    _socket?.sink?.close();
+    _socket?.sink.close();
     _socket = null;
     await Future.delayed(Duration(seconds: 1));
     createConnection();

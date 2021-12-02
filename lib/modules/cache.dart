@@ -1,17 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:simply_sdk/api/main.dart';
-import 'package:simply_sdk/api/members.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/types/document.dart';
 import "package:universal_html/html.dart" as html;
 import 'dart:io';
-import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart' as fir;
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:simply_sdk/helpers.dart';
-import 'package:simply_sdk/modules/socket.dart';
 
 import '../simply_sdk.dart';
 
@@ -31,13 +27,11 @@ class Cache {
 
   void updateToCache(String type, String id, Map<String, dynamic> _data,
       {bool triggerUpdateSubscription: true}) {
-    if (_data == null) return;
-
     Map<String, dynamic> coll = _cache[type];
     if (_cache[type] != null) {
       if (coll.containsKey(id)) {
         Map<String, dynamic> dat = _cache[type][id];
-        dat?.addAll(_data);
+        dat.addAll(_data);
         _cache[type][id] = dat;
       } else {
         _cache[type][id] = _data;
@@ -67,9 +61,7 @@ class Cache {
   Map<String, dynamic> getTypeCache(String type) {
     if (_cache.containsKey(type)) {
       Map<String, dynamic> data = _cache[type];
-      if (data != null) {
         return data;
-      }
     }
     return Map<String, dynamic>();
   }
