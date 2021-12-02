@@ -2,18 +2,14 @@ import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/types/document.dart';
-class MemberData implements DocumentData {
+class CustomFrontData implements DocumentData {
   String? name;
-  String? pronouns;
   String? avatarUrl;
   String? avatarUuid;
   String? desc;
-  String? pkId;
   String? color;
   bool? private;
   bool? preventTrusted;
-  bool? preventFrontNotifs;
-  Map<String, String>? info;
 
   @override
   Map<String, dynamic> toJson() {
@@ -21,15 +17,11 @@ class MemberData implements DocumentData {
 
     insertData("name", name, payload);
     insertData("desc", desc, payload);
-    insertData("pronouns", pronouns, payload);
-    insertData("pkId", pkId, payload);
     insertData("color", color, payload);
     insertData("avatarUuid", avatarUuid, payload);
     insertData("avatarUrl", avatarUrl, payload);
     insertData("private", private, payload);
     insertData("preventTrusted", preventTrusted, payload);
-    insertData("preventFrontNotifs", preventFrontNotifs, payload);
-    insertData("info", info, payload);
 
     return payload;
   }
@@ -38,34 +30,30 @@ class MemberData implements DocumentData {
   constructFromJson(Map<String, dynamic> json) {
     name = readDataFromJson("name", json);
     desc = readDataFromJson("desc", json);
-    pronouns = readDataFromJson("pronouns", json);
-    pkId = readDataFromJson("pkId", json);
     avatarUuid = readDataFromJson("avatarUuid", json);
     avatarUrl = readDataFromJson("avatarUrl", json);
     private = readDataFromJson("private", json);
     preventTrusted = readDataFromJson("preventTrusted", json);
-    preventFrontNotifs = readDataFromJson("preventFrontNotifs", json);
-    info = readDataFromJson("info", json);
   }
 }
 
-class Members extends Collection {
+class CustomFronts extends Collection {
   @override
-  String get type => "Members";
+  String get type => "CustomFronts";
 
   @override
   void add(DocumentData values) {
-    addSimpleDocument(type, "v1/member", values);
+    addSimpleDocument(type, "v1/customFront", values);
   }
 
   @override
   void delete(String documentId) {
-    deleteSimpleDocument(type, "v1/member", documentId);
+    deleteSimpleDocument(type, "v1/customFront", documentId);
   }
 
   @override
   Future<Document> get(String id) async {
-    return Document(true, "", MemberData(), type);
+    return Document(true, "", CustomFrontData(), type);
   }
 
   @override
@@ -75,6 +63,6 @@ class Members extends Collection {
 
   @override
   void update(String documentId, DocumentData values) {
-    updateSimpleDocument(type, "v1/member", documentId, values);
+    updateSimpleDocument(type, "v1/customFront", documentId, values);
   }
 }

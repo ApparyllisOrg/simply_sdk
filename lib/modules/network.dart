@@ -25,6 +25,7 @@ class NetworkRequest {
       {this.query, this.payload, this.onDone});
 }
 
+// TODO: Save pending network requests
 class Network {
   Network() {
     tick();

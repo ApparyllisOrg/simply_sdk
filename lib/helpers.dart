@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_performance/firebase_performance.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 
 import 'api/members.dart';
@@ -48,7 +47,13 @@ Object customDecode(dynamic key, dynamic value) {
 void insertData(String propertyName, dynamic dataToInsert,
     Map<String, dynamic> dataObject) {
   if (dataToInsert != null) {
-    dataObject[propertyName] = dataToInsert;
+    if (dataToInsert is DocumentData)
+    {
+      dataObject[propertyName] = dataToInsert.toJson();
+    }
+    else{
+      dataObject[propertyName] = dataToInsert;
+    }
   }
 }
 
@@ -61,6 +66,6 @@ T readDataFromJson<T>(String propertyName, Map<String, dynamic> json) {
 DocumentData? convertJsonToDataObject(
     Map<String, dynamic> json, String type) {
   if (type == "Members") {
-    return MembersData().constructFromJson(json);
+    return MemberData().constructFromJson(json);
   }
 }
