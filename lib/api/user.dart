@@ -1,8 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart' as fir;
+import 'package:http/http.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
+import 'package:simply_sdk/modules/network.dart';
 import 'package:simply_sdk/types/document.dart';
+
+import '../simply_sdk.dart';
 
 class UserFieldData implements DocumentData {
   String? name;
@@ -16,7 +21,7 @@ class UserFieldData implements DocumentData {
     name = readDataFromJson("name", json);
     order = readDataFromJson("order", json);
     private = readDataFromJson("private", json);
-    preventTrusted= readDataFromJson("preventTrusted", json);
+    preventTrusted = readDataFromJson("preventTrusted", json);
     type = readDataFromJson("type", json);
   }
 
@@ -96,5 +101,15 @@ class User extends Collection {
   @override
   void update(String documentId, DocumentData values) {
     updateSimpleDocument(type, "v1/user", documentId, values);
+  }
+
+  Future<void> setUsername(String newUsername, String userId) async {
+    try {
+      await patch(
+          Uri.parse(
+              API().connection().getRequestUrl("v1/user/username/$userId", "")),
+          body: {"username": newUsername});
+    } catch (e) {}
+    return;
   }
 }
