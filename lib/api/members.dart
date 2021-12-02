@@ -1,4 +1,5 @@
 import 'package:firebase_performance/firebase_performance.dart';
+import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/modules/network.dart';
@@ -58,18 +59,12 @@ class Members extends Collection {
 
   @override
   void add(DocumentData values) {
-    API().network().request(new NetworkRequest(
-        HttpMethod.Post, "v1/member", DateTime.now().millisecondsSinceEpoch,
-        payload: values.toJson()));
+    addSimpleDocument(type, "v1/member", values);
   }
 
   @override
   void delete(String documentId) {
-    API().network().request(new NetworkRequest(
-          HttpMethod.Delete,
-          "v1/member/$documentId",
-          DateTime.now().millisecondsSinceEpoch,
-        ));
+    deleteSimpleDocument(type, "v1/member", documentId);
   }
 
   @override
@@ -84,8 +79,6 @@ class Members extends Collection {
 
   @override
   void update(String documentId, DocumentData values) {
-    API().network().request(new NetworkRequest(HttpMethod.Patch,
-        "v1/member/$documentId", DateTime.now().millisecondsSinceEpoch,
-        payload: values.toJson()));
+    updateSimpleDocument(type, "v1/member", documentId, values);
   }
 }
