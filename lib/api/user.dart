@@ -112,4 +112,6 @@ class User extends Collection {
     } catch (e) {}
     return;
   }
+
+  //Todo: Add generate user report
 }
