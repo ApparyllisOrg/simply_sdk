@@ -23,7 +23,7 @@ class Document<ObjectClass> {
   final String id;
   final String type;
   final bool fromCache;
-  final DocumentData dataObject;
+  final ObjectClass dataObject;
   late Map<String, dynamic> data;
 
   bool exists;
@@ -41,8 +41,6 @@ class Document<ObjectClass> {
     return fallback;
   }
 
-  ObjectClass getDataObject() => dataObject as ObjectClass;
-
   static Map<String, dynamic> convertTime(Map<String, dynamic> data) {
     data.forEach((key, value) {
       if (key.toLowerCase().contains("time") && value is int) {
@@ -54,7 +52,7 @@ class Document<ObjectClass> {
 
   Document(this.exists, this.id, this.dataObject, this.type,
       {this.fromCache = false}) {
-    data = dataObject.toJson();
+    data = (dataObject as DocumentData).toJson();
     data = convertTime(this.data);
   }
 }

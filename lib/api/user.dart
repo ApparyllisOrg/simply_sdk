@@ -42,6 +42,7 @@ class UserFieldData implements DocumentData {
 }
 
 class UserData implements DocumentData {
+  String? username;
   String? desc;
   bool? isAsystem;
   String? avatarUuid;
@@ -52,6 +53,7 @@ class UserData implements DocumentData {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
 
+    // No need to fill in username, we can't directly set username..
     insertData("desc", desc, payload);
     insertData("isAsystem", isAsystem, payload);
     insertData("avatarUuid", avatarUuid, payload);
@@ -63,6 +65,7 @@ class UserData implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
+    username = readDataFromJson("username", json);
     desc = readDataFromJson("desc", json);
     isAsystem = readDataFromJson("isAsystem", json);
     avatarUuid = readDataFromJson("avatarUuid", json);
@@ -111,7 +114,7 @@ class User extends Collection {
           Uri.parse(
               API().connection().getRequestUrl("v1/user/username/$userId", "")),
           body: {"username": newUsername});
-          
+
       return createResponseObject(response);
     } catch (e) {}
     return createFailResponseObject();
