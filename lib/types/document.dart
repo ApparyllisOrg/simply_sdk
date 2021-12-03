@@ -19,7 +19,7 @@ class DocumentRef {
   }
 }
 
-class Document {
+class Document<ObjectClass> {
   final String id;
   final String type;
   final bool fromCache;
@@ -41,7 +41,7 @@ class Document {
     return fallback;
   }
 
-  T getDataObject<T>() => dataObject as T;
+  ObjectClass getDataObject() => dataObject as ObjectClass;
 
   static Map<String, dynamic> convertTime(Map<String, dynamic> data) {
     data.forEach((key, value) {
