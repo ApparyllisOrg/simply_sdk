@@ -1,11 +1,23 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart';
+import 'package:simply_sdk/api/main.dart';
+import 'package:simply_sdk/api/user.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/modules/http.dart';
+import 'package:simply_sdk/types/request.dart';
 
 import '../simply_sdk.dart';
+
+class FriendsFrontData {
+  final String uid;
+  final String frontString;
+  final String customFrontString;
+
+  FriendsFrontData(this.uid, this.frontString, this.customFrontString);
+}
 
 class FriendSettingsData implements DocumentData {
   bool? seeFront;
@@ -21,12 +33,11 @@ class FriendSettingsData implements DocumentData {
     getFrontNotif = readDataFromJson("getFrontNotif", json);
     trustedFriend = readDataFromJson("trustedFriend", json);
     getTheirFrontNotif = readDataFromJson("getTheirFrontNotif", json);
- 
   }
 
   @override
-  Map<String, dynamic> toJson() { 
-      Map<String, dynamic> payload = {};
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> payload = {};
 
     insertData("seeFront", seeFront, payload);
     insertData("seeMembers", seeMembers, payload);
@@ -39,90 +50,170 @@ class FriendSettingsData implements DocumentData {
 }
 
 class Friends {
-  Future<void> sendFriendRequest(
-      String userid, FriendSettingsData settings) async {
+  Future<RequestResponse> sendFriendRequest(
+      String userId, FriendSettingsData settings) async {
     try {
-      await SimplyHttpClient().post(
+      var response = await SimplyHttpClient().post(
           Uri.parse(API()
               .connection()
-              .getRequestUrl("v1/friends/request/add/$userid", "")),
+              .getRequestUrl("v1/friends/request/add/$userId", "")),
           body: jsonEncode({"settings": settings.toJson()}));
+
+      return createResponseObject(response);
     } catch (e) {}
-    return;
+    return createFailResponseObject();
   }
 
-  Future<Map<String, dynamic>> respondToFriendRequest(
-      Map<String, dynamic> settings, bool accepted) {
+  Future<RequestResponse> respondToFriendRequest(
+      FriendSettingsData settings, bool accepted, String userId) {
     return Future(() async {
-      String url = API().connection().currentHost + "/respondToFriendRqV2";
-      http.Response msg = await http
-          .post(Uri.parse(url),
-              headers: {
-                "Authorization": API().auth().getToken(),
-                "Content-Type": "application/json"
-              },
-              body: jsonEncode({"settings": settings, "accept": accepted}))
-          .timeout(Duration(seconds: 20), onTimeout: () {
-        return Future.error({"success": false, "msg": "Request timed out"});
-      }).catchError((e) {
-        return Future.error({"success": false, "msg": e});
-      });
-      return jsonDecode(msg.body);
+      try {
+        var response = await SimplyHttpClient().post(
+            Uri.parse(API()
+                .connection()
+                .getRequestUrl("v1/friends/request/respond/$userId", "")),
+            body: jsonEncode({"settings": settings.toJson()}));
+
+        return createResponseObject(response);
+      } catch (e) {}
+      return createFailResponseObject();
     });
   }
 
-  Future<Map<String, dynamic>> cancelFriendRequest(String userid) {
+  Future<RequestResponse> cancelFriendRequest(String userId) {
     return Future(() async {
-      String url = API().connection().currentHost + "/cancelFriendRq";
-      http.Response msg = await http
-          .post(Uri.parse(url),
-              headers: {
-                "Authorization": API().auth().getToken(),
-                "Content-Type": "application/json"
-              },
-              body: jsonEncode({"target": target}))
-          .timeout(Duration(seconds: 20), onTimeout: () {
-        return Future.error({"success": false, "msg": "Request timed out"});
-      }).catchError((e) {
-        return Future.error({"success": false, "msg": e});
-      });
-      return jsonDecode(msg.body);
+      try {
+        var response = await SimplyHttpClient().delete(Uri.parse(API()
+            .connection()
+            .getRequestUrl("v1/friends/request/$userId", "")));
+
+        return createResponseObject(response);
+      } catch (e) {}
+      return createFailResponseObject();
     });
   }
 
-  Future<Map<String, dynamic>> removeFriend(String userid) {
+  Future<RequestResponse> removeFriend(String userId) {
     return Future(() async {
-      String url = API().connection().currentHost + "/removeFriend";
-      http.Response msg = await http
-          .post(Uri.parse(url),
-              headers: {
-                "Authorization": API().auth().getToken(),
-                "Content-Type": "application/json"
-              },
-              body: jsonEncode({"target": target}))
-          .timeout(Duration(seconds: 20), onTimeout: () {
-        return Future.error({"success": false, "msg": "Request timed out"});
-      }).catchError((e) {
-        return Future.error({"success": false, "msg": e});
-      });
-      return jsonDecode(msg.body);
+      try {
+        var response = await SimplyHttpClient().delete(Uri.parse(
+            API().connection().getRequestUrl("v1/friends/remove/$userId", "")));
+
+        return createResponseObject(response);
+      } catch (e) {}
+      return createFailResponseObject();
     });
   }
 
-  FutureOr<dynamic> getFriendFrontValues() {
+  Future<List<FriendsFrontData>> getFriendFrontValues() {
     return Future(() async {
-      String url = API().connection().currentHost + "/friends/getFrontValues";
-      http.Response msg = await http.get(Uri.parse(url), headers: {
-        "Authorization": API().auth().getToken(),
-        "Content-Type": "application/json"
-      }).timeout(Duration(seconds: 3), onTimeout: () {
-        return http.Response.bytes([], 408);
-      }).catchError((e) {
-        return {"success": false, "msg": e};
-      });
-      if (msg.statusCode == 408)
-        return {"success": false, "msg": "Request timed out"};
-      return {"success": true, "msg": jsonDecode(msg.body)};
+      try {
+        var response = await SimplyHttpClient().get(Uri.parse(
+            API().connection().getRequestUrl("v1/friends/getFrontValues", "")));
+
+        var jsonResponse = jsonDecode(response.body);
+        if (response.statusCode == 200) {
+          List<Map<String, String>> results = jsonResponse["results"];
+
+          List<FriendsFrontData> friendFronts = [];
+
+          for (var i = 0; i < results.length; ++i) {
+            var result = results[i];
+
+            friendFronts.add(FriendsFrontData(
+                result["uid"] ?? "",
+                result["frontString"] ?? "",
+                result["customFrontString"] ?? ""));
+          }
+          return friendFronts;
+        } else {
+          return [];
+        }
+      } catch (e) {}
+      return [];
+    });
+  }
+
+  Future<List<String>> getFriendFronters(String userId) {
+    return Future(() async {
+      try {
+        var response = await SimplyHttpClient().get(Uri.parse(
+            API().connection().getRequestUrl("1/fronters/$userId", "")));
+
+        var jsonResponse = jsonDecode(response.body);
+        if (response.statusCode == 200) {
+          return jsonResponse["results"];
+        } else {
+          return [];
+        }
+      } catch (e) {}
+      return [];
+    });
+  }
+
+  List<UserData> _convertResponseIntoUsers(Response response) {
+    var jsonResponse = jsonDecode(response.body);
+    List<Map<String, dynamic>> userResults = jsonResponse["results"];
+
+    List<UserData> users = [];
+
+    for (var i = 0; i < userResults.length; ++i) {
+      users.add(UserData().constructFromJson(userResults[i]));
+    }
+
+    return users;
+  }
+
+  Future<List<UserData>> getFriends() {
+    return Future(() async {
+      try {
+        var response = await SimplyHttpClient().get(
+            Uri.parse(API().connection().getRequestUrl("v1/friends/", "")));
+
+        var jsonResponse = jsonDecode(response.body);
+        if (response.statusCode == 200) {
+          return _convertResponseIntoUsers(jsonResponse);
+        } else {
+          return [];
+        }
+      } catch (e) {}
+      return [];
+    });
+  }
+
+  Future<List<UserData>> getIncomingFriendRequests() {
+    return Future(() async {
+      try {
+        var response = await SimplyHttpClient().get(Uri.parse(API()
+            .connection()
+            .getRequestUrl("/v1/friends/requests/incoming", "")));
+
+        var jsonResponse = jsonDecode(response.body);
+        if (response.statusCode == 200) {
+          return _convertResponseIntoUsers(jsonResponse);
+        } else {
+          return [];
+        }
+      } catch (e) {}
+      return [];
+    });
+  }
+
+  Future<List<UserData>> getOutgoingFriendRequests() {
+    return Future(() async {
+      try {
+        var response = await SimplyHttpClient().get(Uri.parse(API()
+            .connection()
+            .getRequestUrl("/v1/friends/requests/outgoing", "")));
+
+        var jsonResponse = jsonDecode(response.body);
+        if (response.statusCode == 200) {
+          return _convertResponseIntoUsers(jsonResponse);
+        } else {
+          return [];
+        }
+      } catch (e) {}
+      return [];
     });
   }
 }

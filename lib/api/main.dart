@@ -9,8 +9,10 @@ void addSimpleDocument(String type, String path, DocumentData data,
 
   Map<String, dynamic> jsonPayload = data.toJson();
 
-  API().network().request(new NetworkRequest(HttpRequestMethod.Post,
-      "$path/${overrideId ?? generatedId}", DateTime.now().millisecondsSinceEpoch,
+  API().network().request(new NetworkRequest(
+      HttpRequestMethod.Post,
+      "$path/${overrideId ?? generatedId}",
+      DateTime.now().millisecondsSinceEpoch,
       payload: jsonPayload));
 
   API().cache().insertDocument(type, generatedId, jsonPayload);

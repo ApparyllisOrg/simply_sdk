@@ -7,6 +7,7 @@ import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/modules/http.dart';
 import 'package:simply_sdk/modules/network.dart';
 import 'package:simply_sdk/types/document.dart';
+import 'package:simply_sdk/types/request.dart';
 
 import '../simply_sdk.dart';
 
@@ -104,18 +105,19 @@ class User extends Collection {
     updateSimpleDocument(type, "v1/user", documentId, values);
   }
 
-  Future<void> setUsername(String newUsername, String userId) async {
+  Future<RequestResponse> setUsername(String newUsername, String userId) async {
     try {
-      await SimplyHttpClient().patch(
+      var response = await SimplyHttpClient().patch(
           Uri.parse(
               API().connection().getRequestUrl("v1/user/username/$userId", "")),
           body: {"username": newUsername});
+          
+      return createResponseObject(response);
     } catch (e) {}
-    return;
+    return createFailResponseObject();
   }
 
-  Future<void> deleteAccount() async
-  {
+  Future<void> deleteAccount() async {
     // Todo: Implement this
   }
 
