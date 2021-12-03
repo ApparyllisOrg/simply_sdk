@@ -54,8 +54,8 @@ class Members extends Collection {
   String get type => "Members";
 
   @override
-  void add(DocumentData values) {
-    addSimpleDocument(type, "v1/member", values);
+  Document<MemberData> add(DocumentData values) {
+    return addSimpleDocument(type, "v1/member", values);
   }
 
   @override
@@ -64,12 +64,12 @@ class Members extends Collection {
   }
 
   @override
-  Future<Document> get(String id) async {
+  Future<Document<MemberData>> get(String id) async {
     return Document(true, "", MemberData(), type);
   }
 
   @override
-  Future<List<Document>> getAll() async {
+  Future<List<Document<MemberData>>> getAll() async {
     return [];
   }
 

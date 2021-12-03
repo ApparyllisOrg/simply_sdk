@@ -86,20 +86,24 @@ class Users extends Collection {
 
   @deprecated
   @override
-  void add(DocumentData values) {}
+  Document<DocumentData> add(DocumentData values) {
+    throw UnimplementedError();
+  }
 
   @deprecated
   @override
-  void delete(String documentId) {}
+  void delete(String documentId) {
+    throw UnimplementedError();
+  }
 
   @override
-  Future<Document> get(String id) async {
+  Future<Document<UserData>> get(String id) async {
     return Document(true, "", UserData(), type);
   }
 
   @deprecated
   @override
-  Future<List<Document>> getAll() async {
+  Future<List<Document<UserData>>> getAll() async {
     return [];
   }
 

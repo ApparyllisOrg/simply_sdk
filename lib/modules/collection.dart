@@ -8,9 +8,9 @@ abstract class DocumentData {
 abstract class Collection {
   String type = "NONE";
 
-  Future<Document> get(String id);
-  Future<List<Document>> getAll();
-  void add(DocumentData values);
+  Future<Document<DocumentData>> get(String id);
+  Future<List<Document<DocumentData>>> getAll();
+  Document<DocumentData> add(DocumentData values);
   void update(String documentId, DocumentData values);
   void delete(String documentId);
 }

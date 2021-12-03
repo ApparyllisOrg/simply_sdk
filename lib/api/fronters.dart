@@ -3,6 +3,7 @@ import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/types/document.dart';
+
 class FronterData implements DocumentData {
   Timestamp? startTime;
   String? uuid;
@@ -30,10 +31,12 @@ class Fronters extends Collection {
 
   @Deprecated("Use addToFront instead")
   @override
-  void add(DocumentData values) {}
+  Document<FronterData> add(DocumentData values) {
+    throw UnimplementedError();
+  }
 
-  void addToFront(String documentId, DocumentData values) {
-    addSimpleDocument(type, "v1/front", values, overrideId: documentId);
+  Document<FronterData> addToFront(String documentId, DocumentData values) {
+    return addSimpleDocument(type, "v1/front", values, overrideId: documentId);
   }
 
   @override
@@ -42,12 +45,12 @@ class Fronters extends Collection {
   }
 
   @override
-  Future<Document> get(String id) async {
+  Future<Document<FronterData>> get(String id) async {
     return Document(true, "", FronterData(), type);
   }
 
   @override
-  Future<List<Document>> getAll() async {
+  Future<List<Document<FronterData>>> getAll() async {
     return [];
   }
 

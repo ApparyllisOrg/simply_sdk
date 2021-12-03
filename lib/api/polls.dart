@@ -84,8 +84,8 @@ class Polls extends Collection {
   String get type => "Polls";
 
   @override
-  void add(DocumentData values) {
-    addSimpleDocument(type, "v1/poll", values);
+  Document<PollData> add(DocumentData values) {
+    return addSimpleDocument(type, "v1/poll", values);
   }
 
   @override
@@ -94,12 +94,12 @@ class Polls extends Collection {
   }
 
   @override
-  Future<Document> get(String id) async {
+  Future<Document<PollData>> get(String id) async {
     return Document(true, "", PollData(), type);
   }
 
   @override
-  Future<List<Document>> getAll() async {
+  Future<List<Document<PollData>>> getAll() async {
     return [];
   }
 

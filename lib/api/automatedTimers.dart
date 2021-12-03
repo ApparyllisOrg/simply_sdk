@@ -37,8 +37,8 @@ class AutomatedTimers extends Collection {
   String get type => "AutomatedTimers";
 
   @override
-  void add(DocumentData values) {
-    addSimpleDocument(type, "v1/timer/aumtomated", values);
+  Document<AutomatedTimerData> add(DocumentData values) {
+    return addSimpleDocument(type, "v1/timer/aumtomated", values);
   }
 
   @override
@@ -47,12 +47,12 @@ class AutomatedTimers extends Collection {
   }
 
   @override
-  Future<Document> get(String id) async {
+  Future<Document<AutomatedTimerData>> get(String id) async {
     return Document(true, "", AutomatedTimerData(), type);
   }
 
   @override
-  Future<List<Document>> getAll() async {
+  Future<List<Document<AutomatedTimerData>>> getAll() async {
     return [];
   }
 

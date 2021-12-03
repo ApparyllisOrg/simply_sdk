@@ -39,20 +39,24 @@ class Privates extends Collection {
 
   @deprecated
   @override
-  void add(DocumentData values) {}
+  Document<PrivateData> add(DocumentData values) {
+    throw UnimplementedError();
+  }
 
   @deprecated
   @override
-  void delete(String documentId) {}
+  void delete(String documentId) {
+    throw UnimplementedError();
+  }
 
   @override
-  Future<Document> get(String id) async {
+  Future<Document<PrivateData>> get(String id) async {
     return Document(true, "", PrivateData(), type);
   }
 
   @deprecated
   @override
-  Future<List<Document>> getAll() async {
+  Future<List<Document<PrivateData>>> getAll() async {
     return [];
   }
 

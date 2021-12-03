@@ -84,8 +84,8 @@ class RepeatedTimers extends Collection {
   String get type => "RepeatedTimers";
 
   @override
-  void add(DocumentData values) {
-    addSimpleDocument(type, "v1/timer/repeated", values);
+  Document<RepeatedTimerData> add(DocumentData values) {
+    return addSimpleDocument(type, "v1/timer/repeated", values);
   }
 
   @override
@@ -94,12 +94,12 @@ class RepeatedTimers extends Collection {
   }
 
   @override
-  Future<Document> get(String id) async {
+  Future<Document<RepeatedTimerData>> get(String id) async {
     return Document(true, "", RepeatedTimerData(), type);
   }
 
   @override
-  Future<List<Document>> getAll() async {
+  Future<List<Document<RepeatedTimerData>>> getAll() async {
     return [];
   }
 

@@ -38,8 +38,8 @@ class Notes extends Collection {
   String get type => "Notes";
 
   @override
-  void add(DocumentData values) {
-    addSimpleDocument(type, "v1/note", values);
+  Document<NoteData> add(DocumentData values) {
+    return addSimpleDocument(type, "v1/note", values);
   }
 
   @override
@@ -48,12 +48,12 @@ class Notes extends Collection {
   }
 
   @override
-  Future<Document> get(String id) async {
+  Future<Document<NoteData>> get(String id) async {
     return Document(true, "", NoteData(), type);
   }
 
   @override
-  Future<List<Document>> getAll() async {
+  Future<List<Document<NoteData>>> getAll() async {
     return [];
   }
 

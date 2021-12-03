@@ -47,8 +47,8 @@ class Groups extends Collection {
   String get type => "Groups";
 
   @override
-  void add(DocumentData values) {
-    addSimpleDocument(type, "v1/group", values);
+  Document<GroupData> add(DocumentData values) {
+    return addSimpleDocument(type, "v1/group", values);
   }
 
   @override
@@ -57,12 +57,12 @@ class Groups extends Collection {
   }
 
   @override
-  Future<Document> get(String id) async {
+  Future<Document<GroupData>> get(String id) async {
     return Document(true, "", GroupData(), type);
   }
 
   @override
-  Future<List<Document>> getAll() async {
+  Future<List<Document<GroupData>>> getAll() async {
     return [];
   }
 

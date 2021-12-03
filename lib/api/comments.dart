@@ -35,8 +35,8 @@ class Comments extends Collection {
   String get type => "Comments";
 
   @override
-  void add(DocumentData values) {
-    addSimpleDocument(type, "v1/comment", values);
+  Document<CommentData> add(DocumentData values) {
+    return addSimpleDocument(type, "v1/comment", values);
   }
 
   @override
@@ -45,12 +45,12 @@ class Comments extends Collection {
   }
 
   @override
-  Future<Document> get(String id) async {
+  Future<Document<CommentData>> get(String id) async {
     return Document(true, "", CommentData(), type);
   }
 
   @override
-  Future<List<Document>> getAll() async {
+  Future<List<Document<CommentData>>> getAll() async {
     return [];
   }
 

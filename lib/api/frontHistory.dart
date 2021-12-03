@@ -35,8 +35,8 @@ class FrontHistory extends Collection {
   String get type => "FrontHistory";
 
   @override
-  void add(DocumentData values) {
-    addSimpleDocument(type, "v1/frontHistory", values);
+  Document<FrontHistoryData> add(DocumentData values) {
+    return addSimpleDocument(type, "v1/frontHistory", values);
   }
 
   @override
@@ -45,12 +45,12 @@ class FrontHistory extends Collection {
   }
 
   @override
-  Future<Document> get(String id) async {
+  Future<Document<FrontHistoryData>> get(String id) async {
     return Document(true, "", FrontHistoryData(), type);
   }
 
   @override
-  Future<List<Document>> getAll() async {
+  Future<List<Document<FrontHistoryData>>> getAll() async {
     return [];
   }
 

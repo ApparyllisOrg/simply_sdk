@@ -1,9 +1,10 @@
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/modules/network.dart';
+import 'package:simply_sdk/types/document.dart';
 import '../simply_sdk.dart';
 
-void addSimpleDocument(String type, String path, DocumentData data,
+Document<T> addSimpleDocument<T>(String type, String path, DocumentData data,
     {String? overrideId}) {
   String generatedId = ObjectId(clientMode: true).toHexString();
 
@@ -16,6 +17,8 @@ void addSimpleDocument(String type, String path, DocumentData data,
       payload: jsonPayload));
 
   API().cache().insertDocument(type, generatedId, jsonPayload);
+
+  return Document(true, overrideId ?? generatedId, data as T, type);
 }
 
 void updateSimpleDocument(

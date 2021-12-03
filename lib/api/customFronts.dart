@@ -42,8 +42,8 @@ class CustomFronts extends Collection {
   String get type => "CustomFronts";
 
   @override
-  void add(DocumentData values) {
-    addSimpleDocument(type, "v1/customFront", values);
+  Document<CustomFrontData> add(DocumentData values) {
+    return addSimpleDocument(type, "v1/customFront", values);
   }
 
   @override
@@ -52,12 +52,12 @@ class CustomFronts extends Collection {
   }
 
   @override
-  Future<Document> get(String id) async {
+  Future<Document<CustomFrontData>> get(String id) async {
     return Document(true, "", CustomFrontData(), type);
   }
 
   @override
-  Future<List<Document>> getAll() async {
+  Future<List<Document<CustomFrontData>>> getAll() async {
     return [];
   }
 
