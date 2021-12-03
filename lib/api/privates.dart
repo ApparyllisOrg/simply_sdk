@@ -33,9 +33,9 @@ class PrivateData implements DocumentData {
   }
 }
 
-class Private extends Collection {
+class Privates extends Collection {
   @override
-  String get type => "Private";
+  String get type => "Privates";
 
   @deprecated
   @override

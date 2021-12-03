@@ -10,10 +10,10 @@ import 'package:simply_sdk/api/groups.dart';
 import 'package:simply_sdk/api/members.dart';
 import 'package:simply_sdk/api/notes.dart';
 import 'package:simply_sdk/api/polls.dart';
-import 'package:simply_sdk/api/private.dart';
+import 'package:simply_sdk/api/privates.dart';
 import 'package:simply_sdk/api/repeatedTimers.dart';
 import 'package:simply_sdk/api/storage.dart';
-import 'package:simply_sdk/api/user.dart';
+import 'package:simply_sdk/api/users.dart';
 import 'package:simply_sdk/modules/auth.dart';
 import 'package:simply_sdk/modules/cache.dart';
 import 'package:simply_sdk/modules/config.dart';
@@ -63,10 +63,10 @@ class API {
   final Members _members = Members();
   final Notes _notes = Notes();
   final Polls _polls = Polls();
-  final Private _private = Private();
+  final Privates _privates = Privates();
   final RepeatedTimers _repeatedTimers = RepeatedTimers();
   final Storage _storage = Storage();
-  final User _user = User();
+  final Users _users = Users();
 
   // Declare global getters
   Auth auth() => _auth;
@@ -88,10 +88,10 @@ class API {
   Members members() => _members;
   Notes notes() => _notes;
   Polls polls() => _polls;
-  Private private() => _private;
+  Privates private() => _privates;
   RepeatedTimers repeatedTimers() => _repeatedTimers;
   Storage storage() => _storage;
-  User user() => _user;
+  Users user() => _users;
 
   void reportError(e, StackTrace trace) {
     try {

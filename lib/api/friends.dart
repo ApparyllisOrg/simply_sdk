@@ -2,8 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart';
-import 'package:simply_sdk/api/main.dart';
-import 'package:simply_sdk/api/user.dart';
+import 'package:simply_sdk/api/users.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/modules/http.dart';

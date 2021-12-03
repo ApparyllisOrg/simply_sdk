@@ -80,9 +80,9 @@ class UserData implements DocumentData {
   }
 }
 
-class User extends Collection {
+class Users extends Collection {
   @override
-  String get type => "User";
+  String get type => "Users";
 
   @deprecated
   @override
