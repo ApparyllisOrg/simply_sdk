@@ -41,6 +41,8 @@ class Document {
     return fallback;
   }
 
+  T getDataObject<T>() => dataObject as T;
+
   static Map<String, dynamic> convertTime(Map<String, dynamic> data) {
     data.forEach((key, value) {
       if (key.toLowerCase().contains("time") && value is int) {
@@ -50,7 +52,8 @@ class Document {
     return data;
   }
 
-  Document(this.exists, this.id, this.dataObject, this.type, {this.fromCache = false}) {
+  Document(this.exists, this.id, this.dataObject, this.type,
+      {this.fromCache = false}) {
     data = dataObject.toJson();
     data = convertTime(this.data);
   }
