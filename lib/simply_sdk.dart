@@ -88,10 +88,10 @@ class API {
   Members members() => _members;
   Notes notes() => _notes;
   Polls polls() => _polls;
-  Privates private() => _privates;
+  Privates privates() => _privates;
   RepeatedTimers repeatedTimers() => _repeatedTimers;
   Storage storage() => _storage;
-  Users user() => _users;
+  Users users() => _users;
 
   void reportError(e, StackTrace trace) {
     try {
