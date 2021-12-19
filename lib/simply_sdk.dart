@@ -1,6 +1,6 @@
 library simply_sdk;
 
-import 'package:simply_sdk/api/AutomatedTimers.dart';
+import 'package:simply_sdk/api/automatedTimers.dart';
 import 'package:simply_sdk/api/comments.dart';
 import 'package:simply_sdk/api/customFronts.dart';
 import 'package:simply_sdk/api/friends.dart';
