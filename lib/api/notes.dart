@@ -5,7 +5,7 @@ import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/types/document.dart';
 
 class NoteData implements DocumentData {
-  String? name;
+  String? title;
   String? desc;
   String? color;
   String? member;
@@ -15,7 +15,7 @@ class NoteData implements DocumentData {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
 
-    insertData("name", name, payload);
+    insertData("title", title, payload);
     insertData("desc", desc, payload);
     insertData("color", color, payload);
     insertData("member", member, payload);
@@ -25,7 +25,7 @@ class NoteData implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    name = readDataFromJson("name", json);
+    title = readDataFromJson("title", json);
     desc = readDataFromJson("desc", json);
     color = readDataFromJson("color", json);
     member = readDataFromJson("member", json);
