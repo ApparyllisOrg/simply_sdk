@@ -1,7 +1,9 @@
 import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
+import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
+
 class CustomFrontData implements DocumentData {
   String? name;
   String? avatarUrl;
@@ -38,6 +40,8 @@ class CustomFrontData implements DocumentData {
 }
 
 class CustomFronts extends Collection {
+  List<Document<CustomFrontData>> _cachedCustomFronts = [];
+
   @override
   String get type => "CustomFronts";
 
@@ -58,11 +62,30 @@ class CustomFronts extends Collection {
 
   @override
   Future<List<Document<CustomFrontData>>> getAll() async {
-    return [];
+    var collection = await getCollection<CustomFrontData>(
+        "v1/customFronts", API().auth().getUid() ?? "");
+
+    List<Document<CustomFrontData>> customFronts =
+        collection.map((e) => CustomFrontData()..constructFromJson(e))
+            as List<Document<CustomFrontData>>;
+
+    _cachedCustomFronts = customFronts;
+
+    return customFronts;
   }
 
   @override
   void update(String documentId, DocumentData values) {
     updateSimpleDocument(type, "v1/customFront", documentId, values);
+  }
+
+  List<Document<CustomFrontData>> getAllCachedCustomfronts() {
+    return _cachedCustomFronts;
+  }
+
+  @override
+  void propogateChanges(Document<DocumentData> change) {
+    super.propogateChanges(change);
+    updateDocumentInList(_cachedCustomFronts, change);
   }
 }

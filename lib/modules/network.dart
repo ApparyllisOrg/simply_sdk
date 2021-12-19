@@ -11,7 +11,8 @@ enum HttpRequestMethod
 {
   Post,
   Patch,
-  Delete
+  Delete,
+  Get
 }
 
 class NetworkRequest {

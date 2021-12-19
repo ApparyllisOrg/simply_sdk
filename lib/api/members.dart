@@ -2,6 +2,9 @@ import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/types/document.dart';
+
+import '../simply_sdk.dart';
+
 class MemberData implements DocumentData {
   String? name;
   String? pronouns;
@@ -50,6 +53,8 @@ class MemberData implements DocumentData {
 }
 
 class Members extends Collection {
+  List<Document<MemberData>> _cachedMembers = [];
+
   @override
   String get type => "Members";
 
@@ -70,11 +75,30 @@ class Members extends Collection {
 
   @override
   Future<List<Document<MemberData>>> getAll() async {
-    return [];
+    var collection = await getCollection<MemberData>(
+        "v1/members", API().auth().getUid() ?? "");
+
+    List<Document<MemberData>> members =
+        collection.map((e) => MemberData()..constructFromJson(e))
+            as List<Document<MemberData>>;
+
+    _cachedMembers = members;
+
+    return members;
+  }
+
+  List<Document<MemberData>> getAllCachedMembers() {
+    return _cachedMembers;
   }
 
   @override
   void update(String documentId, DocumentData values) {
     updateSimpleDocument(type, "v1/member", documentId, values);
+  }
+
+  @override
+  void propogateChanges(Document<DocumentData> change) {
+    super.propogateChanges(change);
+    updateDocumentInList(_cachedMembers, change);
   }
 }

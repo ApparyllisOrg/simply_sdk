@@ -1,6 +1,7 @@
 import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
+import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
 
 class GroupData implements DocumentData {
@@ -30,7 +31,7 @@ class GroupData implements DocumentData {
   }
 
   @override
-  constructFromJson(Map<String, dynamic> json) {
+  void constructFromJson(Map<String, dynamic> json) {
     parent = readDataFromJson("parent", json);
     name = readDataFromJson("name", json);
     color = readDataFromJson("color", json);
@@ -43,6 +44,8 @@ class GroupData implements DocumentData {
 }
 
 class Groups extends Collection {
+  List<Document<GroupData>> _cachedGroups = [];
+
   @override
   String get type => "Groups";
 
@@ -63,11 +66,30 @@ class Groups extends Collection {
 
   @override
   Future<List<Document<GroupData>>> getAll() async {
-    return [];
+    var collection = await getCollection<GroupData>(
+        "v1/groups", API().auth().getUid() ?? "");
+
+    List<Document<GroupData>> groups =
+        collection.map((e) => GroupData()..constructFromJson(e))
+            as List<Document<GroupData>>;
+
+    _cachedGroups = groups;
+
+    return groups;
   }
 
   @override
   void update(String documentId, DocumentData values) {
     updateSimpleDocument(type, "v1/group", documentId, values);
+  }
+
+  List<Document<GroupData>> getAllCachedGroups() {
+    return _cachedGroups;
+  }
+
+  @override
+  void propogateChanges(Document<DocumentData> change) {
+    super.propogateChanges(change);
+    updateDocumentInList(_cachedGroups, change);
   }
 }

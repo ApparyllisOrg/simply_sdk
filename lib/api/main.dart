@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:simply_sdk/modules/collection.dart';
+import 'package:simply_sdk/modules/http.dart';
 import 'package:simply_sdk/modules/network.dart';
 import 'package:simply_sdk/types/document.dart';
 import '../simply_sdk.dart';
@@ -38,4 +41,23 @@ void deleteSimpleDocument(String type, String path, String id) {
         "$path/$id",
         DateTime.now().millisecondsSinceEpoch,
       ));
+}
+
+Future<List<Map<String, dynamic>>> getCollection<ObjectType>(
+    String path, String id) async {
+  var response = await SimplyHttpClient().patch(Uri.parse("$path/$id"));
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body);
+  }
+  return [];
+}
+
+void updateDocumentInList(List<Document> documents, Document updatedDocument) {
+  int index =
+      documents.indexWhere((element) => element.id == updatedDocument.id);
+  if (index > 0) {
+    documents[index] = updatedDocument;
+  } else {
+    documents.add(updatedDocument);
+  }
 }
