@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/modules/collection.dart';
 
 typedef DocumentId = String;
@@ -27,19 +26,6 @@ class Document<ObjectClass> {
   late Map<String, dynamic> data;
 
   bool exists;
-
-  T value<T>(String field, T fallback) {
-    var value = data[field];
-    if (value != null) {
-      // Special case where every DateTime needs to be converted to Timestamp, as
-      // we only provide Timestamp to ensure server/cache works in harmony
-      if (value is DateTime) {
-        return Timestamp.fromDate(value) as T;
-      }
-      return value as T;
-    }
-    return fallback;
-  }
 
   static Map<String, dynamic> convertTime(Map<String, dynamic> data) {
     data.forEach((key, value) {
