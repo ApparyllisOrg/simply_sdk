@@ -1,6 +1,6 @@
 name: simply_sdk
 description: SDK for Apparyllis API
-version: 1.0.11
+version: 1.0.12
 author:
 
 publish_to: none
@@ -18,7 +18,7 @@ dependencies:
   uuid: ^3.0.4
   mongo_dart: ^0.7.0+2
   universal_html: ^2.0.8
-  cloud_firestore: ^1.0.1 
+  cloud_firestore: ^1.0.1
   shared_preferences: ^2.0.8
   source_gen: ^1.2.0
 

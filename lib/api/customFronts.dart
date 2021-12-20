@@ -40,8 +40,6 @@ class CustomFrontData implements DocumentData {
 }
 
 class CustomFronts extends Collection {
-  List<Document<CustomFrontData>> _cachedCustomFronts = [];
-
   @override
   String get type => "CustomFronts";
 
@@ -69,23 +67,11 @@ class CustomFronts extends Collection {
         collection.map((e) => CustomFrontData()..constructFromJson(e))
             as List<Document<CustomFrontData>>;
 
-    _cachedCustomFronts = customFronts;
-
     return customFronts;
   }
 
   @override
   void update(String documentId, DocumentData values) {
     updateSimpleDocument(type, "v1/customFront", documentId, values);
-  }
-
-  List<Document<CustomFrontData>> getAllCachedCustomfronts() {
-    return _cachedCustomFronts;
-  }
-
-  @override
-  void propogateChanges(Document<DocumentData> change) {
-    super.propogateChanges(change);
-    updateDocumentInList(_cachedCustomFronts, change);
   }
 }

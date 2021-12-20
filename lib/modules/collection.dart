@@ -6,10 +6,14 @@ abstract class DocumentData {
   constructFromJson(Map<String, dynamic> json);
 }
 
+enum EChangeType { Add, Update, Delete }
+
+typedef DocumentChange = void Function(Document<DocumentData>, EChangeType);
+
 abstract class Collection {
   String type = "NONE";
 
-  List<ValueChanged<Document<DocumentData>>?> boundChanges = [];
+  List<DocumentChange?> boundChanges = [];
 
   Future<Document<DocumentData>> get(String id);
   Future<List<Document<DocumentData>>> getAll();
@@ -17,17 +21,17 @@ abstract class Collection {
   void update(String documentId, DocumentData values);
   void delete(String documentId);
 
-  void listenForChanges(ValueChanged<Document<DocumentData>> bindFunc) {
+  void listenForChanges(DocumentChange bindFunc) {
     boundChanges.add(bindFunc);
   }
 
-  void cancelListenForChanges(ValueChanged<Document<DocumentData>> bindFunc) {
+  void cancelListenForChanges(DocumentChange bindFunc) {
     boundChanges.remove(bindFunc);
   }
 
-  void propogateChanges(Document<DocumentData> change) {
+  void propogateChanges(Document<DocumentData> change, EChangeType changeType) {
     boundChanges.forEach((element) {
-      if (element != null) element(change);
+      if (element != null) element(change, changeType);
     });
   }
 }

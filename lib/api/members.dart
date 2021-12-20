@@ -53,7 +53,6 @@ class MemberData implements DocumentData {
 }
 
 class Members extends Collection {
-  List<Document<MemberData>> _cachedMembers = [];
 
   @override
   String get type => "Members";
@@ -82,23 +81,12 @@ class Members extends Collection {
         collection.map((e) => MemberData()..constructFromJson(e))
             as List<Document<MemberData>>;
 
-    _cachedMembers = members;
-
     return members;
   }
 
-  List<Document<MemberData>> getAllCachedMembers() {
-    return _cachedMembers;
-  }
 
   @override
   void update(String documentId, DocumentData values) {
     updateSimpleDocument(type, "v1/member", documentId, values);
-  }
-
-  @override
-  void propogateChanges(Document<DocumentData> change) {
-    super.propogateChanges(change);
-    updateDocumentInList(_cachedMembers, change);
   }
 }

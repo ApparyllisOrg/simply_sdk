@@ -52,12 +52,18 @@ Future<List<Map<String, dynamic>>> getCollection<ObjectType>(
   return [];
 }
 
-void updateDocumentInList(List<Document> documents, Document updatedDocument) {
-  int index =
-      documents.indexWhere((element) => element.id == updatedDocument.id);
-  if (index > 0) {
-    documents[index] = updatedDocument;
-  } else {
-    documents.add(updatedDocument);
+void updateDocumentInList(List<Document> documents, Document updatedDocument, EChangeType changeType) {
+  if (changeType == EChangeType.Delete)
+  {
+    documents.removeWhere((element) => element.id == updatedDocument.id);
+  }
+  else{
+    int index =
+        documents.indexWhere((element) => element.id == updatedDocument.id);
+    if (index > 0) {
+      documents[index] = updatedDocument;
+    } else {
+      documents.add(updatedDocument);
+    }
   }
 }

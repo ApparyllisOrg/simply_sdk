@@ -44,8 +44,6 @@ class GroupData implements DocumentData {
 }
 
 class Groups extends Collection {
-  List<Document<GroupData>> _cachedGroups = [];
-
   @override
   String get type => "Groups";
 
@@ -73,23 +71,11 @@ class Groups extends Collection {
         collection.map((e) => GroupData()..constructFromJson(e))
             as List<Document<GroupData>>;
 
-    _cachedGroups = groups;
-
     return groups;
   }
 
   @override
   void update(String documentId, DocumentData values) {
     updateSimpleDocument(type, "v1/group", documentId, values);
-  }
-
-  List<Document<GroupData>> getAllCachedGroups() {
-    return _cachedGroups;
-  }
-
-  @override
-  void propogateChanges(Document<DocumentData> change) {
-    super.propogateChanges(change);
-    updateDocumentInList(_cachedGroups, change);
   }
 }
