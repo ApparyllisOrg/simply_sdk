@@ -5,7 +5,6 @@ import 'package:simply_sdk/api/comments.dart';
 import 'package:simply_sdk/api/customFronts.dart';
 import 'package:simply_sdk/api/friends.dart';
 import 'package:simply_sdk/api/frontHistory.dart';
-import 'package:simply_sdk/api/fronters.dart';
 import 'package:simply_sdk/api/groups.dart';
 import 'package:simply_sdk/api/members.dart';
 import 'package:simply_sdk/api/notes.dart';
@@ -19,6 +18,7 @@ import 'package:simply_sdk/modules/cache.dart';
 import 'package:simply_sdk/modules/config.dart';
 import 'package:simply_sdk/modules/connection.dart';
 import 'package:simply_sdk/modules/socket.dart';
+import 'package:simply_sdk/modules/store.dart';
 import 'package:simply_sdk/modules/subscriptions.dart';
 
 import 'modules/network.dart';
@@ -57,7 +57,6 @@ class API {
   final Comments _comments = Comments();
   final CustomFronts _customFronts = CustomFronts();
   final Friends _friends = Friends();
-  final Fronters _fronters = Fronters();
   final FrontHistory _frontHistory = FrontHistory();
   final Groups _groups = Groups();
   final Members _members = Members();
@@ -67,6 +66,7 @@ class API {
   final RepeatedTimers _repeatedTimers = RepeatedTimers();
   final Storage _storage = Storage();
   final Users _users = Users();
+  final Store _store = Store();
 
   // Declare global getters
   Auth auth() => _auth;
@@ -82,7 +82,6 @@ class API {
   Comments comments() => _comments;
   CustomFronts customFronts() => _customFronts;
   Friends friends() => _friends;
-  Fronters fronters() => _fronters;
   FrontHistory frontHistory() => _frontHistory;
   Groups groups() => _groups;
   Members members() => _members;
@@ -92,6 +91,7 @@ class API {
   RepeatedTimers repeatedTimers() => _repeatedTimers;
   Storage storage() => _storage;
   Users users() => _users;
+  Store store() => _store;
 
   void reportError(e, StackTrace trace) {
     try {

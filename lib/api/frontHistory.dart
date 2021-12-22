@@ -3,11 +3,13 @@ import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/types/document.dart';
+
 class FrontHistoryData implements DocumentData {
   bool? custom;
   Timestamp? startTime;
   Timestamp? endTime;
   String? member;
+  bool? live;
 
   @override
   Map<String, dynamic> toJson() {
@@ -17,6 +19,7 @@ class FrontHistoryData implements DocumentData {
     insertData("startTime", startTime, payload);
     insertData("endTime", endTime, payload);
     insertData("member", member, payload);
+    insertData("live", live, payload);
 
     return payload;
   }
@@ -27,6 +30,7 @@ class FrontHistoryData implements DocumentData {
     startTime = readDataFromJson("startTime", json);
     endTime = readDataFromJson("endTime", json);
     member = readDataFromJson("member", json);
+    live = readDataFromJson("live", json);
   }
 }
 

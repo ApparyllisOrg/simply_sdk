@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
+import 'package:simply_sdk/modules/http.dart';
 import 'package:simply_sdk/types/document.dart';
 
 class NoteData implements DocumentData {
@@ -54,6 +57,14 @@ class Notes extends Collection {
 
   @override
   Future<List<Document<NoteData>>> getAll() async {
+    return [];
+  }
+
+  Future<List<Document<NoteData>>> getNotesForMember(String member, String systemId) async {
+    var response = await SimplyHttpClient().patch(Uri.parse('v1/notes/$systemId/$member'));
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
     return [];
   }
 
