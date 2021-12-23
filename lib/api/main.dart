@@ -45,7 +45,9 @@ void deleteSimpleDocument(String type, String path, String id) {
 
 Future<List<Map<String, dynamic>>> getCollection<ObjectType>(
     String path, String id) async {
-  var response = await SimplyHttpClient().patch(Uri.parse("$path/$id"));
+  var response = await SimplyHttpClient().patch(Uri.parse( API()
+              .connection()
+              .getRequestUrl("$path/$id", "")));
   if (response.statusCode == 200) {
     return jsonDecode(response.body);
   }

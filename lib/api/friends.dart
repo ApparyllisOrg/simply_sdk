@@ -6,6 +6,8 @@ import 'package:simply_sdk/api/users.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/modules/http.dart';
+import 'package:simply_sdk/modules/network.dart';
+import 'package:simply_sdk/types/document.dart';
 import 'package:simply_sdk/types/request.dart';
 
 import '../simply_sdk.dart';
@@ -22,7 +24,7 @@ class FriendSettingsData implements DocumentData {
   bool? seeFront;
   bool? seeMembers;
   bool? getFrontNotif;
-  bool? trustedFriend;
+  bool? trusted;
   bool? getTheirFrontNotif;
 
   @override
@@ -30,7 +32,7 @@ class FriendSettingsData implements DocumentData {
     seeFront = readDataFromJson("seeFront", json);
     seeMembers = readDataFromJson("seeMembers", json);
     getFrontNotif = readDataFromJson("getFrontNotif", json);
-    trustedFriend = readDataFromJson("trustedFriend", json);
+    trusted = readDataFromJson("trusted", json);
     getTheirFrontNotif = readDataFromJson("getTheirFrontNotif", json);
   }
 
@@ -41,7 +43,7 @@ class FriendSettingsData implements DocumentData {
     insertData("seeFront", seeFront, payload);
     insertData("seeMembers", seeMembers, payload);
     insertData("getFrontNotif", getFrontNotif, payload);
-    insertData("trustedFriend", trustedFriend, payload);
+    insertData("trusted", trusted, payload);
     insertData("getTheirFrontNotif", getTheirFrontNotif, payload);
 
     return payload;
@@ -150,20 +152,42 @@ class Friends {
     });
   }
 
-  List<UserData> _convertResponseIntoUsers(Response response) {
+  List<Document<UserData>> _convertResponseIntoUsers(Response response) {
     var jsonResponse = jsonDecode(response.body);
     List<Map<String, dynamic>> userResults = jsonResponse["results"];
 
-    List<UserData> users = [];
+    List<Document<UserData>> users = [];
 
     for (var i = 0; i < userResults.length; ++i) {
-      users.add(UserData().constructFromJson(userResults[i]));
+      users.add(Document(true, userResults[i]["uid"],
+          UserData().constructFromJson(userResults[i]), "friends"));
     }
 
     return users;
   }
 
-  Future<List<UserData>> getFriends() {
+  Future<Document<UserData>?> getFriend(String uid) async {
+    var response = await SimplyHttpClient()
+        .get(Uri.parse(API().connection().getRequestUrl('v1/friend/$uid', "")));
+    var jsonResponse = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      return Document(
+          true, uid, UserData().constructFromJson(jsonResponse), "friends");
+    } else {
+      return null;
+    }
+  }
+
+  void updateFriend(String uid, FriendSettingsData settings) async {
+    API().network().request(new NetworkRequest(
+      HttpRequestMethod.Patch,
+      'v1/friend/$uid',
+      DateTime.now().millisecondsSinceEpoch,
+      payload: settings.toJson()));
+  }
+
+  Future<List<Document<UserData>>> getFriends() {
     return Future(() async {
       try {
         var response = await SimplyHttpClient().get(
@@ -180,7 +204,7 @@ class Friends {
     });
   }
 
-  Future<List<UserData>> getIncomingFriendRequests() {
+  Future<List<Document<UserData>>> getIncomingFriendRequests() {
     return Future(() async {
       try {
         var response = await SimplyHttpClient().get(Uri.parse(API()
@@ -198,7 +222,7 @@ class Friends {
     });
   }
 
-  Future<List<UserData>> getOutgoingFriendRequests() {
+  Future<List<Document<UserData>>> getOutgoingFriendRequests() {
     return Future(() async {
       try {
         var response = await SimplyHttpClient().get(Uri.parse(API()
