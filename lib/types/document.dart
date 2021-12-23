@@ -28,11 +28,6 @@ class Document<ObjectClass> {
   bool exists;
 
   static Map<String, dynamic> convertTime(Map<String, dynamic> data) {
-    data.forEach((key, value) {
-      if (key.toLowerCase().contains("time") && value is int) {
-        data[key] = Timestamp.fromMillisecondsSinceEpoch(value);
-      }
-    });
     return data;
   }
 

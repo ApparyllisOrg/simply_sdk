@@ -53,6 +53,8 @@ class PollData implements DocumentData {
   bool? allowVeto;
   List<PollOptionData>? options;
   List<PollVoteData>? votes;
+  bool? custom;
+  int? endTime;
 
   @override
   Map<String, dynamic> toJson() {
@@ -64,6 +66,8 @@ class PollData implements DocumentData {
     insertData("allowVeto", allowVeto, payload);
     insertData("options", options, payload);
     insertData("votes", votes, payload);
+    insertData("custom", custom, payload);
+    insertData("endTime", endTime, payload);
 
     return payload;
   }
@@ -76,6 +80,8 @@ class PollData implements DocumentData {
     allowVeto = readDataFromJson("allowVeto", json);
     options = readDataFromJson("options", json);
     votes = readDataFromJson("votes", json);
+    custom = readDataFromJson("custom", json);
+    endTime = readDataFromJson("endTime", json);
   }
 }
 

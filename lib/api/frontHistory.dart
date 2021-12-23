@@ -1,13 +1,16 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
+import 'package:simply_sdk/modules/http.dart';
 import 'package:simply_sdk/types/document.dart';
 
 class FrontHistoryData implements DocumentData {
   bool? custom;
-  Timestamp? startTime;
-  Timestamp? endTime;
+  int? startTime;
+  int? endTime;
   String? member;
   bool? live;
 
@@ -55,6 +58,14 @@ class FrontHistory extends Collection {
 
   @override
   Future<List<Document<FrontHistoryData>>> getAll() async {
+    return [];
+  }
+
+  Future<List<Document<FrontHistoryData>>> getCurrentFronters() async {
+     var response = await SimplyHttpClient().get(Uri.parse('v1/fronters'));
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
     return [];
   }
 

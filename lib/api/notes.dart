@@ -12,7 +12,7 @@ class NoteData implements DocumentData {
   String? note;
   String? color;
   String? member;
-  Timestamp? date;
+  int? date;
 
   @override
   Map<String, dynamic> toJson() {
@@ -61,7 +61,7 @@ class Notes extends Collection {
   }
 
   Future<List<Document<NoteData>>> getNotesForMember(String member, String systemId) async {
-    var response = await SimplyHttpClient().patch(Uri.parse('v1/notes/$systemId/$member'));
+    var response = await SimplyHttpClient().get(Uri.parse('v1/notes/$systemId/$member'));
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     }

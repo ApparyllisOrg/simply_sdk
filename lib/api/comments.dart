@@ -1,10 +1,13 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
+import 'package:simply_sdk/modules/http.dart';
 import 'package:simply_sdk/types/document.dart';
 class CommentData implements DocumentData {
-  Timestamp? time;
+  int? time;
   String? text;
   String? documentId;
   String? collection;
@@ -51,6 +54,15 @@ class Comments extends Collection {
 
   @override
   Future<List<Document<CommentData>>> getAll() async {
+    return [];
+  }
+
+
+  Future<List<Document<CommentData>>> getCommentsForDocument(String documentId) async {
+     var response = await SimplyHttpClient().get(Uri.parse('v1/comments/$documentId'));
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
     return [];
   }
 

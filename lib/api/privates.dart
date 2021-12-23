@@ -5,7 +5,7 @@ import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/types/document.dart';
 
 class PrivateData implements DocumentData {
-  List<String>? notificationTokens;
+  List<String>? notificationToken;
   int? latestVersion;
   String? location;
   bool? termsOfServicesAccepted;
@@ -15,7 +15,7 @@ class PrivateData implements DocumentData {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
 
-    insertData("notificationTokens", notificationTokens, payload);
+    insertData("notificationToken", notificationToken, payload);
     insertData("latestVersion", latestVersion, payload);
     insertData("location", location, payload);
     insertData("termsOfServicesAccepted", termsOfServicesAccepted, payload);
@@ -25,7 +25,7 @@ class PrivateData implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    notificationTokens = readDataFromJson("notificationTokens", json);
+    notificationToken = readDataFromJson("notificationToken", json);
     latestVersion = readDataFromJson("latestVersion", json);
     location = readDataFromJson("location", json);
     termsOfServicesAccepted = readDataFromJson("termsOfServicesAccepted", json);

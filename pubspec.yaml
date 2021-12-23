@@ -1,7 +1,6 @@
 name: simply_sdk
 description: SDK for Apparyllis API
-version: 1.0.13
-author:
+version: 1.0.14
 
 publish_to: none
 
