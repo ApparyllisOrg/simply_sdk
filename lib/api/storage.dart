@@ -1,27 +1,29 @@
 import 'dart:typed_data';
 
 import 'package:simply_sdk/modules/http.dart';
+import 'package:simply_sdk/types/request.dart';
 
 import '../simply_sdk.dart';
 
 class Storage {
-  Future<bool> storeAvatar(String avatarUuid, Uint8List bytes) async {
+  Future<RequestResponse> storeAvatar(String avatarUuid, Uint8List bytes) async {
     try {
       await SimplyHttpClient().post(
           Uri.parse(
               API().connection().getRequestUrl("v1/avatar/$avatarUuid", "")),
           body: {"buffer": bytes});
 
-      return true;
+      return RequestResponse(true, "");
     } catch (e) {}
-    return false;
+    return RequestResponse(false, "Something went wrong");
   }
 
-  Future<void> deleteAvatar(String avatarUuid) async {
+  Future<RequestResponse> deleteAvatar(String avatarUuid) async {
     try {
       await SimplyHttpClient().delete(Uri.parse(
           API().connection().getRequestUrl("v1/avatar/$avatarUuid", "")));
+      return RequestResponse(true, "");
     } catch (e) {}
-    return;
+    return RequestResponse(false, "Something went wrong");
   }
 }

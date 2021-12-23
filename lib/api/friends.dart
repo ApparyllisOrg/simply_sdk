@@ -139,7 +139,7 @@ class Friends {
     return Future(() async {
       try {
         var response = await SimplyHttpClient().get(Uri.parse(
-            API().connection().getRequestUrl("1/fronters/$userId", "")));
+            API().connection().getRequestUrl("v1/friend/$userId/getFront", "")));
 
         var jsonResponse = jsonDecode(response.body);
         if (response.statusCode == 200) {
