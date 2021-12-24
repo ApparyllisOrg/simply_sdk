@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart' as fir;
 import 'package:http/http.dart';
 import 'package:mongo_dart/mongo_dart.dart';
@@ -114,10 +116,7 @@ class Users extends Collection {
 
   Future<RequestResponse> setUsername(String newUsername, String userId) async {
     try {
-      var response = await SimplyHttpClient().patch(
-          Uri.parse(
-              API().connection().getRequestUrl("v1/user/username/$userId", "")),
-          body: {"username": newUsername});
+      var response = await SimplyHttpClient().patch(Uri.parse(API().connection().getRequestUrl("v1/user/username/$userId", "")), body: jsonEncode({"username": newUsername}));
 
       return createResponseObject(response);
     } catch (e) {}
