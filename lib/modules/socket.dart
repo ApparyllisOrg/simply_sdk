@@ -87,7 +87,9 @@ class Socket {
     gotHello = false;
     isDisconnected = false;
     try {
-      _socket = WebSocketChannel.connect(Uri.parse('wss://api.apparyllis.com:8443'));
+      String overrideIp = String.fromEnvironment("ip");
+      String socketUrl = overrideIp.isNotEmpty ? overrideIp : 'wss://api.apparyllis.com:8443';
+      _socket = WebSocketChannel.connect(Uri.parse(socketUrl));
 
       _socket!.stream.handleError((err) => disconnected());
       _socket!.stream.listen(onData);
@@ -219,7 +221,9 @@ class Socket {
 
   void onData(event) {
     gotHello = true;
-    onReceivedData(event);
+    if (event is String && event.isNotEmpty) {
+      onReceivedData(event);
+    }
   }
 
   void onReceivedData(event) async {

@@ -15,7 +15,9 @@ class Connection {
   }
 
   String getRequestUrl(String path, String query) {
-    return "$currentHost/$path?$query";
+    String overrideIp = String.fromEnvironment("ip");
+    String useIp = overrideIp.isNotEmpty ? overrideIp : currentHost;
+    return "$useIp/$path?$query";
   }
 
   void setDebugMode(bool debug) {
