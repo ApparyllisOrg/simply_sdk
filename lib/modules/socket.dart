@@ -87,7 +87,7 @@ class Socket {
     gotHello = false;
     isDisconnected = false;
     try {
-      String overrideIp = const String.fromEnvironment("ip");
+      String overrideIp = const String.fromEnvironment("IP");
       String socketUrl = overrideIp.isNotEmpty ? overrideIp : 'wss://api.apparyllis.com:8443';
       _socket = WebSocketChannel.connect(Uri.parse(socketUrl));
 
