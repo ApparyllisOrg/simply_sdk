@@ -28,7 +28,11 @@ class APISettings {}
 
 class API {
   static API? _instance;
-  factory API() => _instance ??= API();
+  factory API() {
+    if (_instance != null) return _instance!;
+    _instance = API();
+    return _instance!;
+  }
 
   Future<void> initialize({APISettings? settings}) async {
     _auth = Auth();
