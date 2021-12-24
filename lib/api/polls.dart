@@ -28,11 +28,13 @@ class PollOptionData implements DocumentData {
 class PollVoteData implements DocumentData {
   String? id;
   String? vote;
+  String? comment;
 
   @override
   constructFromJson(Map<String, dynamic> json) {
     id = readDataFromJson("id", json);
     vote = readDataFromJson("vote", json);
+    comment = readDataFromJson("comment", json);
   }
 
   @override
@@ -41,6 +43,7 @@ class PollVoteData implements DocumentData {
 
     insertData("id", id, payload);
     insertData("vote", vote, payload);
+    insertData("comment", comment, payload);
 
     return payload;
   }
