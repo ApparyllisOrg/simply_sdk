@@ -27,11 +27,8 @@ import 'modules/network.dart';
 class APISettings {}
 
 class API {
-  static API _singleton = API();
-
-  factory API() {
-    return _singleton;
-  }
+  static API? _instance;
+  factory API() => _instance ??= API();
 
   Future<void> initialize({APISettings? settings}) async {
     _auth = Auth();
