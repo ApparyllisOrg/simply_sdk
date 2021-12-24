@@ -27,8 +27,16 @@ import 'modules/network.dart';
 class APISettings {}
 
 class API {
-  static final API _instance = API();
-  factory API() => _instance;
+  static API? _instance;
+
+  API._() {}
+
+  factory API() {
+    if (_instance == null) {
+      _instance = new API._();
+    }
+    return _instance!;
+  }
 
   Future<void> initialize({APISettings? settings}) async {
     await _cache.initialize("");
