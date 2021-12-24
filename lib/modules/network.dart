@@ -7,13 +7,7 @@ import 'package:simply_sdk/modules/http.dart';
 
 import '../simply_sdk.dart';
 
-enum HttpRequestMethod
-{
-  Post,
-  Patch,
-  Delete,
-  Get
-}
+enum HttpRequestMethod { Post, Patch, Delete, Get }
 
 class NetworkRequest {
   final HttpRequestMethod method;
@@ -23,8 +17,7 @@ class NetworkRequest {
   final int timestamp;
   final Function? onDone;
 
-  NetworkRequest(this.method, this.path, this.timestamp,
-      {this.query, this.payload, this.onDone});
+  NetworkRequest(this.method, this.path, this.timestamp, {this.query, this.payload, this.onDone});
 }
 
 // TODO: Save pending network requests
@@ -42,9 +35,7 @@ class Network {
         NetworkRequest request = _pendingRequests[i];
 
         requestsToSend.add(Future(() async {
-          String url = API()
-              .connection()
-              .getRequestUrl(request.path, request.query ?? "");
+          String url = API().connection().getRequestUrl(request.path, request.query ?? "");
 
           Uri uri = Uri.parse(url);
 
@@ -54,29 +45,22 @@ class Network {
             switch (request.method) {
               case HttpRequestMethod.Delete:
                 {
-                  response = await SimplyHttpClient().delete(uri,
-                      headers: {"Operation-Time": request.timestamp.toString()},
-                      body: request.payload);
+                  response = await SimplyHttpClient().delete(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: request.payload);
                   break;
                 }
               case HttpRequestMethod.Patch:
                 {
-                  response = await SimplyHttpClient().patch(uri,
-                      headers: {"Operation-Time": request.timestamp.toString()},
-                      body: request.payload);
+                  response = await SimplyHttpClient().patch(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: request.payload);
                   break;
                 }
               case HttpRequestMethod.Post:
                 {
-                  response = await SimplyHttpClient().post(uri,
-                      headers: {"Operation-Time": request.timestamp.toString()},
-                      body: request.payload);
+                  response = await SimplyHttpClient().post(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: request.payload);
                   break;
                 }
               default:
                 {
-                  API().reportError("Attempting to send an unsupported method",
-                      StackTrace.current);
+                  API().reportError("Attempting to send an unsupported method", StackTrace.current);
                   _pendingRequests.remove(request);
                   break;
                 }
@@ -86,7 +70,9 @@ class Network {
               _pendingRequests.remove(request);
               request.onDone!();
             }
-          } catch (e) {}
+          } catch (e) {
+            print(e);
+          }
         }));
       }
       await Future.wait(requestsToSend);
