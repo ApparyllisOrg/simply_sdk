@@ -5,6 +5,7 @@ import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/modules/http.dart';
+import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
 
 class FrontHistoryData implements DocumentData {
@@ -59,13 +60,22 @@ class FrontHistory extends Collection {
     return Document(true, "", FrontHistoryData(), type);
   }
 
+  @deprecated
   @override
   Future<List<Document<FrontHistoryData>>> getAll() async {
+    throw UnimplementedError();
+  }
+
+  Future<List<Document<FrontHistoryData>>> getFrontHistoryInRange(int start, int end) async {
+    var response = await SimplyHttpClient().get(Uri.parse('v1/frontHistory/${API().auth().getUid()}'));
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
     return [];
   }
 
   Future<List<Document<FrontHistoryData>>> getCurrentFronters() async {
-     var response = await SimplyHttpClient().get(Uri.parse('v1/fronters'));
+    var response = await SimplyHttpClient().get(Uri.parse('v1/fronters'));
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     }
