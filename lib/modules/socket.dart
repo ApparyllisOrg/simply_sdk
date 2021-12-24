@@ -87,7 +87,7 @@ class Socket {
     gotHello = false;
     isDisconnected = false;
     try {
-      String overrideIp = String.fromEnvironment("ip");
+      String overrideIp = const String.fromEnvironment("ip");
       String socketUrl = overrideIp.isNotEmpty ? overrideIp : 'wss://api.apparyllis.com:8443';
       _socket = WebSocketChannel.connect(Uri.parse(socketUrl));
 
@@ -229,7 +229,9 @@ class Socket {
   void onReceivedData(event) async {
     Map<String, dynamic> data = jsonDecode(event, reviver: customDecode);
 
-    String msg = data["msg"];
+    String? msg = data["msg"];
+
+    if (msg == null) return;
 
     if (msg == "update") {
       for (Subscription sub in _subscriptions) {
