@@ -31,24 +31,17 @@ class API {
   factory API() => _instance;
 
   Future<void> initialize({APISettings? settings}) async {
-    _auth = Auth();
-    _cache = Cache();
-    _connection = Connection();
-    _socket = Socket();
-    _network = Network();
-    _documentSubscriptions = DocumentSubscriptions();
-    _remoteConfig = RemoteConfig();
     await _cache.initialize("");
   }
 
   // Declare globals
-  late Auth _auth;
-  late Cache _cache;
-  late Connection _connection;
-  late Network _network;
-  late Socket _socket;
-  late DocumentSubscriptions _documentSubscriptions;
-  late RemoteConfig _remoteConfig;
+  final Auth _auth = Auth();
+  final Cache _cache = Cache();
+  final Connection _connection = Connection();
+  final Network _network = Network();
+  final Socket _socket = Socket();
+  final DocumentSubscriptions _documentSubscriptions = DocumentSubscriptions();
+  final RemoteConfig _remoteConfig = RemoteConfig();
 
   // Declare Api globals
   final AutomatedTimers _automatedTimers = AutomatedTimers();
