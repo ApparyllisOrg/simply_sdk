@@ -8,6 +8,7 @@ import 'package:simply_sdk/api/frontHistory.dart';
 import 'package:simply_sdk/api/groups.dart';
 import 'package:simply_sdk/api/members.dart';
 import 'package:simply_sdk/api/notes.dart';
+import 'package:simply_sdk/api/pk.dart';
 import 'package:simply_sdk/api/polls.dart';
 import 'package:simply_sdk/api/privates.dart';
 import 'package:simply_sdk/api/repeatedTimers.dart';
@@ -67,6 +68,7 @@ class API {
   final Storage _storage = Storage();
   final Users _users = Users();
   final Store _store = Store();
+  final PK _pk = PK();
 
   // Declare global getters
   Auth auth() => _auth;
@@ -92,6 +94,7 @@ class API {
   Storage storage() => _storage;
   Users users() => _users;
   Store store() => _store;
+  PK pk() => _pk;
 
   void reportError(e, StackTrace trace) {
     try {

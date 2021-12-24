@@ -13,6 +13,7 @@ class FrontHistoryData implements DocumentData {
   int? endTime;
   String? member;
   bool? live;
+  int? commentCount;
 
   @override
   Map<String, dynamic> toJson() {
@@ -23,6 +24,7 @@ class FrontHistoryData implements DocumentData {
     insertData("endTime", endTime, payload);
     insertData("member", member, payload);
     insertData("live", live, payload);
+    // Never send comment count
 
     return payload;
   }
@@ -34,6 +36,7 @@ class FrontHistoryData implements DocumentData {
     endTime = readDataFromJson("endTime", json);
     member = readDataFromJson("member", json);
     live = readDataFromJson("live", json);
+    commentCount = readDataFromJson("commentCount", json);
   }
 }
 

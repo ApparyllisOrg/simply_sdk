@@ -73,9 +73,9 @@ class Members extends Collection {
   }
 
   @override
-  Future<List<Document<MemberData>>> getAll() async {
+  Future<List<Document<MemberData>>> getAll({String? uid}) async {
     var collection = await getCollection<MemberData>(
-        "v1/members", API().auth().getUid() ?? "");
+        "v1/members/${(uid ?? API().auth().getUid()) ?? ""}", "");
 
     List<Document<MemberData>> members =
         collection.map((e) => MemberData()..constructFromJson(e))

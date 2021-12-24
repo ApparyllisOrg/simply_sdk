@@ -59,9 +59,9 @@ class CustomFronts extends Collection {
   }
 
   @override
-  Future<List<Document<CustomFrontData>>> getAll() async {
+  Future<List<Document<CustomFrontData>>> getAll({String? uid}) async {
     var collection = await getCollection<CustomFrontData>(
-        "v1/customFronts", API().auth().getUid() ?? "");
+        "v1/customFronts/${(uid ?? API().auth().getUid()) ?? ""}", "");
 
     List<Document<CustomFrontData>> customFronts =
         collection.map((e) => CustomFrontData()..constructFromJson(e))

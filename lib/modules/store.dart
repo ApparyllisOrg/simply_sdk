@@ -18,6 +18,8 @@ class Store {
   List<Document<GroupData>> getAllGroups() => _groups;
   List<Document<FrontHistoryData>> getFronters() => _fronters;
 
+  List<void Function(Document<FrontHistoryData>)> _frontChanges = [];
+
   void initializeStore() async {
     clearStore();
     _members = await API().members().getAll();
@@ -35,6 +37,7 @@ class Store {
     _members = [];
     _customFronts = [];
     _groups = [];
+    _frontChanges = [];
 
     API().members().cancelListenForChanges(memberChanged);
     API().customFronts().cancelListenForChanges(customFrontChanged);
@@ -55,6 +58,35 @@ class Store {
   }
 
   void frontHistoryChanged(Document<dynamic> data, EChangeType changeType) {
+    int index = _fronters.indexWhere((element) => element.id == data.id);
+
+    Document<FrontHistoryData> fhDoc = data as Document<FrontHistoryData>;
+    if (index >= 0) {
+      // If we're no longer a live fronter, notify of front change
+      bool wasLive = (_fronters[index].dataObject.live ?? false) == true;
+      bool isLive = (fhDoc.dataObject.live ?? false) == false;
+
+      if (wasLive && !isLive) {
+         _notifyFrontChange(fhDoc);
+      }
+
+      // If was live and is live but member or time change, also notify of front changes
+      if (wasLive && isLive) {
+        if (fhDoc.dataObject.startTime !=
+            _fronters[index].dataObject.startTime) {
+
+          _notifyFrontChange(fhDoc);
+
+        } else if (fhDoc.dataObject.member !=
+            _fronters[index].dataObject.member) {
+
+          _notifyFrontChange(fhDoc);
+        }
+      }
+    } else if ((_fronters[index].dataObject.live ?? false) == true) {
+        _notifyFrontChange(fhDoc);
+    }
+
     updateDocumentInList(_fronters, data, changeType);
     _fronters
         .removeWhere((element) => (element.dataObject.live ?? true) == false);
@@ -92,8 +124,24 @@ class Store {
   }
 
   Document<FrontHistoryData>? getFronterById(String id) {
-    int index = _fronters.indexWhere((element) => element.dataObject.member == id);
+    int index =
+        _fronters.indexWhere((element) => element.dataObject.member == id);
     if (index >= 0) return _fronters[index];
     return null;
+  }
+
+  void listenForFrontChanges(void Function(Document<FrontHistoryData>) func) {
+    _frontChanges.add(func);
+  }
+
+  void cancelListenForFrontChanges(
+      void Function(Document<FrontHistoryData>) func) {
+    _frontChanges.remove(func);
+  }
+
+  void _notifyFrontChange(Document<FrontHistoryData> doc) {
+    _frontChanges.forEach((element) {
+      element(doc);
+    });
   }
 }

@@ -12,7 +12,7 @@ class CommentData implements DocumentData {
   String? text;
   String? documentId;
   String? collection;
-  int? commentCount;
+
 
   @override
   Map<String, dynamic> toJson() {
@@ -22,7 +22,6 @@ class CommentData implements DocumentData {
     insertData("text", text, payload);
     insertData("documentId", documentId, payload);
     insertData("collection", collection, payload);
-    // Never send comment count
 
     return payload;
   }
@@ -33,7 +32,6 @@ class CommentData implements DocumentData {
     text = readDataFromJson("text", json);
     documentId = readDataFromJson("documentId", json);
     collection = readDataFromJson("collection", json);
-    commentCount = readDataFromJson("commentCount", json);
   }
 }
 
@@ -62,9 +60,9 @@ class Comments extends Collection {
   }
 
   Future<List<Document<CommentData>>> getCommentsForDocument(
-      String documentId) async {
+      String documentId, String type) async {
     var response =
-        await SimplyHttpClient().get(Uri.parse('v1/comments/$documentId'));
+        await SimplyHttpClient().get(Uri.parse('v1/comments/$type/$documentId/'));
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     }
