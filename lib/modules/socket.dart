@@ -37,7 +37,7 @@ class Socket {
     if (isSocketLive()) {
       _socket?.sink.close();
     }
-    if (pingTimer!.isActive) {
+    if (pingTimer?.isActive == true) {
       pingTimer!.cancel();
       pingTimer = null;
     }
@@ -56,8 +56,7 @@ class Socket {
         if (pendingSubscriptions.isNotEmpty) {
           StreamController cont = pendingSubscriptions.first;
 
-          Subscription subscription = _subscriptions
-              .firstWhere((element) => element.controller == cont);
+          Subscription subscription = _subscriptions.firstWhere((element) => element.controller == cont);
           requestDataListen(subscription);
           pendingSubscriptions.removeAt(0);
         }
@@ -70,8 +69,7 @@ class Socket {
 
   Timer? pingTimer;
   bool gotHello = false;
-  bool isSocketLive() =>
-      _socket != null && _socket!.closeCode == null && gotHello;
+  bool isSocketLive() => _socket != null && _socket!.closeCode == null && gotHello;
   WebSocketChannel? getSocket() => _socket;
 
   bool isDisconnected = true;
@@ -89,8 +87,7 @@ class Socket {
     gotHello = false;
     isDisconnected = false;
     try {
-      _socket =
-          WebSocketChannel.connect(Uri.parse('wss://api.apparyllis.com:8443'));
+      _socket = WebSocketChannel.connect(Uri.parse('wss://api.apparyllis.com:8443'));
 
       _socket!.stream.handleError((err) => disconnected());
       _socket!.stream.listen(onData);
@@ -122,8 +119,7 @@ class Socket {
     }
   }
 
-  void updateDocument(
-      Subscription sub, Map<String, dynamic> documentData, String docId) async {
+  void updateDocument(Subscription sub, Map<String, dynamic> documentData, String docId) async {
     int docIndex = sub.documents.indexWhere((element) => element.id == docId);
 
     if (docIndex < 0) {
@@ -137,15 +133,12 @@ class Socket {
 
     Document doc = sub.documents[docIndex];
     doc.data = Document.convertTime(documentData["content"]);
-    API().cache().updateDocument(sub.target, docId, documentData["content"],
-        doTriggerUpdateSubscription: false);
+    API().cache().updateDocument(sub.target, docId, documentData["content"], doTriggerUpdateSubscription: false);
   }
 
   void removeDocument(Subscription sub, String id) async {
     sub.documents.removeWhere((element) => element.id == id);
-    API()
-        .cache()
-        .removeDocument(sub.target, id, doTriggerUpdateSubscription: false);
+    API().cache().removeDocument(sub.target, id, doTriggerUpdateSubscription: false);
   }
 
   void updateCollectionLocally(Subscription sub, Map<String, dynamic> change) {
@@ -164,16 +157,15 @@ class Socket {
     }
   }
 
-  void beOptimistic(String targetCollection, EUpdateType operation, String id,
-      Map<String, dynamic> data) async {
+  void beOptimistic(String targetCollection, EUpdateType operation, String id, Map<String, dynamic> data) async {
     Map<String, dynamic> sendData = {};
     sendData["operationType"] = updateTypeToString(operation);
     sendData["id"] = id;
     sendData["content"] = data;
 
     Document? cacheDoc = await API().cache().getDocument(targetCollection, id);
-    if (cacheDoc!.exists) {
-      Map<String, dynamic> cacheData = cacheDoc.data;
+    if (cacheDoc?.exists == true) {
+      Map<String, dynamic> cacheData = cacheDoc!.data;
       cacheData.addAll(data);
       sendData["content"] = cacheData;
     }
@@ -210,12 +202,10 @@ class Socket {
 
             switch (queuedDoc["action"]) {
               case "update":
-                updateDocument(
-                    sub, {"content": queuedDoc["data"]}, queuedDoc["id"]);
+                updateDocument(sub, {"content": queuedDoc["data"]}, queuedDoc["id"]);
                 break;
               case "add": // We use add, they use insert
-                updateDocument(
-                    sub, {"content": queuedDoc["data"]}, queuedDoc["id"]);
+                updateDocument(sub, {"content": queuedDoc["data"]}, queuedDoc["id"]);
                 break;
               case "delete":
                 removeDocument(sub, queuedDoc["id"]);
@@ -295,8 +285,7 @@ class Socket {
     sub.controller.add(sub.documents);
   }
 
-  Future<StreamController> subscribeToCollection(
-      String target, String collection) {
+  Future<StreamController> subscribeToCollection(String target, String collection) {
     return Future(() {
       StreamController controller = StreamController();
       Subscription sub = Subscription(target, controller);
@@ -312,11 +301,7 @@ class Socket {
   void requestDataListen(Subscription subscription) async {
     assert(isSocketLive());
     try {
-      _socket!.sink.add(jsonEncode({
-        "target": subscription.target,
-        "jwt": API().auth().getToken(),
-        "uniqueId": uniqueConnectionId
-      }, toEncodable: customEncode));
+      _socket!.sink.add(jsonEncode({"target": subscription.target, "jwt": API().auth().getToken(), "uniqueId": uniqueConnectionId}, toEncodable: customEncode));
     } catch (e) {
       API().reportError(e, StackTrace.current);
       disconnected();
