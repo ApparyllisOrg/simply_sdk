@@ -15,8 +15,7 @@ class Cache {
   Map<String, dynamic> _cache = Map<String, dynamic>();
   List<dynamic> _sync = [];
 
-  void removeFromCache(String type, String id,
-      {bool triggerUpdateSubscription: true}) {
+  void removeFromCache(String type, String id, {bool triggerUpdateSubscription: true}) {
     if (_cache[type] != null) {
       _cache[type].remove(id);
     }
@@ -25,10 +24,9 @@ class Cache {
     markDirty();
   }
 
-  void updateToCache(String type, String id, Map<String, dynamic> _data,
-      {bool triggerUpdateSubscription: true}) {
-    Map<String, dynamic> coll = _cache[type];
-    if (_cache[type] != null) {
+  void updateToCache(String type, String id, Map<String, dynamic> _data, {bool triggerUpdateSubscription: true}) {
+    Map<String, dynamic>? coll = _cache[type];
+    if (coll != null) {
       if (coll.containsKey(id)) {
         Map<String, dynamic> dat = _cache[type][id];
         dat.addAll(_data);
@@ -61,7 +59,7 @@ class Cache {
   Map<String, dynamic> getTypeCache(String type) {
     if (_cache.containsKey(type)) {
       Map<String, dynamic> data = _cache[type];
-        return data;
+      return data;
     }
     return Map<String, dynamic>();
   }
@@ -76,8 +74,7 @@ class Cache {
   }
 
   bool hasDataInCacheForType(String type) {
-    return _cache.containsKey(type) &&
-        (_cache[type] as Map<String, dynamic>).length > 0;
+    return _cache.containsKey(type) && (_cache[type] as Map<String, dynamic>).length > 0;
   }
 
   Future<void> clear() {
@@ -111,12 +108,10 @@ class Cache {
       try {
         dirty = false;
         // Save cache
-        html.window.localStorage["db"] =
-            jsonEncode(_cache, toEncodable: customEncode);
+        html.window.localStorage["db"] = jsonEncode(_cache, toEncodable: customEncode);
 
         // Save sync
-        html.window.localStorage["sync"] =
-            jsonEncode(_sync, toEncodable: customEncode);
+        html.window.localStorage["sync"] = jsonEncode(_sync, toEncodable: customEncode);
 
         print("Saved sync and cache");
       } catch (e) {
@@ -139,8 +134,7 @@ class Cache {
 
         // Save sync
         File syncFile = File(syncPath);
-        syncFile
-            .writeAsStringSync(jsonEncode(_sync, toEncodable: customEncode));
+        syncFile.writeAsStringSync(jsonEncode(_sync, toEncodable: customEncode));
 
         print("Saved sync and cache");
       } catch (e) {
@@ -165,15 +159,9 @@ class Cache {
         bool syncExists = html.window.localStorage.containsKey("sync");
         bool dbExists = html.window.localStorage.containsKey("db");
 
-        _sync = syncExists
-            ? jsonDecode(html.window.localStorage["sync"] ?? "",
-                reviver: customDecode) as List<dynamic>
-            : [];
+        _sync = syncExists ? jsonDecode(html.window.localStorage["sync"] ?? "", reviver: customDecode) as List<dynamic> : [];
 
-        _cache = dbExists
-            ? jsonDecode(html.window.localStorage["db"] ?? "",
-                reviver: customDecode) as Map<String, dynamic>
-            : Map<String, dynamic>();
+        _cache = dbExists ? jsonDecode(html.window.localStorage["db"] ?? "", reviver: customDecode) as Map<String, dynamic> : Map<String, dynamic>();
       } else {
         try {
           var dir = await getApplicationDocumentsDirectory();
@@ -186,19 +174,19 @@ class Cache {
 
           if (exists) {
             String jsonObjectString = await file.readAsString();
-            _cache = jsonDecode(jsonObjectString, reviver: customDecode)
-                as Map<String, dynamic>;
+            if (jsonObjectString.isNotEmpty) {
+              _cache = ((jsonDecode(jsonObjectString, reviver: customDecode)) ?? Map<String, dynamic>()) as Map<String, dynamic>;
+            }
           } else {
             _cache = Map<String, dynamic>();
           }
 
           File syncFile = File(syncPath);
-          bool syncEists = await syncFile.exists();
+          bool syncExists = await syncFile.exists();
 
-          if (syncEists) {
+          if (syncExists) {
             String jsonObjectString = await syncFile.readAsString();
-            _sync = jsonDecode(jsonObjectString, reviver: customDecode)
-                as List<dynamic>;
+            _sync = jsonDecode(jsonObjectString, reviver: customDecode) as List<dynamic>;
           } else {
             _sync = [];
           }
@@ -226,102 +214,26 @@ class Cache {
     if (data is int) {
       return data;
     }
-    API().reportError(
-        "data in getTime is not int or timestamp!" + data.toString(),
-        StackTrace.current);
+    API().reportError("data in getTime is not int or timestamp!" + data.toString(), StackTrace.current);
     return 0;
   }
 
-  void enqueueSync(Map<String, dynamic> data) {
-    _sync.add(data);
-    markDirty();
-  }
-
-  void queueDelete(String type, String id) {
-    try {
-      enqueueSync({
-        "queue": true,
-        "id": id,
-        "type": type,
-        "action": "delete",
-        "time": DateTime.now().millisecondsSinceEpoch
-      });
-    } catch (e) {
-      API().reportError(e, StackTrace.current);
-    }
-  }
-
-  void queueUpdate(String type, String id, Map<String, dynamic> data) {
-    try {
-      enqueueSync({
-        "queue": true,
-        "id": id,
-        "type": type,
-        "action": "update",
-        "data": data,
-        "time": DateTime.now().millisecondsSinceEpoch
-      });
-    } catch (e) {
-      API().reportError(e, StackTrace.current);
-    }
-  }
-
-  void queueAdd(
-    String type,
-    String id,
-    Map<String, dynamic> data,
-  ) {
-    try {
-      enqueueSync({
-        "queue": true,
-        "id": id,
-        "type": type,
-        "action": "add",
-        "data": data,
-        "time": DateTime.now().millisecondsSinceEpoch
-      });
-    } catch (e) {
-      API().reportError(e, StackTrace.current);
-    }
-  }
-
-  String insertDocument(String type, String id, Map<String, dynamic> data,
-      {bool doTriggerUpdateSubscription: true}) {
-    try {
-      Map<String, dynamic> dataCopy = Map.from(data);
-      dataCopy["type"] = type;
-      dataCopy["id"] = id;
-      updateToCache(type, id, dataCopy,
-          triggerUpdateSubscription: doTriggerUpdateSubscription);
-    } catch (e) {
-      API().reportError(e, StackTrace.current);
-    }
-
+  String insertDocument(String type, String id, Map<String, dynamic> data, {bool doTriggerUpdateSubscription: true}) {
+    Map<String, dynamic> dataCopy = Map.from(data);
+    dataCopy["type"] = type;
+    dataCopy["id"] = id;
+    updateToCache(type, id, dataCopy, triggerUpdateSubscription: doTriggerUpdateSubscription);
     return id;
   }
 
-  void updateDocument(String type, String id, Map<String, dynamic> data,
-      {bool doTriggerUpdateSubscription: true}) async {
-    try {
-      Map<String, dynamic> dataCopy = Map.from(data);
-      updateToCache(type, id, dataCopy,
-          triggerUpdateSubscription: doTriggerUpdateSubscription);
-    } catch (e) {
-      API().reportError(e, StackTrace.current);
-    }
+  void updateDocument(String type, String id, Map<String, dynamic> data, {bool doTriggerUpdateSubscription: true}) async {
+    Map<String, dynamic> dataCopy = Map.from(data);
+    updateToCache(type, id, dataCopy, triggerUpdateSubscription: doTriggerUpdateSubscription);
   }
 
-  Future<void> removeDocument(String type, String id,
-      {bool doTriggerUpdateSubscription: true}) async {
-    try {
-      removeFromCache(type, id,
-          triggerUpdateSubscription: doTriggerUpdateSubscription);
-    } catch (e) {
-      API().reportError(e, StackTrace.current);
-    }
+  Future<void> removeDocument(String type, String id, {bool doTriggerUpdateSubscription: true}) async {
+    removeFromCache(type, id, triggerUpdateSubscription: doTriggerUpdateSubscription);
   }
-
-
 
   Document? getDocument(String type, String id) {
     try {
@@ -344,9 +256,7 @@ class Cache {
         if (docDataObject != null) {
           return Document(true, id, docDataObject, type, fromCache: true);
         } else {
-          API().reportError(
-              "Unable to convert cached document data to a document data object. Attempt to convert type: $type",
-              StackTrace.current);
+          API().reportError("Unable to convert cached document data to a document data object. Attempt to convert type: $type", StackTrace.current);
         }
         return null;
       } catch (e) {
