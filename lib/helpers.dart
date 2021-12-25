@@ -59,10 +59,10 @@ T readDataFromJson<T>(String propertyName, Map<String, dynamic> json) {
 }
 
 List<T> readDataArrayFromJson<T>(String propertyName, Map<String, dynamic> json) {
-  List oldList = json[propertyName];
+  List? oldList = json[propertyName];
   List<T> newList = [];
 
-  oldList.forEach((element) {
+  oldList?.forEach((element) {
     newList.add(element as T);
   });
 
