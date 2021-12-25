@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:simply_sdk/modules/http.dart';
+import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/request.dart';
 
 class PKSyncSettings {
@@ -23,7 +24,7 @@ class PKSyncAllSettings {
 
 class PK {
   Future<RequestResponse> syncMemberToPk(String memberId, PKSyncSettings settings, String pkToken) async {
-    var response = await SimplyHttpClient().patch(Uri.parse('v1/integrations/pluralkit/sync/member/$memberId?direction=push'),
+    var response = await SimplyHttpClient().patch(Uri.parse(API().connection().getRequestUrl('v1/integrations/pluralkit/sync/member/$memberId', "direction=push")),
         body: jsonEncode({
           "member": memberId,
           "token": pkToken,
@@ -43,7 +44,7 @@ class PK {
   }
 
   Future<RequestResponse> syncMemberFromPk(String memberId, PKSyncSettings settings, String pkToken) async {
-    var response = await SimplyHttpClient().patch(Uri.parse('v1/integrations/pluralkit/sync/member/$memberId?direction=pull'),
+    var response = await SimplyHttpClient().patch(Uri.parse(API().connection().getRequestUrl('v1/integrations/pluralkit/sync/member/$memberId', "direction=pull")),
         body: jsonEncode({
           "member": memberId,
           "token": pkToken,
@@ -62,10 +63,9 @@ class PK {
     return RequestResponse(false, response.body);
   }
 
-  Future<RequestResponse> syncMembersToPk(String memberId, PKSyncSettings settings, PKSyncAllSettings allSettings, String pkToken) async {
-    var response = await SimplyHttpClient().patch(Uri.parse('v1/integrations/pluralkit/sync/members?direction=push'),
+  Future<RequestResponse> syncMembersToPk(PKSyncSettings settings, PKSyncAllSettings allSettings, String pkToken) async {
+    var response = await SimplyHttpClient().patch(Uri.parse(API().connection().getRequestUrl('v1/integrations/pluralkit/sync/members', "direction=push")),
         body: jsonEncode({
-          "member": memberId,
           "token": pkToken,
           "options": {
             "name": settings.syncName,
@@ -75,7 +75,7 @@ class PK {
             "useDisplayName": settings.useDisplayName,
             "color": settings.syncColor,
           },
-          "syncOptions": {"add": allSettings.add, "override": allSettings.override}
+          "syncOptions": {"add": allSettings.add, "overwrite": allSettings.override}
         }));
     if (response.statusCode == 200) {
       return RequestResponse(true, "");
@@ -83,10 +83,9 @@ class PK {
     return RequestResponse(false, response.body);
   }
 
-  Future<RequestResponse> syncMembersFromPk(String memberId, PKSyncSettings settings, PKSyncAllSettings allSettings, String pkToken) async {
-    var response = await SimplyHttpClient().patch(Uri.parse('v1/integrations/pluralkit/sync/members?direction=pull'),
+  Future<RequestResponse> syncMembersFromPk(PKSyncSettings settings, PKSyncAllSettings allSettings, String pkToken) async {
+    var response = await SimplyHttpClient().patch(Uri.parse(API().connection().getRequestUrl('v1/integrations/pluralkit/sync/members', "direction=pull")),
         body: jsonEncode({
-          "member": memberId,
           "token": pkToken,
           "options": {
             "name": settings.syncName,
@@ -96,7 +95,7 @@ class PK {
             "useDisplayName": settings.useDisplayName,
             "color": settings.syncColor,
           },
-          "syncOptions": {"add": allSettings.add, "override": allSettings.override}
+          "syncOptions": {"add": allSettings.add, "overwrite": allSettings.override}
         }));
     if (response.statusCode == 200) {
       return RequestResponse(true, "");

@@ -19,10 +19,7 @@ String updateTypeToString(EUpdateType type) {
   return "";
 }
 
-dynamic getHeader() => {
-      "Content-Type": "application/json",
-      "Authorization": API().auth().getToken()
-    };
+dynamic getHeader() => {"Content-Type": "application/json", "Authorization": API().auth().getToken()};
 
 dynamic customEncode(var obj) {
   if (obj is Timestamp) {
@@ -44,27 +41,35 @@ Object customDecode(dynamic key, dynamic value) {
   return value;
 }
 
-void insertData(String propertyName, dynamic dataToInsert,
-    Map<String, dynamic> dataObject) {
+void insertData(String propertyName, dynamic dataToInsert, Map<String, dynamic> dataObject) {
   if (dataToInsert != null) {
-    if (dataToInsert is DocumentData)
-    {
+    if (dataToInsert is DocumentData) {
       dataObject[propertyName] = dataToInsert.toJson();
-    }
-    else{
+    } else {
       dataObject[propertyName] = dataToInsert;
     }
   }
 }
 
 T readDataFromJson<T>(String propertyName, Map<String, dynamic> json) {
-
-    return json[propertyName];
+  if (json[propertyName] is List) {
+    return json[propertyName] as T;
+  }
+  return json[propertyName] as T;
 }
 
+List<T> readDataArrayFromJson<T>(String propertyName, Map<String, dynamic> json) {
+  List oldList = json[propertyName];
+  List<T> newList = [];
 
-DocumentData? convertJsonToDataObject(
-    Map<String, dynamic> json, String type) {
+  oldList.forEach((element) {
+    newList.add(element as T);
+  });
+
+  return newList;
+}
+
+DocumentData? convertJsonToDataObject(Map<String, dynamic> json, String type) {
   if (type == "Members") {
     return MemberData().constructFromJson(json);
   }

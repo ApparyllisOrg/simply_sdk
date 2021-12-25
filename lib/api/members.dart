@@ -53,7 +53,6 @@ class MemberData implements DocumentData {
 }
 
 class Members extends Collection {
-
   @override
   String get type => "Members";
 
@@ -69,21 +68,17 @@ class Members extends Collection {
 
   @override
   Future<Document<MemberData>> get(String id) async {
-    return Document(true, "", MemberData(), type);
+    return getSimpleDocument(id, "v1/member/${API().auth().getUid()}", type, (data) => MemberData()..constructFromJson(data.content), () => MemberData());
   }
 
   @override
   Future<List<Document<MemberData>>> getAll({String? uid}) async {
-    var collection = await getCollection<MemberData>(
-        "v1/members/${(uid ?? API().auth().getUid()) ?? ""}", "");
+    var collection = await getCollection<MemberData>("v1/members/${(uid ?? API().auth().getUid()) ?? ""}", "");
 
-    List<Document<MemberData>> members =
-        collection.map((e) => MemberData()..constructFromJson(e))
-            as List<Document<MemberData>>;
+    List<Document<MemberData>> members = collection.map<Document<MemberData>>((e) => Document(e["exists"], e["id"], MemberData()..constructFromJson(e["content"]), type)).toList();
 
     return members;
   }
-
 
   @override
   void update(String documentId, DocumentData values) {

@@ -2,6 +2,7 @@ import 'package:mongo_dart/mongo_dart.dart';
 import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
+import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
 
 class PollOptionData implements DocumentData {
@@ -104,12 +105,16 @@ class Polls extends Collection {
 
   @override
   Future<Document<PollData>> get(String id) async {
-    return Document(true, "", PollData(), type);
+    return getSimpleDocument(id, "v1/poll/${API().auth().getUid()}", type, (data) => PollData()..constructFromJson(data.content), () => PollData());
   }
 
   @override
   Future<List<Document<PollData>>> getAll() async {
-    return [];
+    var collection = await getCollection<PollData>("v1/polls/${API().auth().getUid()}", "");
+
+    List<Document<PollData>> polls = collection.map<Document<PollData>>((e) => Document(e["exists"], e["id"], PollData()..constructFromJson(e["content"]), type)).toList();
+
+    return polls;
   }
 
   @override

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'dart:math';
 
@@ -45,17 +46,17 @@ class Network {
             switch (request.method) {
               case HttpRequestMethod.Delete:
                 {
-                  response = await SimplyHttpClient().delete(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: request.payload);
+                  response = await SimplyHttpClient().delete(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload));
                   break;
                 }
               case HttpRequestMethod.Patch:
                 {
-                  response = await SimplyHttpClient().patch(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: request.payload);
+                  response = await SimplyHttpClient().patch(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload));
                   break;
                 }
               case HttpRequestMethod.Post:
                 {
-                  response = await SimplyHttpClient().post(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: request.payload);
+                  response = await SimplyHttpClient().post(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload));
                   break;
                 }
               default:
@@ -68,7 +69,7 @@ class Network {
 
             if (response?.statusCode == 200) {
               _pendingRequests.remove(request);
-              request.onDone!();
+              if (request.onDone != null) request.onDone!();
             }
           } catch (e) {
             print(e);

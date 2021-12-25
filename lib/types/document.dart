@@ -32,8 +32,7 @@ class Document<ObjectClass> {
     return data;
   }
 
-  Document(this.exists, this.id, this.dataObject, this.type,
-      {this.fromCache = false}) {
+  Document(this.exists, this.id, this.dataObject, this.type, {this.fromCache = false}) {
     data = (dataObject as DocumentData).toJson();
     data = convertTime(this.data);
   }

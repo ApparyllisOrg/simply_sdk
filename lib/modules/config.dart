@@ -19,8 +19,7 @@ class RemoteConfig {
   void _initialize() async {
     _sharedPrefs = await SharedPreferences.getInstance();
     if (_sharedPrefs.containsKey(_configSync)) {
-      Timestamp lastSync = Timestamp.fromMillisecondsSinceEpoch(
-          _sharedPrefs.getInt(_configSync)!);
+      Timestamp lastSync = Timestamp.fromMillisecondsSinceEpoch(_sharedPrefs.getInt(_configSync)!);
       Timestamp now = Timestamp.now();
 
       int diff = now.compareTo(lastSync);
@@ -55,9 +54,8 @@ class RemoteConfig {
   }
 
   void _loadConfig() {
-    if (_sharedPrefs.containsKey(_remoteConfig)) {
-      _currentConfig = jsonDecode(_sharedPrefs.getString(_remoteConfig)!)
-          as Map<String, dynamic>;
+    if (_sharedPrefs.containsKey(_remoteConfig) && _sharedPrefs.getString(_remoteConfig)!.isNotEmpty) {
+      _currentConfig = jsonDecode(_sharedPrefs.getString(_remoteConfig)!) as Map<String, dynamic>;
     } else {
       _currentConfig = Map<String, dynamic>();
     }

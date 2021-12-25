@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart';
+import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/api/users.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
@@ -140,10 +141,8 @@ class Friends {
     return Future(() async {
       try {
         var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/friend/$userId/getFront", "")));
-
-        var jsonResponse = jsonDecode(response.body);
         if (response.statusCode == 200) {
-          return jsonResponse["results"];
+          return jsonDecode(response.body);
         } else {
           return [];
         }
@@ -152,26 +151,13 @@ class Friends {
     });
   }
 
-  List<Document<UserData>> _convertResponseIntoUsers(Response response) {
-    var jsonResponse = jsonDecode(response.body);
-    List<Map<String, dynamic>> userResults = jsonResponse["results"];
-
-    List<Document<UserData>> users = [];
-
-    for (var i = 0; i < userResults.length; ++i) {
-      users.add(Document(true, userResults[i]["uid"], UserData().constructFromJson(userResults[i]), "friends"));
-    }
-
-    return users;
-  }
-
   // Return the friend settings for a friend
   Future<Document<FriendSettingsData>?> getFriend(String uid) async {
     var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/friend/${API().auth().getToken()}/$uid/', "")));
     var jsonResponse = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      return Document(true, uid, UserData().constructFromJson(jsonResponse), "friends");
+      return Document(true, uid, UserData().constructFromJson(jsonResponse["content"]), "friends");
     } else {
       return null;
     }
@@ -183,7 +169,7 @@ class Friends {
     var jsonResponse = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      return Document(true, uid, UserData().constructFromJson(jsonResponse), "friends");
+      return Document(true, uid, UserData().constructFromJson(jsonResponse["content"]), "friends");
     } else {
       return null;
     }
@@ -197,49 +183,31 @@ class Friends {
   // Return a list of all friends and their user data
   Future<List<Document<UserData>>> getFriends() {
     return Future(() async {
-      try {
-        var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/friends", "")));
+      var collection = await getCollection<UserData>("v1/friends", "");
 
-        var jsonResponse = jsonDecode(response.body);
-        if (response.statusCode == 200) {
-          return _convertResponseIntoUsers(jsonResponse);
-        } else {
-          return [];
-        }
-      } catch (e) {}
-      return [];
+      List<Document<UserData>> friends = collection.map<Document<UserData>>((e) => Document(e["exists"], e["id"], UserData()..constructFromJson(e["content"]), "friends")).toList();
+
+      return friends;
     });
   }
 
   Future<List<Document<UserData>>> getIncomingFriendRequests() {
     return Future(() async {
-      try {
-        var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("/v1/friends/requests/incoming", "")));
+      var collection = await getCollection<UserData>("v1/friends/requests/incoming", "");
 
-        var jsonResponse = jsonDecode(response.body);
-        if (response.statusCode == 200) {
-          return _convertResponseIntoUsers(jsonResponse);
-        } else {
-          return [];
-        }
-      } catch (e) {}
-      return [];
+      List<Document<UserData>> friends = collection.map<Document<UserData>>((e) => Document(e["exists"], e["id"], UserData()..constructFromJson(e["content"]), "friends")).toList();
+
+      return friends;
     });
   }
 
   Future<List<Document<UserData>>> getOutgoingFriendRequests() {
     return Future(() async {
-      try {
-        var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("/v1/friends/requests/outgoing", "")));
+      var collection = await getCollection<UserData>("v1/friends/requests/outgoing", "");
 
-        var jsonResponse = jsonDecode(response.body);
-        if (response.statusCode == 200) {
-          return _convertResponseIntoUsers(jsonResponse);
-        } else {
-          return [];
-        }
-      } catch (e) {}
-      return [];
+      List<Document<UserData>> friends = collection.map<Document<UserData>>((e) => Document(e["exists"], e["id"], UserData()..constructFromJson(e["content"]), "friends")).toList();
+
+      return friends;
     });
   }
 }

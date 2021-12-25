@@ -5,6 +5,7 @@ import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/modules/http.dart';
+import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
 
 class NoteData implements DocumentData {
@@ -52,12 +53,16 @@ class Notes extends Collection {
 
   @override
   Future<Document<NoteData>> get(String id) async {
-    return Document(true, "", NoteData(), type);
+    return getSimpleDocument(id, "v1/note/${API().auth().getUid()}", type, (data) => NoteData()..constructFromJson(data.content), () => NoteData());
   }
 
   @override
   Future<List<Document<NoteData>>> getAll() async {
-    return [];
+    var collection = await getCollection<NoteData>("v1/notes/${API().auth().getUid()}", "");
+
+    List<Document<NoteData>> notes = collection.map<Document<NoteData>>((e) => Document(e["exists"], e["id"], NoteData()..constructFromJson(e["content"]), type)).toList();
+
+    return notes;
   }
 
   Future<List<Document<NoteData>>> getNotesForMember(String member, String systemId) async {

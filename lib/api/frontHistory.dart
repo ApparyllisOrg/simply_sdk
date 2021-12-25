@@ -57,7 +57,7 @@ class FrontHistory extends Collection {
 
   @override
   Future<Document<FrontHistoryData>> get(String id) async {
-    return Document(true, "", FrontHistoryData(), type);
+    return getSimpleDocument(id, "v1/frontHistory/${API().auth().getUid()}", type, (data) => FrontHistoryData()..constructFromJson(data.content), () => FrontHistoryData());
   }
 
   @deprecated
@@ -67,19 +67,19 @@ class FrontHistory extends Collection {
   }
 
   Future<List<Document<FrontHistoryData>>> getFrontHistoryInRange(int start, int end) async {
-    var response = await SimplyHttpClient().get(Uri.parse('v1/frontHistory/${API().auth().getUid()}'));
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    }
-    return [];
+    var collection = await getCollection<FrontHistoryData>("v1/frontHistory/${API().auth().getUid()}", "?start=$start&end=$end");
+
+    List<Document<FrontHistoryData>> fronts = collection.map<Document<FrontHistoryData>>((e) => Document(e["exists"], e["id"], FrontHistoryData()..constructFromJson(e["content"]), type)).toList();
+
+    return fronts;
   }
 
   Future<List<Document<FrontHistoryData>>> getCurrentFronters() async {
-    var response = await SimplyHttpClient().get(Uri.parse('v1/fronters'));
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    }
-    return [];
+    var collection = await getCollection<FrontHistoryData>("v1/fronters", "");
+
+    List<Document<FrontHistoryData>> fronts = collection.map<Document<FrontHistoryData>>((e) => Document(e["exists"], e["id"], FrontHistoryData()..constructFromJson(e["content"]), type)).toList();
+
+    return fronts;
   }
 
   @override

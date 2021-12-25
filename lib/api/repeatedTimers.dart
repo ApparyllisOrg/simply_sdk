@@ -4,6 +4,8 @@ import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/types/document.dart';
 
+import '../simply_sdk.dart';
+
 class RepeatedTimerTimeData implements DocumentData {
   int? hour;
   int? minute;
@@ -95,12 +97,16 @@ class RepeatedTimers extends Collection {
 
   @override
   Future<Document<RepeatedTimerData>> get(String id) async {
-    return Document(true, "", RepeatedTimerData(), type);
+    return getSimpleDocument(id, "v1/timer/repeated/${API().auth().getUid()}", type, (data) => RepeatedTimerData()..constructFromJson(data.content), () => RepeatedTimerData());
   }
 
   @override
   Future<List<Document<RepeatedTimerData>>> getAll() async {
-    return [];
+    var collection = await getCollection<RepeatedTimerData>("v1/timers/repeated/${API().auth().getUid()}", "");
+
+    List<Document<RepeatedTimerData>> timers = collection.map<Document<RepeatedTimerData>>((e) => Document(e["exists"], e["id"], RepeatedTimerData()..constructFromJson(e["content"]), type)).toList();
+
+    return timers;
   }
 
   @override

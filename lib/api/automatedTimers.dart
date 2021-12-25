@@ -1,7 +1,9 @@
 import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
+import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
+
 class AutomatedTimerData implements DocumentData {
   String? name;
   String? message;
@@ -48,12 +50,16 @@ class AutomatedTimers extends Collection {
 
   @override
   Future<Document<AutomatedTimerData>> get(String id) async {
-    return Document(true, "", AutomatedTimerData(), type);
+    return getSimpleDocument(id, "v1/timer/automated/${API().auth().getUid()}", type, (data) => AutomatedTimerData()..constructFromJson(data.content), () => AutomatedTimerData());
   }
 
   @override
   Future<List<Document<AutomatedTimerData>>> getAll() async {
-    return [];
+    var collection = await getCollection<AutomatedTimerData>("v1/timers/automated/${API().auth().getUid()}", "");
+
+    List<Document<AutomatedTimerData>> timers = collection.map<Document<AutomatedTimerData>>((e) => Document(e["exists"], e["id"], AutomatedTimerData()..constructFromJson(e["content"]), type)).toList();
+
+    return timers;
   }
 
   @override

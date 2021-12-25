@@ -5,6 +5,7 @@ import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/modules/http.dart';
+import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
 
 class CommentData implements DocumentData {
@@ -12,7 +13,6 @@ class CommentData implements DocumentData {
   String? text;
   String? documentId;
   String? collection;
-
 
   @override
   Map<String, dynamic> toJson() {
@@ -51,22 +51,21 @@ class Comments extends Collection {
 
   @override
   Future<Document<CommentData>> get(String id) async {
-    return Document(true, "", CommentData(), type);
+    return getSimpleDocument(id, "v1/comment/${API().auth().getUid()}", type, (data) => CommentData()..constructFromJson(data.content), () => CommentData());
   }
 
+  @deprecated
   @override
   Future<List<Document<CommentData>>> getAll() async {
-    return [];
+    throw UnimplementedError();
   }
 
-  Future<List<Document<CommentData>>> getCommentsForDocument(
-      String documentId, String type) async {
-    var response =
-        await SimplyHttpClient().get(Uri.parse('v1/comments/$type/$documentId/'));
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    }
-    return [];
+  Future<List<Document<CommentData>>> getCommentsForDocument(String documentId, String type) async {
+    var collection = await getCollection<CommentData>("v1/comments/$type/$documentId/", "");
+
+    List<Document<CommentData>> comments = collection.map<Document<CommentData>>((e) => Document(e["exists"], e["id"], CommentData()..constructFromJson(e["content"]), type)).toList();
+
+    return comments;
   }
 
   @override

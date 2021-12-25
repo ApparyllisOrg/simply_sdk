@@ -8,7 +8,7 @@ class PrivateData implements DocumentData {
   List<String>? notificationToken;
   int? latestVersion;
   String? location;
-  bool? termsOfServicesAccepted;
+  bool? termsOfServiceAccepted;
   int? whatsNew;
 
   @override
@@ -18,17 +18,17 @@ class PrivateData implements DocumentData {
     insertData("notificationToken", notificationToken, payload);
     insertData("latestVersion", latestVersion, payload);
     insertData("location", location, payload);
-    insertData("termsOfServicesAccepted", termsOfServicesAccepted, payload);
+    insertData("termsOfServiceAccepted", termsOfServiceAccepted, payload);
     insertData("whatsNew", whatsNew, payload);
     return payload;
   }
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    notificationToken = readDataFromJson("notificationToken", json);
+    notificationToken = readDataArrayFromJson<String>("notificationToken", json);
     latestVersion = readDataFromJson("latestVersion", json);
     location = readDataFromJson("location", json);
-    termsOfServicesAccepted = readDataFromJson("termsOfServicesAccepted", json);
+    termsOfServiceAccepted = readDataFromJson("termsOfServiceAccepted", json);
     whatsNew = readDataFromJson("whatsNew", json);
   }
 }
@@ -51,7 +51,7 @@ class Privates extends Collection {
 
   @override
   Future<Document<PrivateData>> get(String id) async {
-    return Document(true, "", PrivateData(), type);
+    return getSimpleDocument(id, "v1/user/private", "private", (data) => PrivateData()..constructFromJson(data.content), () => PrivateData());
   }
 
   @deprecated
@@ -62,6 +62,6 @@ class Privates extends Collection {
 
   @override
   void update(String documentId, DocumentData values) {
-    updateSimpleDocument(type, "v1/private", documentId, values);
+    updateSimpleDocument(type, "v1/user/private", documentId, values);
   }
 }

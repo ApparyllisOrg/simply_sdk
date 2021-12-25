@@ -73,12 +73,12 @@ class UserData implements DocumentData {
     avatarUuid = readDataFromJson("avatarUuid", json);
     color = readDataFromJson("color", json);
 
+    fields = {};
+
     Map<String, dynamic> _fields = readDataFromJson("fields", json);
     _fields.forEach((key, value) {
-      _fields[key] = UserFieldData().constructFromJson(value);
+      fields![key] = UserFieldData()..constructFromJson(value);
     });
-
-    fields = _fields as Map<String, UserFieldData>;
   }
 }
 
@@ -100,13 +100,13 @@ class Users extends Collection {
 
   @override
   Future<Document<UserData>> get(String id) async {
-    return Document(true, "", UserData(), type);
+    return getSimpleDocument(id, "v1/user", "users", (DocumentResponse data) => UserData()..constructFromJson(data.content), () => UserData());
   }
 
   @deprecated
   @override
   Future<List<Document<UserData>>> getAll() async {
-    return [];
+    throw UnimplementedError();
   }
 
   @override

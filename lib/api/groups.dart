@@ -59,17 +59,14 @@ class Groups extends Collection {
 
   @override
   Future<Document<GroupData>> get(String id) async {
-    return Document(true, "", GroupData(), type);
+    return getSimpleDocument(id, "v1/group/${API().auth().getUid()}", type, (data) => GroupData()..constructFromJson(data.content), () => GroupData());
   }
 
   @override
   Future<List<Document<GroupData>>> getAll({String? uid}) async {
-    var collection = await getCollection<GroupData>(
-        "v1/groups/${(uid ?? API().auth().getUid()) ?? ""}", "");
+    var collection = await getCollection<GroupData>("v1/groups/${uid ?? API().auth().getUid()}", "");
 
-    List<Document<GroupData>> groups =
-        collection.map((e) => GroupData()..constructFromJson(e))
-            as List<Document<GroupData>>;
+    List<Document<GroupData>> groups = collection.map<Document<GroupData>>((e) => Document(e["exists"], e["id"], GroupData()..constructFromJson(e["content"]), type)).toList();
 
     return groups;
   }
