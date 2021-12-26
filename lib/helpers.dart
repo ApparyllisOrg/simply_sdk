@@ -51,22 +51,27 @@ void insertData(String propertyName, dynamic dataToInsert, Map<String, dynamic> 
   }
 }
 
-T readDataFromJson<T>(String propertyName, Map<String, dynamic> json) {
+T? readDataFromJson<T>(String propertyName, Map<String, dynamic> json) {
   if (json[propertyName] is List) {
     return json[propertyName] as T;
   }
-  return json[propertyName] as T;
+  return json[propertyName] as T?;
 }
 
-List<T> readDataArrayFromJson<T>(String propertyName, Map<String, dynamic> json) {
-  List? oldList = json[propertyName];
-  List<T> newList = [];
+List<T>? readDataArrayFromJson<T>(String propertyName, Map<String, dynamic> json) {
+  if (json[propertyName] is List) {
+    List<dynamic> array = json[propertyName] as List<dynamic>;
+    return array.cast<T>();
+  }
+  return [];
+}
 
-  oldList?.forEach((element) {
-    newList.add(element as T);
-  });
-
-  return newList;
+T? readDataMapFromJson<T, K>(String propertyName, Map<String, dynamic> json) {
+  if (json[propertyName] is Map<String, dynamic>) {
+    Map<String, dynamic> map = json[propertyName] as Map<String, dynamic>;
+    return map.map((key, value) => MapEntry(key, value as K)) as T;
+  }
+  return json[propertyName] as T?;
 }
 
 DocumentData? convertJsonToDataObject(Map<String, dynamic> json, String type) {

@@ -48,7 +48,7 @@ class MemberData implements DocumentData {
     private = readDataFromJson("private", json);
     preventTrusted = readDataFromJson("preventTrusted", json);
     preventFrontNotifs = readDataFromJson("preventFrontNotifs", json);
-    info = readDataFromJson("info", json);
+    info = readDataMapFromJson<Map<String, String>, String>("info", json);
   }
 }
 

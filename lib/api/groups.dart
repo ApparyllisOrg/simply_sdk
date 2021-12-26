@@ -39,7 +39,7 @@ class GroupData implements DocumentData {
     preventTrusted = readDataFromJson("preventTrusted", json);
     desc = readDataFromJson("desc", json);
     emoji = readDataFromJson("emoji", json);
-    members = readDataFromJson("members", json);
+    members = readDataArrayFromJson<String>("members", json);
   }
 }
 

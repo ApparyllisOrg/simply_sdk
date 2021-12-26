@@ -9,7 +9,7 @@ import 'cache_test.dart' as cache;
 import 'store_test.dart' as store;
 import 'socket_test.dart' as socket;
 
-const String userId = "rXH5xlieFOZ4ulqAlLv3YXLmn532";
+const String userId = "zdhE8LSYheP9dGzdwKzy8eoJrTu1";
 
 String getRandString(int len) {
   var random = Random.secure();
