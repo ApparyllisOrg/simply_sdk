@@ -6,11 +6,21 @@ abstract class DocumentData {
   constructFromJson(Map<String, dynamic> json);
 }
 
+class EmptyDocumentData extends DocumentData {
+  @override
+  constructFromJson(Map<String, dynamic> json) {}
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {};
+  }
+}
+
 enum EChangeType { Add, Update, Delete }
 
-typedef DocumentChange = void Function(Document<DocumentData>, EChangeType);
+typedef DocumentChange = void Function(Document<dynamic>, EChangeType);
 
-abstract class Collection {
+abstract class Collection<ObjectType> {
   String type = "NONE";
 
   List<DocumentChange?> boundChanges = [];
@@ -29,7 +39,7 @@ abstract class Collection {
     boundChanges.remove(bindFunc);
   }
 
-  void propogateChanges(Document<DocumentData> change, EChangeType changeType) {
+  void propogateChanges(Document<ObjectType> change, EChangeType changeType) {
     boundChanges.forEach((element) {
       if (element != null) element(change, changeType);
     });

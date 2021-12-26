@@ -89,7 +89,7 @@ class PollData implements DocumentData {
   }
 }
 
-class Polls extends Collection {
+class Polls extends Collection<PollData> {
   @override
   String get type => "Polls";
 

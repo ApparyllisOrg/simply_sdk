@@ -81,7 +81,7 @@ class RepeatedTimerData implements DocumentData {
   }
 }
 
-class RepeatedTimers extends Collection {
+class RepeatedTimers extends Collection<RepeatedTimerData> {
   @override
   String get type => "RepeatedTimers";
 

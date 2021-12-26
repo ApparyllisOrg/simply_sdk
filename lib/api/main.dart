@@ -26,6 +26,38 @@ class DocumentResponse {
   }
 }
 
+void propogateChanges(String type, String id, dynamic data, EChangeType changeType) {
+  switch (type) {
+    case "Members":
+      API().members().propogateChanges(Document(true, id, data, type), changeType);
+      break;
+    case "CustomFronts":
+      API().customFronts().propogateChanges(Document(true, id, data, type), changeType);
+      break;
+    case "Groups":
+      API().groups().propogateChanges(Document(true, id, data, type), changeType);
+      break;
+    case "Notes":
+      API().notes().propogateChanges(Document(true, id, data, type), changeType);
+      break;
+    case "Polls":
+      API().polls().propogateChanges(Document(true, id, data, type), changeType);
+      break;
+    case "RepeatedTimers":
+      API().repeatedTimers().propogateChanges(Document(true, id, data, type), changeType);
+      break;
+    case "AutomatedTimers":
+      API().automatedTimers().propogateChanges(Document(true, id, data, type), changeType);
+      break;
+    case "FrontHistory":
+      API().frontHistory().propogateChanges(Document(true, id, data, type), changeType);
+      break;
+    case "Comments":
+      API().comments().propogateChanges(Document(true, id, data, type), changeType);
+      break;
+  }
+}
+
 Document<T> addSimpleDocument<T>(String type, String path, DocumentData data, {String? overrideId}) {
   String generatedId = ObjectId(clientMode: true).toHexString();
 
@@ -34,6 +66,8 @@ Document<T> addSimpleDocument<T>(String type, String path, DocumentData data, {S
   API().network().request(new NetworkRequest(HttpRequestMethod.Post, "$path/${overrideId ?? generatedId}", DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
 
   API().cache().insertDocument(type, generatedId, jsonPayload);
+
+  propogateChanges(type, generatedId, data, EChangeType.Add);
 
   return Document(true, overrideId ?? generatedId, data as T, type);
 }
@@ -44,6 +78,8 @@ void updateSimpleDocument(String type, String path, String documentId, DocumentD
   API().network().request(new NetworkRequest(HttpRequestMethod.Patch, "$path/$documentId", DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
 
   API().cache().updateDocument(type, documentId, jsonPayload);
+
+  propogateChanges(type, documentId, data, EChangeType.Update);
 }
 
 void deleteSimpleDocument(String type, String path, String id) {
@@ -52,6 +88,8 @@ void deleteSimpleDocument(String type, String path, String id) {
         "$path/$id",
         DateTime.now().millisecondsSinceEpoch,
       ));
+
+  propogateChanges(type, id, EmptyDocumentData(), EChangeType.Delete);
 }
 
 Future<List<Map<String, dynamic>>> getCollection<ObjectType>(String path, String id) async {
@@ -63,7 +101,7 @@ Future<List<Map<String, dynamic>>> getCollection<ObjectType>(String path, String
   return [];
 }
 
-void updateDocumentInList(List<Document> documents, Document updatedDocument, EChangeType changeType) {
+void updateDocumentInList<ObjectType>(List<Document> documents, Document<ObjectType> updatedDocument, EChangeType changeType) {
   if (changeType == EChangeType.Delete) {
     documents.removeWhere((element) => element.id == updatedDocument.id);
   } else {

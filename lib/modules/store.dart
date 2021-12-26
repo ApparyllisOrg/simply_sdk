@@ -20,7 +20,7 @@ class Store {
 
   List<void Function(Document<FrontHistoryData>)> _frontChanges = [];
 
-  void initializeStore() async {
+  Future<void> initializeStore() async {
     clearStore();
     _members = await API().members().getAll();
     _customFronts = await API().customFronts().getAll();
@@ -46,15 +46,15 @@ class Store {
   }
 
   void memberChanged(Document<dynamic> data, EChangeType changeType) {
-    updateDocumentInList(_members, data, changeType);
+    updateDocumentInList<MemberData>(_members, data as Document<MemberData>, changeType);
   }
 
   void customFrontChanged(Document<dynamic> data, EChangeType changeType) {
-    updateDocumentInList(_customFronts, data, changeType);
+    updateDocumentInList<CustomFrontData>(_customFronts, data as Document<CustomFrontData>, changeType);
   }
 
   void groupChanged(Document<dynamic> data, EChangeType changeType) {
-    updateDocumentInList(_groups, data, changeType);
+    updateDocumentInList<GroupData>(_groups, data as Document<GroupData>, changeType);
   }
 
   void frontHistoryChanged(Document<dynamic> data, EChangeType changeType) {
@@ -67,29 +67,23 @@ class Store {
       bool isLive = (fhDoc.dataObject.live ?? false) == false;
 
       if (wasLive && !isLive) {
-         _notifyFrontChange(fhDoc);
+        _notifyFrontChange(fhDoc);
       }
 
       // If was live and is live but member or time change, also notify of front changes
       if (wasLive && isLive) {
-        if (fhDoc.dataObject.startTime !=
-            _fronters[index].dataObject.startTime) {
-
+        if (fhDoc.dataObject.startTime != _fronters[index].dataObject.startTime) {
           _notifyFrontChange(fhDoc);
-
-        } else if (fhDoc.dataObject.member !=
-            _fronters[index].dataObject.member) {
-
+        } else if (fhDoc.dataObject.member != _fronters[index].dataObject.member) {
           _notifyFrontChange(fhDoc);
         }
       }
     } else if ((_fronters[index].dataObject.live ?? false) == true) {
-        _notifyFrontChange(fhDoc);
+      _notifyFrontChange(fhDoc);
     }
 
-    updateDocumentInList(_fronters, data, changeType);
-    _fronters
-        .removeWhere((element) => (element.dataObject.live ?? true) == false);
+    updateDocumentInList<FrontHistoryData>(_fronters, data, changeType);
+    _fronters.removeWhere((element) => (element.dataObject.live ?? true) == false);
   }
 
   bool isDocumentAMemberDocument(String id) {
@@ -124,8 +118,7 @@ class Store {
   }
 
   Document<FrontHistoryData>? getFronterById(String id) {
-    int index =
-        _fronters.indexWhere((element) => element.dataObject.member == id);
+    int index = _fronters.indexWhere((element) => element.dataObject.member == id);
     if (index >= 0) return _fronters[index];
     return null;
   }
@@ -134,8 +127,7 @@ class Store {
     _frontChanges.add(func);
   }
 
-  void cancelListenForFrontChanges(
-      void Function(Document<FrontHistoryData>) func) {
+  void cancelListenForFrontChanges(void Function(Document<FrontHistoryData>) func) {
     _frontChanges.remove(func);
   }
 

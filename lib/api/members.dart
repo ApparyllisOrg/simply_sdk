@@ -52,7 +52,7 @@ class MemberData implements DocumentData {
   }
 }
 
-class Members extends Collection {
+class Members extends Collection<MemberData> {
   @override
   String get type => "Members";
 

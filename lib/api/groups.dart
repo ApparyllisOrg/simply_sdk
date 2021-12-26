@@ -43,7 +43,7 @@ class GroupData implements DocumentData {
   }
 }
 
-class Groups extends Collection {
+class Groups extends Collection<GroupData> {
   @override
   String get type => "Groups";
 

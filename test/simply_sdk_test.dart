@@ -6,6 +6,8 @@ import 'package:simply_sdk/simply_sdk.dart';
 import 'user_test.dart' as user;
 import 'pk_test.dart' as pk;
 import 'cache_test.dart' as cache;
+import 'store_test.dart' as store;
+import 'socket_test.dart' as socket;
 
 const String userId = "rXH5xlieFOZ4ulqAlLv3YXLmn532";
 
@@ -21,4 +23,6 @@ void main() {
   user.runTests(userId);
   pk.runTests(userId);
   cache.runTests(userId);
+  store.runTests(userId);
+  socket.runTests(userId);
 }

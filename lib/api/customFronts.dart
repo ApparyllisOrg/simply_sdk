@@ -39,7 +39,7 @@ class CustomFrontData implements DocumentData {
   }
 }
 
-class CustomFronts extends Collection {
+class CustomFronts extends Collection<CustomFrontData> {
   @override
   String get type => "CustomFronts";
 

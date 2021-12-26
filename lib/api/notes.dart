@@ -37,7 +37,7 @@ class NoteData implements DocumentData {
   }
 }
 
-class Notes extends Collection {
+class Notes extends Collection<NoteData> {
   @override
   String get type => "Notes";
 

@@ -41,7 +41,7 @@ class FrontHistoryData implements DocumentData {
   }
 }
 
-class FrontHistory extends Collection {
+class FrontHistory extends Collection<FrontHistoryData> {
   @override
   String get type => "FrontHistory";
 

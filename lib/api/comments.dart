@@ -35,7 +35,7 @@ class CommentData implements DocumentData {
   }
 }
 
-class Comments extends Collection {
+class Comments extends Collection<CommentData> {
   @override
   String get type => "Comments";
 
