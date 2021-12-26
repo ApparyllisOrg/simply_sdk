@@ -67,7 +67,7 @@ class FrontHistory extends Collection<FrontHistoryData> {
   }
 
   Future<List<Document<FrontHistoryData>>> getFrontHistoryInRange(int start, int end) async {
-    var collection = await getCollection<FrontHistoryData>("v1/frontHistory/${API().auth().getUid()}", "?start=$start&end=$end");
+    var collection = await getCollection<FrontHistoryData>("v1/frontHistory/${API().auth().getUid()}", "", query: "start=$start&end=$end");
 
     List<Document<FrontHistoryData>> fronts = collection.map<Document<FrontHistoryData>>((e) => Document(e["exists"], e["id"], FrontHistoryData()..constructFromJson(e["content"]), type)).toList();
 

@@ -92,8 +92,8 @@ void deleteSimpleDocument(String type, String path, String id) {
   propogateChanges(type, id, EmptyDocumentData(), EChangeType.Delete);
 }
 
-Future<List<Map<String, dynamic>>> getCollection<ObjectType>(String path, String id) async {
-  var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("$path/$id", "")));
+Future<List<Map<String, dynamic>>> getCollection<ObjectType>(String path, String id, {String? query}) async {
+  var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("$path/$id", query ?? "")));
   if (response.statusCode == 200) {
     List list = jsonDecode(response.body);
     return list.map((e) => e as Map<String, dynamic>).toList();
@@ -106,7 +106,7 @@ void updateDocumentInList<ObjectType>(List<Document> documents, Document<ObjectT
     documents.removeWhere((element) => element.id == updatedDocument.id);
   } else {
     int index = documents.indexWhere((element) => element.id == updatedDocument.id);
-    if (index > 0) {
+    if (index >= 0) {
       documents[index] = updatedDocument;
     } else {
       documents.add(updatedDocument);

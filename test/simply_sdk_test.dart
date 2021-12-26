@@ -8,6 +8,7 @@ import 'pk_test.dart' as pk;
 import 'cache_test.dart' as cache;
 import 'store_test.dart' as store;
 import 'socket_test.dart' as socket;
+import 'front_history_test.dart' as fh;
 
 const String userId = "zdhE8LSYheP9dGzdwKzy8eoJrTu1";
 
@@ -25,4 +26,5 @@ void main() {
   cache.runTests(userId);
   store.runTests(userId);
   socket.runTests(userId);
+  fh.runTests(userId);
 }

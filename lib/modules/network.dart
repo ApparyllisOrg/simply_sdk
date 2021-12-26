@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'dart:math';
 
@@ -70,6 +71,8 @@ class Network {
             if (response?.statusCode == 200) {
               _pendingRequests.remove(request);
               if (request.onDone != null) request.onDone!();
+            } else {
+              print(response?.body);
             }
           } catch (e) {
             print(e);

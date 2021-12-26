@@ -59,12 +59,13 @@ class Store {
 
   void frontHistoryChanged(Document<dynamic> data, EChangeType changeType) {
     int index = _fronters.indexWhere((element) => element.id == data.id);
+    bool found = index >= 0;
 
     Document<FrontHistoryData> fhDoc = data as Document<FrontHistoryData>;
     if (index >= 0) {
       // If we're no longer a live fronter, notify of front change
       bool wasLive = (_fronters[index].dataObject.live ?? false) == true;
-      bool isLive = (fhDoc.dataObject.live ?? false) == false;
+      bool isLive = (fhDoc.dataObject.live ?? false) == true;
 
       if (wasLive && !isLive) {
         _notifyFrontChange(fhDoc);
@@ -78,7 +79,9 @@ class Store {
           _notifyFrontChange(fhDoc);
         }
       }
-    } else if ((_fronters[index].dataObject.live ?? false) == true) {
+    } else if (found && (_fronters[index].dataObject.live ?? false) == true) {
+      _notifyFrontChange(fhDoc);
+    } else if (!found && data.dataObject.live == true) {
       _notifyFrontChange(fhDoc);
     }
 
