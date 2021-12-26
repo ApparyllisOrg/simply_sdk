@@ -1,5 +1,12 @@
+import 'dart:io';
+
 import 'package:http/http.dart' as http;
 import '../simply_sdk.dart';
+
+http.Response generateFailedResponse(HttpException e) {
+  print("ERROR: " + e.uri.toString() + " => " + e.message);
+  return http.Response("", 1);
+}
 
 class SimplyHttpClient extends http.BaseClient {
   static SimplyHttpClient? _instance;

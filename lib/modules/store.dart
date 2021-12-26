@@ -59,12 +59,16 @@ class Store {
 
   void frontHistoryChanged(Document<dynamic> data, EChangeType changeType) {
     int index = _fronters.indexWhere((element) => element.id == data.id);
-    bool found = index >= 0;
 
+    Document<FrontHistoryData>? previousFhDoc = index >= 0 ? _fronters[index] : null;
     Document<FrontHistoryData> fhDoc = data as Document<FrontHistoryData>;
-    if (index >= 0) {
+
+    updateDocumentInList<FrontHistoryData>(_fronters, data, changeType);
+    _fronters.removeWhere((element) => (element.dataObject.live ?? true) == false);
+
+    if (previousFhDoc != null) {
       // If we're no longer a live fronter, notify of front change
-      bool wasLive = (_fronters[index].dataObject.live ?? false) == true;
+      bool wasLive = (previousFhDoc.dataObject.live ?? false) == true;
       bool isLive = (fhDoc.dataObject.live ?? false) == true;
 
       if (wasLive && !isLive) {
@@ -73,20 +77,17 @@ class Store {
 
       // If was live and is live but member or time change, also notify of front changes
       if (wasLive && isLive) {
-        if (fhDoc.dataObject.startTime != _fronters[index].dataObject.startTime) {
+        if (fhDoc.dataObject.startTime != previousFhDoc.dataObject.startTime) {
           _notifyFrontChange(fhDoc);
-        } else if (fhDoc.dataObject.member != _fronters[index].dataObject.member) {
+        } else if (fhDoc.dataObject.member != previousFhDoc.dataObject.member) {
           _notifyFrontChange(fhDoc);
         }
       }
-    } else if (found && (_fronters[index].dataObject.live ?? false) == true) {
+    } else if (previousFhDoc != null && (previousFhDoc.dataObject.live ?? false) == true) {
       _notifyFrontChange(fhDoc);
-    } else if (!found && data.dataObject.live == true) {
+    } else if (previousFhDoc == null && data.dataObject.live == true) {
       _notifyFrontChange(fhDoc);
     }
-
-    updateDocumentInList<FrontHistoryData>(_fronters, data, changeType);
-    _fronters.removeWhere((element) => (element.dataObject.live ?? true) == false);
   }
 
   bool isDocumentAMemberDocument(String id) {

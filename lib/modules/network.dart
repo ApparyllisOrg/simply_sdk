@@ -11,6 +11,8 @@ import '../simply_sdk.dart';
 
 enum HttpRequestMethod { Post, Patch, Delete, Get }
 
+List<int> acceptedResponseCodes = [0, 200, 400, 409, 404, 500, 501, 502, 503, 504, 403, 401, 406, 405, 204];
+
 class NetworkRequest {
   final HttpRequestMethod method;
   final String path;
@@ -47,17 +49,17 @@ class Network {
             switch (request.method) {
               case HttpRequestMethod.Delete:
                 {
-                  response = await SimplyHttpClient().delete(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload));
+                  response = await SimplyHttpClient().delete(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload)).catchError(((e) => generateFailedResponse(e)));
                   break;
                 }
               case HttpRequestMethod.Patch:
                 {
-                  response = await SimplyHttpClient().patch(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload));
+                  response = await SimplyHttpClient().patch(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload)).catchError(((e) => generateFailedResponse(e)));
                   break;
                 }
               case HttpRequestMethod.Post:
                 {
-                  response = await SimplyHttpClient().post(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload));
+                  response = await SimplyHttpClient().post(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload)).catchError(((e) => generateFailedResponse(e)));
                   break;
                 }
               default:
@@ -68,7 +70,8 @@ class Network {
                 }
             }
 
-            if (response?.statusCode == 200) {
+            int responseCode = response?.statusCode ?? 0;
+            if (acceptedResponseCodes.contains(responseCode)) {
               _pendingRequests.remove(request);
               if (request.onDone != null) request.onDone!();
             } else {

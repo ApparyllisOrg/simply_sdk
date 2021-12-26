@@ -93,7 +93,7 @@ void deleteSimpleDocument(String type, String path, String id) {
 }
 
 Future<List<Map<String, dynamic>>> getCollection<ObjectType>(String path, String id, {String? query}) async {
-  var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("$path/$id", query ?? "")));
+  var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("$path/$id", query ?? ""))).catchError(((e) => generateFailedResponse(e)));
   if (response.statusCode == 200) {
     List list = jsonDecode(response.body);
     return list.map((e) => e as Map<String, dynamic>).toList();
@@ -115,7 +115,7 @@ void updateDocumentInList<ObjectType>(List<Document> documents, Document<ObjectT
 }
 
 Future<Document<DataType>> getSimpleDocument<DataType>(String id, String url, String type, DataType Function(DocumentResponse data) createDoc, DataType Function() creatEmptyeDoc) async {
-  var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("$url/$id", "")));
+  var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("$url/$id", ""))).catchError(((e) => generateFailedResponse(e)));
   if (response.statusCode == 200) {
     return Document<DataType>(true, id, createDoc(DocumentResponse.fromString(response.body)), type);
   }

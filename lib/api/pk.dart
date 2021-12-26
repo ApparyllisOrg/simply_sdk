@@ -24,19 +24,21 @@ class PKSyncAllSettings {
 
 class PK {
   Future<RequestResponse> syncMemberToPk(String memberId, PKSyncSettings settings, String pkToken) async {
-    var response = await SimplyHttpClient().patch(Uri.parse(API().connection().getRequestUrl('v1/integrations/pluralkit/sync/member/$memberId', "direction=push")),
-        body: jsonEncode({
-          "member": memberId,
-          "token": pkToken,
-          "options": {
-            "name": settings.syncName,
-            "avatar": settings.syncAvatar,
-            "pronouns": settings.syncPronouns,
-            "description": settings.syncDesc,
-            "useDisplayName": settings.useDisplayName,
-            "color": settings.syncColor,
-          }
-        }));
+    var response = await SimplyHttpClient()
+        .patch(Uri.parse(API().connection().getRequestUrl('v1/integrations/pluralkit/sync/member/$memberId', "direction=push")),
+            body: jsonEncode({
+              "member": memberId,
+              "token": pkToken,
+              "options": {
+                "name": settings.syncName,
+                "avatar": settings.syncAvatar,
+                "pronouns": settings.syncPronouns,
+                "description": settings.syncDesc,
+                "useDisplayName": settings.useDisplayName,
+                "color": settings.syncColor,
+              }
+            }))
+        .catchError(((e) => generateFailedResponse(e)));
     if (response.statusCode == 200) {
       return RequestResponse(true, "");
     }
@@ -44,19 +46,21 @@ class PK {
   }
 
   Future<RequestResponse> syncMemberFromPk(String memberId, PKSyncSettings settings, String pkToken) async {
-    var response = await SimplyHttpClient().patch(Uri.parse(API().connection().getRequestUrl('v1/integrations/pluralkit/sync/member/$memberId', "direction=pull")),
-        body: jsonEncode({
-          "member": memberId,
-          "token": pkToken,
-          "options": {
-            "name": settings.syncName,
-            "avatar": settings.syncAvatar,
-            "pronouns": settings.syncPronouns,
-            "description": settings.syncDesc,
-            "useDisplayName": settings.useDisplayName,
-            "color": settings.syncColor,
-          }
-        }));
+    var response = await SimplyHttpClient()
+        .patch(Uri.parse(API().connection().getRequestUrl('v1/integrations/pluralkit/sync/member/$memberId', "direction=pull")),
+            body: jsonEncode({
+              "member": memberId,
+              "token": pkToken,
+              "options": {
+                "name": settings.syncName,
+                "avatar": settings.syncAvatar,
+                "pronouns": settings.syncPronouns,
+                "description": settings.syncDesc,
+                "useDisplayName": settings.useDisplayName,
+                "color": settings.syncColor,
+              }
+            }))
+        .catchError(((e) => generateFailedResponse(e)));
     if (response.statusCode == 200) {
       return RequestResponse(true, "");
     }
@@ -64,19 +68,21 @@ class PK {
   }
 
   Future<RequestResponse> syncMembersToPk(PKSyncSettings settings, PKSyncAllSettings allSettings, String pkToken) async {
-    var response = await SimplyHttpClient().patch(Uri.parse(API().connection().getRequestUrl('v1/integrations/pluralkit/sync/members', "direction=push")),
-        body: jsonEncode({
-          "token": pkToken,
-          "options": {
-            "name": settings.syncName,
-            "avatar": settings.syncAvatar,
-            "pronouns": settings.syncPronouns,
-            "description": settings.syncDesc,
-            "useDisplayName": settings.useDisplayName,
-            "color": settings.syncColor,
-          },
-          "syncOptions": {"add": allSettings.add, "overwrite": allSettings.override}
-        }));
+    var response = await SimplyHttpClient()
+        .patch(Uri.parse(API().connection().getRequestUrl('v1/integrations/pluralkit/sync/members', "direction=push")),
+            body: jsonEncode({
+              "token": pkToken,
+              "options": {
+                "name": settings.syncName,
+                "avatar": settings.syncAvatar,
+                "pronouns": settings.syncPronouns,
+                "description": settings.syncDesc,
+                "useDisplayName": settings.useDisplayName,
+                "color": settings.syncColor,
+              },
+              "syncOptions": {"add": allSettings.add, "overwrite": allSettings.override}
+            }))
+        .catchError(((e) => generateFailedResponse(e)));
     if (response.statusCode == 200) {
       return RequestResponse(true, "");
     }
@@ -84,19 +90,21 @@ class PK {
   }
 
   Future<RequestResponse> syncMembersFromPk(PKSyncSettings settings, PKSyncAllSettings allSettings, String pkToken) async {
-    var response = await SimplyHttpClient().patch(Uri.parse(API().connection().getRequestUrl('v1/integrations/pluralkit/sync/members', "direction=pull")),
-        body: jsonEncode({
-          "token": pkToken,
-          "options": {
-            "name": settings.syncName,
-            "avatar": settings.syncAvatar,
-            "pronouns": settings.syncPronouns,
-            "description": settings.syncDesc,
-            "useDisplayName": settings.useDisplayName,
-            "color": settings.syncColor,
-          },
-          "syncOptions": {"add": allSettings.add, "overwrite": allSettings.override}
-        }));
+    var response = await SimplyHttpClient()
+        .patch(Uri.parse(API().connection().getRequestUrl('v1/integrations/pluralkit/sync/members', "direction=pull")),
+            body: jsonEncode({
+              "token": pkToken,
+              "options": {
+                "name": settings.syncName,
+                "avatar": settings.syncAvatar,
+                "pronouns": settings.syncPronouns,
+                "description": settings.syncDesc,
+                "useDisplayName": settings.useDisplayName,
+                "color": settings.syncColor,
+              },
+              "syncOptions": {"add": allSettings.add, "overwrite": allSettings.override}
+            }))
+        .catchError(((e) => generateFailedResponse(e)));
     if (response.statusCode == 200) {
       return RequestResponse(true, "");
     }
