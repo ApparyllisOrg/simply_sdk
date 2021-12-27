@@ -43,6 +43,7 @@ class MemberData implements DocumentData {
     desc = readDataFromJson("desc", json);
     pronouns = readDataFromJson("pronouns", json);
     pkId = readDataFromJson("pkId", json);
+    color = readDataFromJson("color", json);
     avatarUuid = readDataFromJson("avatarUuid", json);
     avatarUrl = readDataFromJson("avatarUrl", json);
     private = readDataFromJson("private", json);

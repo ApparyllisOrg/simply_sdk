@@ -36,6 +36,7 @@ class CustomFrontData implements DocumentData {
     avatarUrl = readDataFromJson("avatarUrl", json);
     private = readDataFromJson("private", json);
     preventTrusted = readDataFromJson("preventTrusted", json);
+    color = readDataFromJson("color", json);
   }
 }
 
