@@ -9,6 +9,7 @@ import 'cache_test.dart' as cache;
 import 'store_test.dart' as store;
 import 'socket_test.dart' as socket;
 import 'front_history_test.dart' as fh;
+import 'custom_fields_test.dart' as customfields;
 
 const String userId = "zdhE8LSYheP9dGzdwKzy8eoJrTu1";
 
@@ -27,4 +28,5 @@ void main() {
   store.runTests(userId);
   socket.runTests(userId);
   fh.runTests(userId);
+  customfields.runTests(userId);
 }

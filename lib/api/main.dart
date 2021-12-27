@@ -107,7 +107,8 @@ void updateDocumentInList<ObjectType>(List<Document> documents, Document<ObjectT
   } else {
     int index = documents.indexWhere((element) => element.id == updatedDocument.id);
     if (index >= 0) {
-      documents[index] = updatedDocument;
+      documents[index].data.addAll(updatedDocument.data);
+      documents[index].dataObject.constructFromJson(documents[index].data);
     } else {
       documents.add(updatedDocument);
     }

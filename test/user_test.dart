@@ -25,13 +25,13 @@ void runTests(userId) {
         userId,
         UserData()
           ..desc = randomDesc
-          ..isAsystem = false);
+          ..isAsystem = true);
 
     await Future.delayed(Duration(seconds: 1));
 
     Document<UserData> user = await API().users().get(userId);
     expect(randomDesc, user.dataObject.desc);
-    expect(false, user.dataObject.isAsystem);
+    expect(true, user.dataObject.isAsystem);
   });
 
   test('get private', () async {
