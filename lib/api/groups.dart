@@ -53,8 +53,8 @@ class Groups extends Collection<GroupData> {
   }
 
   @override
-  void delete(String documentId) {
-    deleteSimpleDocument(type, "v1/group", documentId);
+  void delete(String documentId, Document originalDocument) {
+    deleteSimpleDocument(type, "v1/group", documentId, originalDocument.dataObject);
   }
 
   @override

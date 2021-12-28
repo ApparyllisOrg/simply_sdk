@@ -45,8 +45,8 @@ class Comments extends Collection<CommentData> {
   }
 
   @override
-  void delete(String documentId) {
-    deleteSimpleDocument(type, "v1/comment", documentId);
+  void delete(String documentId, Document originalDocument) {
+    deleteSimpleDocument(type, "v1/comment", documentId, originalDocument.dataObject);
   }
 
   @override

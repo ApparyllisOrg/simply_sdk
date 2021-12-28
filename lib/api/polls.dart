@@ -99,8 +99,8 @@ class Polls extends Collection<PollData> {
   }
 
   @override
-  void delete(String documentId) {
-    deleteSimpleDocument(type, "v1/poll", documentId);
+  void delete(String documentId, Document originalDocument) {
+    deleteSimpleDocument(type, "v1/poll", documentId, originalDocument.dataObject);
   }
 
   @override

@@ -50,8 +50,8 @@ class CustomFronts extends Collection<CustomFrontData> {
   }
 
   @override
-  void delete(String documentId) {
-    deleteSimpleDocument(type, "v1/customFront", documentId);
+  void delete(String documentId, Document originalDocument) {
+    deleteSimpleDocument(type, "v1/customFront", documentId, originalDocument.dataObject);
   }
 
   @override

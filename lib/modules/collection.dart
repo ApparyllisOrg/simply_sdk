@@ -29,7 +29,7 @@ abstract class Collection<ObjectType> {
   Future<List<Document<DocumentData>>> getAll();
   Document<DocumentData> add(DocumentData values);
   void update(String documentId, DocumentData values);
-  void delete(String documentId);
+  void delete(String documentId, Document originalDocument);
 
   void listenForChanges(DocumentChange bindFunc) {
     boundChanges.add(bindFunc);

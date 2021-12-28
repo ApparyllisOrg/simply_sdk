@@ -44,8 +44,8 @@ class AutomatedTimers extends Collection<AutomatedTimerData> {
   }
 
   @override
-  void delete(String documentId) {
-    deleteSimpleDocument(type, "v1/timer/automated", documentId);
+  void delete(String documentId, Document originalDocument) {
+    deleteSimpleDocument(type, "v1/timer/automated", documentId, originalDocument.dataObject);
   }
 
   @override

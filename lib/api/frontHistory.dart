@@ -51,8 +51,8 @@ class FrontHistory extends Collection<FrontHistoryData> {
   }
 
   @override
-  void delete(String documentId) {
-    deleteSimpleDocument(type, "v1/frontHistory", documentId);
+  void delete(String documentId, Document originalDocument) {
+    deleteSimpleDocument(type, "v1/frontHistory", documentId, originalDocument.dataObject);
   }
 
   @override
@@ -67,7 +67,7 @@ class FrontHistory extends Collection<FrontHistoryData> {
   }
 
   Future<List<Document<FrontHistoryData>>> getFrontHistoryInRange(int start, int end) async {
-    var collection = await getCollection<FrontHistoryData>("v1/frontHistory/${API().auth().getUid()}", "", query: "start=$start&end=$end");
+    var collection = await getCollection<FrontHistoryData>("v1/frontHistory/${API().auth().getUid()}", "", query: "startTime=$start&endTime=$end");
 
     List<Document<FrontHistoryData>> fronts = collection.map<Document<FrontHistoryData>>((e) => Document(e["exists"], e["id"], FrontHistoryData()..constructFromJson(e["content"]), type)).toList();
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:logging/logging.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 
 import 'user_test.dart' as user;
@@ -10,6 +11,8 @@ import 'store_test.dart' as store;
 import 'socket_test.dart' as socket;
 import 'front_history_test.dart' as fh;
 import 'custom_fields_test.dart' as customfields;
+import 'paginate_test.dart' as pagination;
+import 'notes_test.dart' as notes;
 
 const String userId = "zdhE8LSYheP9dGzdwKzy8eoJrTu1";
 
@@ -20,6 +23,7 @@ String getRandString(int len) {
 }
 
 void main() {
+  Logger.root.level = Level.ALL;
   API().connection().setCurrentHost("http://localhost:3000");
   API().auth().setLastAuthToken("testToken2", userId);
   user.runTests(userId);
@@ -29,4 +33,6 @@ void main() {
   socket.runTests(userId);
   fh.runTests(userId);
   customfields.runTests(userId);
+  pagination.runTests(userId);
+  notes.runTests(userId);
 }

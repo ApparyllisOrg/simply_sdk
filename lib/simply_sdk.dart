@@ -1,5 +1,6 @@
 library simply_sdk;
 
+import 'package:logging/logging.dart';
 import 'package:simply_sdk/api/automatedTimers.dart';
 import 'package:simply_sdk/api/comments.dart';
 import 'package:simply_sdk/api/customFronts.dart';
@@ -29,7 +30,11 @@ class APISettings {}
 class API {
   static API? _instance;
 
-  API._() {}
+  API._() {
+    Logger.root.onRecord.listen((record) {
+      print('${record.level.name}: ${record.time}: ${record.message}');
+    });
+  }
 
   factory API() {
     if (_instance == null) {

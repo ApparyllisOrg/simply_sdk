@@ -47,8 +47,8 @@ class Notes extends Collection<NoteData> {
   }
 
   @override
-  void delete(String documentId) {
-    deleteSimpleDocument(type, "v1/note", documentId);
+  void delete(String documentId, Document originalDocument) {
+    deleteSimpleDocument(type, "v1/note", documentId, originalDocument.dataObject);
   }
 
   @override
@@ -66,11 +66,10 @@ class Notes extends Collection<NoteData> {
   }
 
   Future<List<Document<NoteData>>> getNotesForMember(String member, String systemId) async {
-    var response = await SimplyHttpClient().get(Uri.parse('v1/notes/$systemId/$member'));
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    }
-    return [];
+    var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/notes/$systemId/$member', "")));
+    List<Map<String, dynamic>> convertedResponse = convertServerResponseToList(response);
+    List<Document<NoteData>> notes = convertedResponse.map<Document<NoteData>>((e) => Document(e["exists"], e["id"], NoteData()..constructFromJson(e["content"]), type)).toList();
+    return notes;
   }
 
   @override

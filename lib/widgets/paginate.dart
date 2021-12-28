@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:http/http.dart';
 import 'package:simply_sdk/modules/http.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import '../types/document.dart';
@@ -16,17 +18,7 @@ class Paginate extends StatefulWidget {
   final String url;
   final DocumentConstructor documentConstructor;
 
-  const Paginate(
-      {Key? key,
-      required this.itemBuilder,
-      this.stepSize = 10,
-      required this.getLoader,
-      required this.emptyView,
-      required this.sortBy,
-      required this.sortOrder,
-      required this.url,
-      required this.documentConstructor})
-      : super(key: key);
+  const Paginate({Key? key, required this.itemBuilder, this.stepSize = 10, required this.getLoader, required this.emptyView, required this.sortBy, required this.sortOrder, required this.url, required this.documentConstructor}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => PaginateState();
@@ -57,6 +49,10 @@ class PaginateState extends State<Paginate> {
     getNextBatch();
   }
 
+  static Future<Response> getNextPage(String url, String sortBy, int sortOrder, int stepSize, int currentOffset, {String? additionalQuery}) async {
+    return SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('$url', 'sortBy=$sortBy&sortOrder=$sortOrder&limit=$stepSize&start=$currentOffset&sortUp=true&${additionalQuery ?? ""}')));
+  }
+
   void getNextBatch() async {
     if (reachedEnd || isLoading) {
       return;
@@ -67,10 +63,7 @@ class PaginateState extends State<Paginate> {
       setState(() {});
     }
 
-    var response = await SimplyHttpClient().get(Uri.parse(API()
-        .connection()
-        .getRequestUrl('${widget.url}',
-            'sortBy=${widget.sortBy}&sortOrder=${widget.sortOrder}&limit=${widget.stepSize}&start=$currentOffset')));
+    var response = await getNextPage(widget.url, widget.sortBy, widget.sortOrder, widget.stepSize, currentOffset);
 
     List<Map<String, dynamic>> responseDocs = jsonDecode(response.body);
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:logging/logging.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/types/document.dart';
 import 'package:web_socket_channel/io.dart';
@@ -200,7 +201,7 @@ class Socket {
         for (int i = 0; i < queue.length; i++) {
           var queuedDoc = queue[i];
           if (queuedDoc["collectionRef"] == collection) {
-            print("replaying =>" + queuedDoc["id"]);
+            Logger.root.fine("replaying =>" + queuedDoc["id"]);
 
             switch (queuedDoc["action"]) {
               case "update":

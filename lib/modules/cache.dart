@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:logging/logging.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/types/document.dart';
 import "package:universal_html/html.dart" as html;
@@ -113,7 +114,7 @@ class Cache {
         // Save sync
         html.window.localStorage["sync"] = jsonEncode(_sync, toEncodable: customEncode);
 
-        print("Saved sync and cache");
+        Logger.root.fine("Saved sync and cache");
       } catch (e) {
         dirty = true;
         API().reportError(e, StackTrace.current);

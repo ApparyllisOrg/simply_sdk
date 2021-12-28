@@ -1,8 +1,5 @@
-import 'dart:async';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:simply_sdk/api/frontHistory.dart';
-import 'package:simply_sdk/api/members.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
 
@@ -10,6 +7,7 @@ import 'simply_sdk_test.dart';
 
 void runTests(userId) {
   int now = DateTime.now().millisecondsSinceEpoch;
+  int end = now + (60 * 1000);
   test('Remove everyone from front', () async {
     List<Document<FrontHistoryData>> fronters = API().store().getFronters();
     for (int i = fronters.length - 1; i >= 0; --i) {
@@ -17,15 +15,16 @@ void runTests(userId) {
           fronters[i].id,
           FrontHistoryData()
             ..live = false
-            ..endTime = DateTime.now().millisecondsSinceEpoch);
+            ..endTime = end);
     }
+    await Future.delayed(Duration(seconds: 2));
   });
 
   test('Add to front', () async {
     API().frontHistory().add(FrontHistoryData()
       ..live = true
       ..custom = false
-      ..startTime = DateTime.now().millisecondsSinceEpoch
+      ..startTime = now
       ..member = "testMember");
   });
 
@@ -51,7 +50,7 @@ void runTests(userId) {
     API().frontHistory().add(FrontHistoryData()
       ..live = true
       ..custom = false
-      ..startTime = DateTime.now().millisecondsSinceEpoch
+      ..startTime = now
       ..member = "testMember2");
     await Future.delayed(Duration(seconds: 1));
   });
@@ -65,8 +64,8 @@ void runTests(userId) {
         API().store().getFronters()[0].id,
         FrontHistoryData()
           ..live = false
-          ..endTime = DateTime.now().millisecondsSinceEpoch);
-    await Future.delayed(Duration(seconds: 1));
+          ..endTime = end);
+    await Future.delayed(Duration(seconds: 3));
   });
 
   test('Check again amount of people in front', () async {
@@ -74,7 +73,7 @@ void runTests(userId) {
   });
 
   test('Check found front history for range of unit test', () async {
-    List<Document<FrontHistoryData>> fh = await API().frontHistory().getFrontHistoryInRange(now, DateTime.now().millisecondsSinceEpoch);
-    expect(fh.length, 2);
+    List<Document<FrontHistoryData>> fh = await API().frontHistory().getFrontHistoryInRange(now, end);
+    expect(fh.length, 1);
   });
 }

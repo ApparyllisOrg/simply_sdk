@@ -91,8 +91,8 @@ class RepeatedTimers extends Collection<RepeatedTimerData> {
   }
 
   @override
-  void delete(String documentId) {
-    deleteSimpleDocument(type, "v1/timer/repeated", documentId);
+  void delete(String documentId, Document originalDocument) {
+    deleteSimpleDocument(type, "v1/timer/repeated", documentId, originalDocument.dataObject);
   }
 
   @override

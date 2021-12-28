@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:logging/logging.dart';
 import 'package:mongo_dart/mongo_dart.dart';
+import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/modules/http.dart';
 import 'package:simply_sdk/modules/network.dart';
@@ -82,21 +84,24 @@ void updateSimpleDocument(String type, String path, String documentId, DocumentD
   propogateChanges(type, documentId, data, EChangeType.Update);
 }
 
-void deleteSimpleDocument(String type, String path, String id) {
+void deleteSimpleDocument(String type, String path, String id, DocumentData data) {
   API().network().request(new NetworkRequest(
         HttpRequestMethod.Delete,
         "$path/$id",
         DateTime.now().millisecondsSinceEpoch,
       ));
 
-  propogateChanges(type, id, EmptyDocumentData(), EChangeType.Delete);
+  propogateChanges(type, id, data, EChangeType.Delete);
 }
 
 Future<List<Map<String, dynamic>>> getCollection<ObjectType>(String path, String id, {String? query}) async {
   var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("$path/$id", query ?? ""))).catchError(((e) => generateFailedResponse(e)));
   if (response.statusCode == 200) {
-    List list = jsonDecode(response.body);
-    return list.map((e) => e as Map<String, dynamic>).toList();
+    return convertServerResponseToList(response);
+  } else {
+    Logger.root.fine("Failed get Collection result => ");
+    Logger.root.fine(Uri.parse(API().connection().getRequestUrl("$path/$id", query ?? "")));
+    Logger.root.fine(response.body);
   }
   return [];
 }

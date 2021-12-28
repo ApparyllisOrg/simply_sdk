@@ -5,6 +5,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:http/http.dart' as http;
+import 'package:logging/logging.dart';
 import 'package:simply_sdk/modules/http.dart';
 
 import '../simply_sdk.dart';
@@ -49,17 +50,17 @@ class Network {
             switch (request.method) {
               case HttpRequestMethod.Delete:
                 {
-                  response = await SimplyHttpClient().delete(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload)).catchError(((e) => generateFailedResponse(e)));
+                  response = await SimplyHttpClient().delete(uri, headers: {"Operation-Time": request.timestamp.toString()}).catchError(((e) => generateFailedResponse(e)));
                   break;
                 }
               case HttpRequestMethod.Patch:
                 {
-                  response = await SimplyHttpClient().patch(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload)).catchError(((e) => generateFailedResponse(e)));
+                  response = await SimplyHttpClient().patch(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload ?? "{}")).catchError(((e) => generateFailedResponse(e)));
                   break;
                 }
               case HttpRequestMethod.Post:
                 {
-                  response = await SimplyHttpClient().post(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload)).catchError(((e) => generateFailedResponse(e)));
+                  response = await SimplyHttpClient().post(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload ?? "{}")).catchError(((e) => generateFailedResponse(e)));
                   break;
                 }
               default:
@@ -75,7 +76,7 @@ class Network {
               _pendingRequests.remove(request);
               if (request.onDone != null) request.onDone!();
             } else {
-              print(response?.body);
+              Logger.root.fine(response?.body);
             }
           } catch (e) {
             print(e);

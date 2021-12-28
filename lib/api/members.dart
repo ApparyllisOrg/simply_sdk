@@ -63,8 +63,8 @@ class Members extends Collection<MemberData> {
   }
 
   @override
-  void delete(String documentId) {
-    deleteSimpleDocument(type, "v1/member", documentId);
+  void delete(String documentId, Document originalDocument) {
+    deleteSimpleDocument(type, "v1/member", documentId, originalDocument.dataObject);
   }
 
   @override

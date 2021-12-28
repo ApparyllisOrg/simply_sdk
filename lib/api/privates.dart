@@ -45,7 +45,7 @@ class Privates extends Collection {
 
   @deprecated
   @override
-  void delete(String documentId) {
+  void delete(String documentId, Document originalDocument) {
     throw UnimplementedError();
   }
 

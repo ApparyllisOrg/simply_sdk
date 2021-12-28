@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 
 import 'api/members.dart';
@@ -78,4 +81,9 @@ DocumentData? convertJsonToDataObject(Map<String, dynamic> json, String type) {
   if (type == "Members") {
     return MemberData().constructFromJson(json);
   }
+}
+
+List<Map<String, dynamic>> convertServerResponseToList(Response response) {
+  List list = jsonDecode(response.body);
+  return list.map((e) => e as Map<String, dynamic>).toList();
 }
