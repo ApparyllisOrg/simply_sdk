@@ -8,7 +8,7 @@ class AutomatedTimerData implements DocumentData {
   String? name;
   String? message;
   int? action;
-  double? delayInHours;
+  num? delayInHours;
   int? type;
 
   @override
@@ -40,7 +40,7 @@ class AutomatedTimers extends Collection<AutomatedTimerData> {
 
   @override
   Document<AutomatedTimerData> add(DocumentData values) {
-    return addSimpleDocument(type, "v1/timer/aumtomated", values);
+    return addSimpleDocument(type, "v1/timer/automated", values);
   }
 
   @override

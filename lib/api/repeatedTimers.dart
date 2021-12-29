@@ -54,7 +54,7 @@ class RepeatedTimerStartTimeData implements DocumentData {
 class RepeatedTimerData implements DocumentData {
   String? name;
   String? message;
-  double? dayInterval;
+  num? dayInterval;
   RepeatedTimerTimeData? time;
   RepeatedTimerStartTimeData? startTime;
 

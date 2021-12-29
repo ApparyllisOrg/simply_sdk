@@ -13,6 +13,7 @@ import 'front_history_test.dart' as fh;
 import 'custom_fields_test.dart' as customfields;
 import 'paginate_test.dart' as pagination;
 import 'notes_test.dart' as notes;
+import 'timers_test.dart' as timers;
 
 const String userId = "zdhE8LSYheP9dGzdwKzy8eoJrTu1";
 
@@ -35,4 +36,5 @@ void main() {
   customfields.runTests(userId);
   pagination.runTests(userId);
   notes.runTests(userId);
+  timers.runTests(userId);
 }

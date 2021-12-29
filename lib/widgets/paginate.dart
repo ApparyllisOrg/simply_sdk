@@ -65,7 +65,7 @@ class PaginateState extends State<Paginate> {
 
     var response = await getNextPage(widget.url, widget.sortBy, widget.sortOrder, widget.stepSize, currentOffset);
 
-    List<Map<String, dynamic>> responseDocs = jsonDecode(response.body);
+    List<Map<String, dynamic>> responseDocs = (jsonDecode(response.body) as List<dynamic>).cast<Map<String, dynamic>>();
 
     List<Document> newDocs = [];
     responseDocs.forEach((element) {

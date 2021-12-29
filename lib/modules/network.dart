@@ -12,7 +12,7 @@ import '../simply_sdk.dart';
 
 enum HttpRequestMethod { Post, Patch, Delete, Get }
 
-List<int> acceptedResponseCodes = [0, 200, 400, 409, 404, 500, 501, 502, 503, 504, 403, 401, 406, 405, 204];
+List<int> acceptedResponseCodes = [0, 200, 409, 500, 501, 502, 503, 504, 403, 401, 406, 405, 204];
 
 class NetworkRequest {
   final HttpRequestMethod method;
