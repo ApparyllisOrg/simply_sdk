@@ -16,6 +16,16 @@ class FrontHistoryData implements DocumentData {
   bool? live;
   int? commentCount;
 
+  static FrontHistoryData copyFrom(FrontHistoryData other) {
+    return FrontHistoryData()
+      ..custom = other.custom
+      ..startTime = other.startTime
+      ..endTime = other.endTime
+      ..member = other.member
+      ..live = other.live
+      ..commentCount = other.commentCount;
+  }
+
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};

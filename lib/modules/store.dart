@@ -57,17 +57,18 @@ class Store {
     updateDocumentInList<GroupData>(_groups, data as Document<GroupData>, changeType);
   }
 
-  void frontHistoryChanged(Document<dynamic> data, EChangeType changeType) {
+  void frontHistoryChanged(Document<FrontHistoryData> data, EChangeType changeType) {
     int index = _fronters.indexWhere((element) => element.id == data.id);
 
     Document<FrontHistoryData>? previousFhDoc = index >= 0 ? _fronters[index] : null;
 
     // Create a new instance so that when "updateDocumentInList", we still have the original values
+    // Also copy the data, because we need a deep copy but dart doesn't have deep copy so we need to manually do it
     if (previousFhDoc != null) {
-      previousFhDoc = Document<FrontHistoryData>(true, previousFhDoc.id, previousFhDoc.dataObject, previousFhDoc.type);
+      previousFhDoc = Document<FrontHistoryData>(true, previousFhDoc.id, FrontHistoryData.copyFrom(previousFhDoc.dataObject), previousFhDoc.type);
     }
 
-    Document<FrontHistoryData> fhDoc = data as Document<FrontHistoryData>;
+    Document<FrontHistoryData> fhDoc = data;
 
     updateDocumentInList<FrontHistoryData>(_fronters, data, changeType);
     _fronters.removeWhere((element) => (element.dataObject.live ?? true) == false);

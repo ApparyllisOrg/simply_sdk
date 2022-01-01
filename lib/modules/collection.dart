@@ -18,12 +18,12 @@ class EmptyDocumentData extends DocumentData {
 
 enum EChangeType { Add, Update, Delete }
 
-typedef DocumentChange = void Function(Document<dynamic>, EChangeType);
+typedef DocumentChange<ObjectType> = void Function(Document<ObjectType>, EChangeType);
 
 abstract class Collection<ObjectType> {
   String type = "NONE";
 
-  List<DocumentChange?> boundChanges = [];
+  List<DocumentChange<ObjectType>?> boundChanges = [];
 
   Future<Document<DocumentData>> get(String id);
   Future<List<Document<DocumentData>>> getAll();
@@ -31,11 +31,11 @@ abstract class Collection<ObjectType> {
   void update(String documentId, ObjectType values);
   void delete(String documentId, Document originalDocument);
 
-  void listenForChanges(DocumentChange bindFunc) {
+  void listenForChanges(DocumentChange<ObjectType> bindFunc) {
     boundChanges.add(bindFunc);
   }
 
-  void cancelListenForChanges(DocumentChange bindFunc) {
+  void cancelListenForChanges(DocumentChange<ObjectType> bindFunc) {
     boundChanges.remove(bindFunc);
   }
 
