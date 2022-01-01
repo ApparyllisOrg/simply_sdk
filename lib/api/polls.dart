@@ -82,8 +82,8 @@ class PollData implements DocumentData {
     desc = readDataFromJson("desc", json);
     allowAbstain = readDataFromJson("allowAbstain", json);
     allowVeto = readDataFromJson("allowVeto", json);
-    options = readDataFromJson("options", json);
-    votes = readDataFromJson("votes", json);
+    options = readDataArrayFromJson("options", json);
+    votes = readDataArrayFromJson("votes", json);
     custom = readDataFromJson("custom", json);
     endTime = readDataFromJson("endTime", json);
   }

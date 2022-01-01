@@ -61,6 +61,12 @@ class Store {
     int index = _fronters.indexWhere((element) => element.id == data.id);
 
     Document<FrontHistoryData>? previousFhDoc = index >= 0 ? _fronters[index] : null;
+
+    // Create a new instance so that when "updateDocumentInList", we still have the original values
+    if (previousFhDoc != null) {
+      previousFhDoc = Document<FrontHistoryData>(true, previousFhDoc.id, previousFhDoc.dataObject, previousFhDoc.type);
+    }
+
     Document<FrontHistoryData> fhDoc = data as Document<FrontHistoryData>;
 
     updateDocumentInList<FrontHistoryData>(_fronters, data, changeType);
