@@ -28,7 +28,7 @@ abstract class Collection<ObjectType> {
   Future<Document<DocumentData>> get(String id);
   Future<List<Document<DocumentData>>> getAll();
   Document<DocumentData> add(DocumentData values);
-  void update(String documentId, DocumentData values);
+  void update(String documentId, ObjectType values);
   void delete(String documentId, Document originalDocument);
 
   void listenForChanges(DocumentChange bindFunc) {

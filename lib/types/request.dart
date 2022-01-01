@@ -9,14 +9,13 @@ class RequestResponse {
   RequestResponse(this.success, this.message);
 }
 
-  RequestResponse createResponseObject(Response response) {
-    var jsonResponse = jsonDecode(response.body);
-    if (response.statusCode == 200 && jsonResponse["success"] == true) {
-      return RequestResponse(true, jsonResponse["msg"]);
-    } else {
-      return RequestResponse(false, jsonResponse["msg"]);
-    }
+RequestResponse createResponseObject(Response response) {
+  var jsonResponse = jsonDecode(response.body);
+  if (response.statusCode == 200 && jsonResponse["success"] == true) {
+    return RequestResponse(true, jsonResponse["msg"] ?? "");
+  } else {
+    return RequestResponse(false, jsonResponse["msg"] ?? "");
   }
+}
 
-  RequestResponse createFailResponseObject() =>
-      RequestResponse(false, "Something went wrong. Try again later.");
+RequestResponse createFailResponseObject() => RequestResponse(false, "Something went wrong. Try again later.");

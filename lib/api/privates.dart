@@ -33,7 +33,7 @@ class PrivateData implements DocumentData {
   }
 }
 
-class Privates extends Collection {
+class Privates extends Collection<PrivateData> {
   @override
   String get type => "Privates";
 
@@ -61,7 +61,7 @@ class Privates extends Collection {
   }
 
   @override
-  void update(String documentId, DocumentData values) {
+  void update(String documentId, PrivateData values) {
     updateSimpleDocument(type, "v1/user/private", documentId, values);
   }
 }

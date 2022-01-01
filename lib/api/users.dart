@@ -82,7 +82,7 @@ class UserData implements DocumentData {
   }
 }
 
-class Users extends Collection {
+class Users extends Collection<UserData> {
   @override
   String get type => "Users";
 
@@ -110,7 +110,8 @@ class Users extends Collection {
   }
 
   @override
-  void update(String documentId, DocumentData values) {
+  void update(String documentId, UserData values) {
+    values.username = null;
     updateSimpleDocument(type, "v1/user", documentId, values);
   }
 
