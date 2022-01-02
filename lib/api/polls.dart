@@ -66,8 +66,10 @@ class PollData implements DocumentData {
 
     insertData("name", name, payload);
     insertData("desc", desc, payload);
-    insertData("allowAbstain", allowAbstain, payload);
-    insertData("allowVeto", allowVeto, payload);
+    if (custom != true) {
+      insertData("allowAbstain", allowAbstain, payload);
+      insertData("allowVeto", allowVeto, payload);
+    }
     insertData("options", options, payload);
     insertData("votes", votes, payload);
     insertData("custom", custom, payload);
@@ -82,8 +84,20 @@ class PollData implements DocumentData {
     desc = readDataFromJson("desc", json);
     allowAbstain = readDataFromJson("allowAbstain", json);
     allowVeto = readDataFromJson("allowVeto", json);
-    options = readDataArrayFromJson("options", json);
-    votes = readDataArrayFromJson("votes", json);
+
+    options = [];
+    votes = [];
+
+    List<dynamic> _options = readDataFromJson("options", json);
+    _options.forEach((value) {
+      options!.add(PollOptionData()..constructFromJson(value as Map<String, dynamic>));
+    });
+
+    List<dynamic> _votes = readDataFromJson("votes", json);
+    _votes.forEach((value) {
+      votes!.add(PollVoteData()..constructFromJson(value as Map<String, dynamic>));
+    });
+
     custom = readDataFromJson("custom", json);
     endTime = readDataFromJson("endTime", json);
   }
