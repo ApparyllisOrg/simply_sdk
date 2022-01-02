@@ -75,10 +75,12 @@ class UserData implements DocumentData {
 
     fields = {};
 
-    Map<String, dynamic> _fields = readDataFromJson("fields", json);
-    _fields.forEach((key, value) {
-      fields![key] = UserFieldData()..constructFromJson(value);
-    });
+    Map<String, dynamic>? _fields = readDataFromJson("fields", json);
+    if (_fields != null) {
+      _fields.forEach((key, value) {
+        fields![key] = UserFieldData()..constructFromJson(value);
+      });
+    }
   }
 }
 

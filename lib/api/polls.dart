@@ -88,15 +88,19 @@ class PollData implements DocumentData {
     options = [];
     votes = [];
 
-    List<dynamic> _options = readDataFromJson("options", json);
-    _options.forEach((value) {
-      options!.add(PollOptionData()..constructFromJson(value as Map<String, dynamic>));
-    });
+    List<dynamic>? _options = readDataFromJson("options", json);
+    if (_options != null) {
+      _options.forEach((value) {
+        options!.add(PollOptionData()..constructFromJson(value as Map<String, dynamic>));
+      });
+    }
 
-    List<dynamic> _votes = readDataFromJson("votes", json);
-    _votes.forEach((value) {
-      votes!.add(PollVoteData()..constructFromJson(value as Map<String, dynamic>));
-    });
+    List<dynamic>? _votes = readDataFromJson("votes", json);
+    if (_votes != null) {
+      _votes.forEach((value) {
+        votes!.add(PollVoteData()..constructFromJson(value as Map<String, dynamic>));
+      });
+    }
 
     custom = readDataFromJson("custom", json);
     endTime = readDataFromJson("endTime", json);
