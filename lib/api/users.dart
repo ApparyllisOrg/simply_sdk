@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart' as fir;
 import 'package:http/http.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:simply_sdk/api/main.dart';
