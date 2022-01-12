@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simply_sdk/simply_sdk.dart';
@@ -19,8 +18,8 @@ class RemoteConfig {
   void _initialize() async {
     _sharedPrefs = await SharedPreferences.getInstance();
     if (_sharedPrefs.containsKey(_configSync)) {
-      Timestamp lastSync = Timestamp.fromMillisecondsSinceEpoch(_sharedPrefs.getInt(_configSync)!);
-      Timestamp now = Timestamp.now();
+      int lastSync = _sharedPrefs.getInt(_configSync) ?? 0;
+      int now = DateTime.now().millisecondsSinceEpoch;
 
       int diff = now.compareTo(lastSync);
 
@@ -36,7 +35,7 @@ class RemoteConfig {
   }
 
   void fetchConfig() async {
-    Timestamp now = Timestamp.now();
+    int now = DateTime.now().millisecondsSinceEpoch;
 
     _loadConfig();
 
@@ -44,7 +43,7 @@ class RemoteConfig {
     Response response;
     try {
       response = await get(url);
-      _sharedPrefs.setInt(_configSync, now.millisecondsSinceEpoch);
+      _sharedPrefs.setInt(_configSync, now);
       _sharedPrefs.setString(_remoteConfig, response.body);
     } catch (e) {
       print(e);

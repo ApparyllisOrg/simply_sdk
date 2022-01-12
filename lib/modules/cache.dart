@@ -5,7 +5,6 @@ import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/types/document.dart';
 import "package:universal_html/html.dart" as html;
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart' as fir;
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:simply_sdk/helpers.dart';
@@ -206,17 +205,7 @@ class Cache {
   }
 
   int getTime(var data) {
-    if (data is fir.Timestamp) {
-      return data.millisecondsSinceEpoch;
-    }
-    if (data is DateTime) {
-      return data.millisecondsSinceEpoch;
-    }
-    if (data is int) {
-      return data;
-    }
-    API().reportError("data in getTime is not int or timestamp!" + data.toString(), StackTrace.current);
-    return 0;
+    return data;
   }
 
   String insertDocument(String type, String id, Map<String, dynamic> data, {bool doTriggerUpdateSubscription: true}) {

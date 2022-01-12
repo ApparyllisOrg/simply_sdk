@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:simply_sdk/modules/collection.dart';
 
 typedef DocumentId = String;
