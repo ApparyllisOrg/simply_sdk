@@ -55,6 +55,7 @@ class Groups extends Collection<GroupData> {
   @override
   void delete(String documentId, Document originalDocument) {
     deleteSimpleDocument(type, "v1/group", documentId, originalDocument.dataObject);
+    recursiveDeleteGroup(documentId);
   }
 
   @override
@@ -74,5 +75,12 @@ class Groups extends Collection<GroupData> {
   @override
   void update(String documentId, DocumentData values) {
     updateSimpleDocument(type, "v1/group", documentId, values);
+  }
+
+  void recursiveDeleteGroup(String groupId) {
+    Iterable<Document<GroupData>> groups = API().store().getAllGroups().where((element) => element.dataObject.parent == groupId);
+    groups.forEach((element) {
+      delete(element.id, element);
+    });
   }
 }

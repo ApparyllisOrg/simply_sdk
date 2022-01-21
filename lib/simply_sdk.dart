@@ -23,6 +23,7 @@ import 'package:simply_sdk/modules/socket.dart';
 import 'package:simply_sdk/modules/store.dart';
 import 'package:simply_sdk/modules/subscriptions.dart';
 
+import 'api/tokens.dart';
 import 'modules/network.dart';
 
 class APISettings {}
@@ -72,6 +73,7 @@ class API {
   final Users _users = Users();
   final Store _store = Store();
   final PK _pk = PK();
+  final Tokens _tokens = Tokens();
 
   // Declare global getters
   Auth auth() => _auth;
@@ -98,6 +100,7 @@ class API {
   Users users() => _users;
   Store store() => _store;
   PK pk() => _pk;
+  Tokens tokens() => _tokens;
 
   void reportError(e, StackTrace trace) {
     try {
