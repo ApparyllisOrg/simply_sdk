@@ -60,8 +60,8 @@ class GenerateUserReportDataFh implements DocumentData {
 
     insertData("start", start, payload);
     insertData("end", end, payload);
-    insertData("includesMembers", includesMembers, payload);
-    insertData("includesCfs", includesCfs, payload);
+    insertData("includeMembers", includesMembers, payload);
+    insertData("includeCustomFronts", includesCfs, payload);
     insertData("privacyLevel", privacyLevel, payload);
 
     return payload;
