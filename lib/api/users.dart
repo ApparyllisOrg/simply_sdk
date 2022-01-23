@@ -42,6 +42,95 @@ class UserFieldData implements DocumentData {
   }
 }
 
+class GenerateUserReportDataFh implements DocumentData {
+  int? start;
+  int? end;
+  bool? includesMembers;
+  bool? includesCfs;
+  int? privacyLevel;
+
+  @override
+  constructFromJson(Map<String, dynamic> json) {
+    throw UnimplementedError("This is a to-server data object only, we never retrieve this from the server.");
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> payload = {};
+
+    insertData("start", start, payload);
+    insertData("end", end, payload);
+    insertData("includesMembers", includesMembers, payload);
+    insertData("includesCfs", includesCfs, payload);
+    insertData("privacyLevel", privacyLevel, payload);
+
+    return payload;
+  }
+}
+
+class GenerateUserReportDataCf implements DocumentData {
+  int? privacyLevel;
+
+  @override
+  constructFromJson(Map<String, dynamic> json) {
+    throw UnimplementedError("This is a to-server data object only, we never retrieve this from the server.");
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> payload = {};
+    insertData("privacyLevel", privacyLevel, payload);
+
+    return payload;
+  }
+}
+
+class GenerateUserReportDataFMem implements DocumentData {
+  bool? includeCustomFields;
+  int? privacyLevel;
+
+  @override
+  constructFromJson(Map<String, dynamic> json) {
+    throw UnimplementedError("This is a to-server data object only, we never retrieve this from the server.");
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> payload = {};
+
+    insertData("includeCustomFields", includeCustomFields, payload);
+    insertData("privacyLevel", privacyLevel, payload);
+
+    return payload;
+  }
+}
+
+class GenerateUserReportData implements DocumentData {
+  String? sendTo;
+  List<String>? cc;
+  GenerateUserReportDataFh? frontHistory;
+  GenerateUserReportDataCf? customFronts;
+  GenerateUserReportDataFMem? members;
+
+  @override
+  constructFromJson(Map<String, dynamic> json) {
+    throw UnimplementedError("This is a to-server data object only, we never retrieve this from the server.");
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> payload = {};
+
+    insertData("sendTo", sendTo, payload);
+    insertData("cc", cc, payload);
+    insertData("customFronts", customFronts, payload);
+    insertData("frontHistory", frontHistory, payload);
+    insertData("members", members, payload);
+
+    return payload;
+  }
+}
+
 class UserData implements DocumentData {
   String? username;
   String? desc;
@@ -120,6 +209,17 @@ class Users extends Collection<UserData> {
     try {
       var response = await SimplyHttpClient().patch(Uri.parse(API().connection().getRequestUrl("v1/user/username/$userId", "")), body: jsonEncode({"username": newUsername}));
 
+      return createResponseObject(response);
+    } catch (e) {}
+    return createFailResponseObject();
+  }
+
+  Future<RequestResponse> generateUserReport(GenerateUserReportData data) async {
+    if (data.customFronts == null && data.customFronts == null && data.members == null) {
+      return RequestResponse(false, "You must specify at least one generation type");
+    }
+    try {
+      var response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/user/generateReport", "")), body: data.toJson());
       return createResponseObject(response);
     } catch (e) {}
     return createFailResponseObject();
