@@ -219,7 +219,7 @@ class Users extends Collection<UserData> {
       return RequestResponse(false, "You must specify at least one generation type");
     }
     try {
-      var response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/user/generateReport", "")), body: jsonEncode(data.toString()));
+      var response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/user/generateReport", "")), body: jsonEncode(data.toJson()));
       return createResponseObject(response);
     } catch (e) {}
     return createFailResponseObject();
