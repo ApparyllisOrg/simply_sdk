@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:simply_sdk/modules/http.dart';
@@ -8,7 +9,7 @@ import '../simply_sdk.dart';
 class Storage {
   Future<RequestResponse> storeAvatar(String avatarUuid, Uint8List bytes) async {
     try {
-      await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/avatar/$avatarUuid", "")), body: {"buffer": bytes}).catchError(((e) => generateFailedResponse(e)));
+      await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/avatar/$avatarUuid", "")), body: jsonEncode({"buffer": bytes})).catchError(((e) => generateFailedResponse(e)));
 
       return RequestResponse(true, "");
     } catch (e) {}
