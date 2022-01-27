@@ -64,7 +64,7 @@ class Friends {
   Future<RequestResponse> respondToFriendRequest(FriendSettingsData settings, bool accepted, String userId) {
     return Future(() async {
       try {
-        var response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/friends/request/respond/$userId", "")), body: jsonEncode({"settings": settings.toJson()})).catchError(((e) => generateFailedResponse(e)));
+        var response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/friends/request/respond/$userId", "accepted=${accepted ? 'true' : 'false'}")), body: jsonEncode({"settings": settings.toJson()})).catchError(((e) => generateFailedResponse(e)));
 
         return createResponseObject(response);
       } catch (e) {}
