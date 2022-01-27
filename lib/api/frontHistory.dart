@@ -12,6 +12,7 @@ class FrontHistoryData implements DocumentData {
   int? startTime;
   int? endTime;
   String? member;
+  String? customStatus;
   bool? live;
   int? commentCount;
 
@@ -34,6 +35,7 @@ class FrontHistoryData implements DocumentData {
     insertData("endTime", endTime, payload);
     insertData("member", member, payload);
     insertData("live", live, payload);
+    insertData("customStatus", customStatus, payload);
     // Never send comment count
 
     return payload;
@@ -47,6 +49,7 @@ class FrontHistoryData implements DocumentData {
     member = readDataFromJson("member", json);
     live = readDataFromJson("live", json);
     commentCount = readDataFromJson("commentCount", json);
+    customStatus = readDataFromJson("customStatus", json);
   }
 }
 

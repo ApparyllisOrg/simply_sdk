@@ -157,7 +157,7 @@ class Friends {
     var jsonResponse = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      return Document(true, uid, UserData().constructFromJson(jsonResponse["content"]), "friends");
+      return Document(true, uid, FriendSettingsData().constructFromJson(jsonResponse["content"]), "friends");
     } else {
       return null;
     }
@@ -169,7 +169,7 @@ class Friends {
     var jsonResponse = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      return Document(true, uid, UserData().constructFromJson(jsonResponse["content"]), "friends");
+      return Document(true, uid, FriendSettingsData().constructFromJson(jsonResponse["content"]), "friends");
     } else {
       return null;
     }
