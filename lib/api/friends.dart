@@ -153,7 +153,7 @@ class Friends {
 
   // Return the friend settings for a friend
   Future<Document<FriendSettingsData>?> getFriend(String uid) async {
-    var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/friend/${API().auth().getToken()}/$uid/', ""))).catchError(((e) => generateFailedResponse(e)));
+    var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/friend/${API().auth().getUid()}/$uid/', ""))).catchError(((e) => generateFailedResponse(e)));
     var jsonResponse = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
@@ -165,7 +165,7 @@ class Friends {
 
   // Return the settings a friend has for us
   Future<Document<FriendSettingsData>?> getFriendSettingsForUs(String uid) async {
-    var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/friend/$uid/${API().auth().getToken()}', ""))).catchError(((e) => generateFailedResponse(e)));
+    var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/friend/$uid/${API().auth().getUid()}', ""))).catchError(((e) => generateFailedResponse(e)));
     var jsonResponse = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
