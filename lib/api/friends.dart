@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart';
+import 'package:logging/logging.dart';
 import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/api/users.dart';
 import 'package:simply_sdk/helpers.dart';
@@ -57,7 +58,9 @@ class Friends {
       var response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/friends/request/add/$userId", "")), body: jsonEncode({"settings": settings.toJson()})).catchError(((e) => generateFailedResponse(e)));
 
       return createResponseObject(response);
-    } catch (e) {}
+    } catch (e) {
+      Logger.root.fine("sendFriendRequest failed with: " + e.toString());
+    }
     return createFailResponseObject();
   }
 
@@ -67,7 +70,9 @@ class Friends {
         var response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/friends/request/respond/$userId", "accepted=${accepted ? 'true' : 'false'}")), body: jsonEncode({"settings": settings.toJson()})).catchError(((e) => generateFailedResponse(e)));
 
         return createResponseObject(response);
-      } catch (e) {}
+      } catch (e) {
+        Logger.root.fine("respondToFriendRequest failed with: " + e.toString());
+      }
       return createFailResponseObject();
     });
   }
@@ -78,7 +83,9 @@ class Friends {
         var response = await SimplyHttpClient().delete(Uri.parse(API().connection().getRequestUrl("v1/friends/request/$userId", ""))).catchError(((e) => generateFailedResponse(e)));
 
         return createResponseObject(response);
-      } catch (e) {}
+      } catch (e) {
+        Logger.root.fine("cancelFriendRequest failed with: " + e.toString());
+      }
       return createFailResponseObject();
     });
   }
@@ -89,7 +96,9 @@ class Friends {
         var response = await SimplyHttpClient().delete(Uri.parse(API().connection().getRequestUrl("v1/friends/remove/$userId", ""))).catchError(((e) => generateFailedResponse(e)));
 
         return createResponseObject(response);
-      } catch (e) {}
+      } catch (e) {
+        Logger.root.fine("removeFriend failed with: " + e.toString());
+      }
       return createFailResponseObject();
     });
   }
@@ -115,7 +124,9 @@ class Friends {
         } else {
           return [];
         }
-      } catch (e) {}
+      } catch (e) {
+        Logger.root.fine("getFriendsFrontValues failed with: " + e.toString());
+      }
       return [];
     });
   }
@@ -131,7 +142,9 @@ class Friends {
         } else {
           return null;
         }
-      } catch (e) {}
+      } catch (e) {
+        Logger.root.fine("getFriendFrontValues failed with: " + e.toString());
+      }
       return null;
     });
   }
@@ -142,11 +155,13 @@ class Friends {
       try {
         var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/friend/$userId/getFront", ""))).catchError(((e) => generateFailedResponse(e)));
         if (response.statusCode == 200) {
-          return jsonDecode(response.body);
+          return (jsonDecode(response.body) as List<String>);
         } else {
           return [];
         }
-      } catch (e) {}
+      } catch (e) {
+        Logger.root.fine("getFriendFronters failed with: " + e.toString());
+      }
       return [];
     });
   }
