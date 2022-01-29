@@ -138,6 +138,7 @@ class UserData implements DocumentData {
   String? avatarUuid;
   String? color;
   Map<String, UserFieldData>? fields;
+  bool? patron;
 
   @override
   Map<String, dynamic> toJson() {
@@ -160,6 +161,7 @@ class UserData implements DocumentData {
     isAsystem = readDataFromJson("isAsystem", json);
     avatarUuid = readDataFromJson("avatarUuid", json);
     color = readDataFromJson("color", json);
+    patron = readDataFromJson("patron", json);
 
     fields = {};
 
