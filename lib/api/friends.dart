@@ -155,7 +155,7 @@ class Friends {
       try {
         var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/friend/$userId/getFront", ""))).catchError(((e) => generateFailedResponse(e)));
         if (response.statusCode == 200) {
-          return (jsonDecode(response.body) as List<String>);
+          return (jsonDecode(response.body) as List).cast<String>();
         } else {
           return [];
         }
