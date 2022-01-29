@@ -111,7 +111,7 @@ class Friends {
 
         var jsonResponse = jsonDecode(response.body);
         if (response.statusCode == 200) {
-          List<Map<String, String>> results = jsonResponse["results"];
+          List<dynamic> results = jsonResponse["results"];
 
           List<FriendsFrontData> friendFronts = [];
 
