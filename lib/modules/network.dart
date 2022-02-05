@@ -55,6 +55,10 @@ class Network {
     tick();
   }
 
+  void invalidateRequests() {
+    _pendingRequests = [];
+  }
+
   List<String> getJsonPendingRequestsFromString(String data) {
     List<dynamic> savedRequestsRaw = jsonDecode(data, reviver: customDecode) as List<dynamic>;
     return savedRequestsRaw.cast<String>();

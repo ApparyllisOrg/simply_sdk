@@ -31,30 +31,39 @@ class DocumentResponse {
 void propogateChanges(String type, String id, dynamic data, EChangeType changeType) {
   switch (type) {
     case "Members":
+    case "members":
       API().members().propogateChanges(Document(true, id, data, type), changeType);
       break;
     case "CustomFronts":
+    case "frontStatuses":
       API().customFronts().propogateChanges(Document(true, id, data, type), changeType);
       break;
     case "Groups":
+    case "groups":
       API().groups().propogateChanges(Document(true, id, data, type), changeType);
       break;
     case "Notes":
+    case "notes":
       API().notes().propogateChanges(Document(true, id, data, type), changeType);
       break;
     case "Polls":
+    case "polls":
       API().polls().propogateChanges(Document(true, id, data, type), changeType);
       break;
     case "RepeatedTimers":
+    case "repeatedTimers":
       API().repeatedTimers().propogateChanges(Document(true, id, data, type), changeType);
       break;
     case "AutomatedTimers":
+    case "automatedTimers":
       API().automatedTimers().propogateChanges(Document(true, id, data, type), changeType);
       break;
     case "FrontHistory":
+    case "frontHistory":
       API().frontHistory().propogateChanges(Document(true, id, data, type), changeType);
       break;
     case "Comments":
+    case "comments":
       API().comments().propogateChanges(Document(true, id, data, type), changeType);
       break;
   }

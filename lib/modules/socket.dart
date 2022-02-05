@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:logging/logging.dart';
+import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/types/document.dart';
 import 'package:web_socket_channel/io.dart';
@@ -90,6 +92,7 @@ class Socket {
     try {
       String overrideIp = const String.fromEnvironment("WSSIP");
       String socketUrl = overrideIp.isNotEmpty ? overrideIp : 'wss://api.apparyllis.com:8443';
+
       _socket = WebSocketChannel.connect(Uri.parse(socketUrl));
 
       _socket!.stream.handleError((err) => disconnected());
@@ -160,26 +163,17 @@ class Socket {
     }
   }
 
-  void beOptimistic(String targetCollection, EUpdateType operation, String id, Map<String, dynamic> data) async {
-    Map<String, dynamic> sendData = {};
-    sendData["operationType"] = updateTypeToString(operation);
-    sendData["id"] = id;
-    sendData["content"] = data;
-
-    Document? cacheDoc = await API().cache().getDocument(targetCollection, id);
-    if (cacheDoc?.exists == true) {
-      Map<String, dynamic> cacheData = cacheDoc!.data;
-      cacheData.addAll(data);
-      sendData["content"] = cacheData;
+  EChangeType operationToChangeType(String operation) {
+    switch (operation) {
+      case "update":
+        return EChangeType.Update;
+      case "insert":
+        return EChangeType.Add;
+      case "delete":
+        return EChangeType.Delete;
     }
 
-    onReceivedData(jsonEncode({
-      "msg": "update",
-      "target": targetCollection,
-      "operationType": updateTypeToString(operation),
-      "results": [sendData]
-    }, toEncodable: customEncode));
-    updateSubscription(targetCollection);
+    return EChangeType.Update;
   }
 
   void updateSubscription(String collection) async {
@@ -248,6 +242,7 @@ class Socket {
           }
           for (Map<String, dynamic> result in data["results"]) {
             updateCollectionLocally(sub, result);
+            propogateChanges(data["target"], result["id"], result, operationToChangeType(result["operationType"]));
           }
 
           if (initial) {
