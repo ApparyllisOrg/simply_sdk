@@ -55,14 +55,14 @@ class Network {
     tick();
   }
 
-  List<Map<String, dynamic>> getJsonPendingRequestsFromString(String data) {
+  List<String> getJsonPendingRequestsFromString(String data) {
     List<dynamic> savedRequestsRaw = jsonDecode(data, reviver: customDecode) as List<dynamic>;
-    return savedRequestsRaw.cast<Map<String, dynamic>>();
+    return savedRequestsRaw.cast<String>();
   }
 
-  void loadPendingRequestsFromJson(List<Map<String, dynamic>> jsonList) {
+  void loadPendingRequestsFromJson(List<String> jsonList) {
     _pendingRequests = [];
-    _pendingRequests = jsonList.map((e) => NetworkRequest.fromJson(e)).toList();
+    _pendingRequests = jsonList.map((e) => NetworkRequest.fromJson(jsonDecode(e) as Map<String, dynamic>)).toList();
   }
 
   Future<void> save() async {
@@ -89,7 +89,7 @@ class Network {
   Future<void> loadPendingNetworkRequests() async {
     if (kIsWeb) {
       bool syncExists = html.window.localStorage.containsKey("pendingRequests");
-      List<Map<String, dynamic>> savedRequestsCasted = syncExists ? getJsonPendingRequestsFromString(html.window.localStorage["pendingRequests"] ?? "") : [];
+      List<String> savedRequestsCasted = syncExists ? getJsonPendingRequestsFromString(html.window.localStorage["pendingRequests"] ?? "") : [];
       loadPendingRequestsFromJson(savedRequestsCasted);
     } else {
       try {
@@ -189,7 +189,7 @@ class Network {
         }));
       }
       await Future.wait(requestsToSend);
-      rescheduleNextTick(numPendingRequests != _pendingRequests.length);
+      rescheduleNextTick(numPendingRequests != _pendingRequests.length || _pendingRequests.length == 0);
     } catch (e) {
       API().reportError(e, StackTrace.current);
       rescheduleNextTick(false);
