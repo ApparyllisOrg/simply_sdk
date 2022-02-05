@@ -10,5 +10,7 @@ void runTests(userId) {
     API().socket().initialize();
     await Future.delayed(Duration(seconds: 1));
     expect(API().socket().isSocketLive(), true);
+    await Future.delayed(Duration(seconds: 10));
+    expect(API().socket().isSocketLive(), true);
   });
 }
