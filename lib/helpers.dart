@@ -29,7 +29,7 @@ dynamic customEncode(var obj) {
   }
 }
 
-Object customDecode(dynamic key, dynamic value) {
+Object? customDecode(dynamic key, dynamic value) {
   return value;
 }
 
