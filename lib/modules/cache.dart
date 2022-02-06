@@ -19,8 +19,6 @@ class Cache {
     if (_cache[type] != null) {
       _cache[type].remove(id);
     }
-    if (triggerUpdateSubscription) API().socket().updateSubscription(type);
-
     markDirty();
   }
 
@@ -40,8 +38,6 @@ class Cache {
     }
 
     markDirty();
-
-    if (triggerUpdateSubscription) API().socket().updateSubscription(type);
   }
 
   Map<String, dynamic>? getItemFromType(String type, String id) {
