@@ -37,7 +37,7 @@ class Socket {
 
   void sendAuthentication() {
     try {
-      _socket!.sink.add(jsonEncode({"op": "authentication", "token": API().auth().getToken()}));
+      _socket!.sink.add(jsonEncode({"op": "authenticate", "token": API().auth().getToken()}));
     } catch (e) {}
   }
 
