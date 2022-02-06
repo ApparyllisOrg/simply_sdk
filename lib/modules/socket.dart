@@ -27,6 +27,20 @@ class Socket {
   List<StreamController> pendingSubscriptions = [];
   late String uniqueConnectionId;
 
+  Socket() {
+    API().auth().onAuthChange.add(authChanged);
+  }
+
+  void authChanged() {
+    sendAuthentication();
+  }
+
+  void sendAuthentication() {
+    try {
+      _socket!.sink.add(jsonEncode({"op": "authentication", "token": API().auth().getToken()}));
+    } catch (e) {}
+  }
+
   void initialize() {
     uniqueConnectionId = Uuid().v4();
     createConnection();
@@ -97,6 +111,8 @@ class Socket {
 
       _socket!.stream.handleError((err) => disconnected());
       _socket!.stream.listen(onData);
+
+      sendAuthentication();
 
       _socket!.sink.done.then((value) => createConnection());
 

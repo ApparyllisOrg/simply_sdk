@@ -27,11 +27,11 @@ void main() {
   Logger.root.level = Level.ALL;
   API().connection().setCurrentHost("http://localhost:3000");
   API().auth().setLastAuthToken("HvmRXTOBjp0nFbTxDx/t8ztim14BttGx2GQlS18cOAqLcf0569iDPEuEi16QxIjM", userId);
+  socket.runTests(userId);
   user.runTests(userId);
   pk.runTests(userId);
   cache.runTests(userId);
   store.runTests(userId);
-  socket.runTests(userId);
   fh.runTests(userId);
   customfields.runTests(userId);
   pagination.runTests(userId);
