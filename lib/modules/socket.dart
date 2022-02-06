@@ -216,6 +216,7 @@ class Socket {
 
   void onData(event) {
     gotHello = true;
+    Logger.root.fine("[SOCKET DATA RECEIVED] " + event.toString());
     if (event is String && event.isNotEmpty) {
       onReceivedData(event);
     }
