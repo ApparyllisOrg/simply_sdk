@@ -2,6 +2,15 @@ import 'dart:convert';
 
 import 'package:logging/logging.dart';
 import 'package:mongo_dart/mongo_dart.dart';
+import 'package:simply_sdk/api/automatedTimers.dart';
+import 'package:simply_sdk/api/comments.dart';
+import 'package:simply_sdk/api/customFronts.dart';
+import 'package:simply_sdk/api/frontHistory.dart';
+import 'package:simply_sdk/api/groups.dart';
+import 'package:simply_sdk/api/members.dart';
+import 'package:simply_sdk/api/notes.dart';
+import 'package:simply_sdk/api/polls.dart';
+import 'package:simply_sdk/api/repeatedTimers.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/modules/http.dart';
@@ -26,6 +35,40 @@ class DocumentResponse {
     id = json["id"]!;
     content = json["content"]!;
   }
+}
+
+DocumentData jsonDataToDocumentData(String type, Map<String, dynamic> data) {
+  switch (type) {
+    case "Members":
+    case "members":
+      return MemberData()..constructFromJson(data);
+    case "CustomFronts":
+    case "frontStatuses":
+      return CustomFrontData()..constructFromJson(data);
+    case "Groups":
+    case "groups":
+      return GroupData()..constructFromJson(data);
+    case "Notes":
+    case "notes":
+      return NoteData()..constructFromJson(data);
+    case "Polls":
+    case "polls":
+      return PollData()..constructFromJson(data);
+    case "RepeatedTimers":
+    case "repeatedTimers":
+      return RepeatedTimerData()..constructFromJson(data);
+    case "AutomatedTimers":
+    case "automatedTimers":
+      return AutomatedTimerData()..constructFromJson(data);
+    case "FrontHistory":
+    case "frontHistory":
+      return FrontHistoryData()..constructFromJson(data);
+    case "Comments":
+    case "comments":
+      return CommentData()..constructFromJson(data);
+  }
+
+  return EmptyDocumentData();
 }
 
 void propogateChanges(String type, String id, dynamic data, EChangeType changeType) {
