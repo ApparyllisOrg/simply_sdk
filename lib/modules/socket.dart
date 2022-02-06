@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
-import 'dart:html' as html;
 
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
@@ -25,7 +24,7 @@ class Subscription {
 
 class Socket {
   io.WebSocket? _IOSocket;
-  html.WebSocket? _WebSocket;
+  WebSocketChannel? _WebSocket;
   List<Subscription> _subscriptions = [];
   List<StreamController> pendingSubscriptions = [];
   late String uniqueConnectionId;
@@ -46,7 +45,7 @@ class Socket {
 
   void sendSocketData(String data) {
     if (kIsWeb) {
-      _WebSocket?.send(data);
+      _WebSocket?.sink.add(data);
     } else {
       _IOSocket?.add(data);
     }
@@ -55,7 +54,6 @@ class Socket {
   void initialize() {
     uniqueConnectionId = Uuid().v4();
     createConnection();
-    refreshConnection();
     reconnect();
   }
 
@@ -73,10 +71,6 @@ class Socket {
 
   void reconnect() async {
     if (_subscriptions.isNotEmpty) {
-      if (!isSocketLive()) {
-        createConnection();
-      }
-
       if (isSocketLive()) {
         if (pendingSubscriptions.isNotEmpty) {
           StreamController cont = pendingSubscriptions.first;
@@ -95,12 +89,8 @@ class Socket {
   Timer? pingTimer;
   bool gotHello = false;
   bool isSocketLive() {
-    if (kIsWeb && !html.WebSocket.supported) {
-      return false;
-    }
-
     if (kIsWeb) {
-      return _WebSocket != null && _WebSocket!.readyState == html.WebSocket.OPEN && gotHello;
+      return _WebSocket != null && _WebSocket!.closeCode == null && gotHello;
     } else {
       return _IOSocket != null && _IOSocket!.closeCode == null && gotHello;
     }
@@ -108,7 +98,7 @@ class Socket {
 
   void closeSocket() {
     if (kIsWeb) {
-      _WebSocket?.close();
+      _WebSocket?.sink.close();
       _WebSocket = null;
     } else {
       _IOSocket?.close();
@@ -123,15 +113,11 @@ class Socket {
 
     closeSocket();
 
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(Duration(seconds: 2));
     createConnection();
   }
 
   void createConnection() async {
-    if (kIsWeb && !html.WebSocket.supported) {
-      return;
-    }
-
     print("Create socket connection");
     gotHello = false;
     isDisconnected = false;
@@ -139,26 +125,26 @@ class Socket {
       String overrideIp = const String.fromEnvironment("WSSIP");
       String socketUrl = overrideIp.isNotEmpty ? overrideIp : 'wss://api.apparyllis.com:8443';
 
-      if (kIsWeb && html.WebSocket.supported) {
-        _WebSocket = new html.WebSocket(socketUrl);
+      if (kIsWeb) {
+        _WebSocket = WebSocketChannel.connect(Uri.parse(socketUrl));
       } else {
         _IOSocket = await io.WebSocket.connect(socketUrl, compression: io.CompressionOptions(enabled: true, serverNoContextTakeover: true, clientNoContextTakeover: true, serverMaxWindowBits: 15, clientMaxWindowBits: 15));
       }
 
-      if (kIsWeb && html.WebSocket.supported) {
-        _WebSocket!.onError.handleError((err) => disconnected());
-        _WebSocket!.onMessage.listen(onData);
+      if (kIsWeb) {
+        _WebSocket!.stream.handleError((err) => disconnected());
+        _WebSocket!.stream.listen(onData);
 
         sendAuthentication();
 
-        _WebSocket!.onClose.listen((value) => createConnection());
+        _WebSocket!.sink.done.then((value) => disconnected());
       } else {
         _IOSocket!.handleError((err) => disconnected());
         _IOSocket!.listen(onData);
 
         sendAuthentication();
 
-        _IOSocket!.done.then((value) => createConnection());
+        _IOSocket!.done.then((value) => disconnected());
       }
 
       if (pingTimer != null && pingTimer!.isActive) {
@@ -322,14 +308,6 @@ class Socket {
         }
       }
     }
-  }
-
-  void refreshConnection() async {
-    await Future.delayed(Duration(seconds: 10));
-    if (!isSocketLive()) {
-      createConnection();
-    }
-    refreshConnection();
   }
 
   void delayStartOfflineListener(Subscription sub) async {
