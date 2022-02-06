@@ -27,7 +27,7 @@ class Socket {
   List<StreamController> pendingSubscriptions = [];
   late String uniqueConnectionId;
 
-  Socket() {
+  void bindAuthChanged() {
     API().auth().onAuthChange.add(authChanged);
   }
 

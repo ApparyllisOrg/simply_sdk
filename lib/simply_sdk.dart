@@ -47,6 +47,7 @@ class API {
   Future<void> initialize({APISettings? settings}) async {
     await _cache.initialize("");
     _network.initialize();
+    _socket.bindAuthChanged();
   }
 
   // Declare globals
