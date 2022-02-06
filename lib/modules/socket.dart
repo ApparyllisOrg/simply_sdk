@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' as io;
+import 'dart:html' as html;
 
+import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/modules/collection.dart';
@@ -22,7 +24,8 @@ class Subscription {
 }
 
 class Socket {
-  WebSocketChannel? _socket;
+  io.WebSocket? _IOSocket;
+  html.WebSocket? _WebSocket;
   List<Subscription> _subscriptions = [];
   List<StreamController> pendingSubscriptions = [];
   late String uniqueConnectionId;
@@ -37,8 +40,16 @@ class Socket {
 
   void sendAuthentication() {
     try {
-      _socket!.sink.add(jsonEncode({"op": "authenticate", "token": API().auth().getToken()}));
+      sendSocketData(jsonEncode({"op": "authenticate", "token": API().auth().getToken()}));
     } catch (e) {}
+  }
+
+  void sendSocketData(String data) {
+    if (kIsWeb) {
+      _WebSocket?.send(data);
+    } else {
+      _IOSocket?.add(data);
+    }
   }
 
   void initialize() {
@@ -52,7 +63,7 @@ class Socket {
     _subscriptions.clear();
     pendingSubscriptions.clear();
     if (isSocketLive()) {
-      _socket?.sink.close();
+      closeSocket();
     }
     if (pingTimer?.isActive == true) {
       pingTimer!.cancel();
@@ -63,9 +74,6 @@ class Socket {
   void reconnect() async {
     if (_subscriptions.isNotEmpty) {
       if (!isSocketLive()) {
-        if (_socket != null) {
-          print("Socket closed");
-        }
         createConnection();
       }
 
@@ -86,20 +94,44 @@ class Socket {
 
   Timer? pingTimer;
   bool gotHello = false;
-  bool isSocketLive() => _socket != null && _socket!.closeCode == null && gotHello;
-  WebSocketChannel? getSocket() => _socket;
+  bool isSocketLive() {
+    if (kIsWeb && !html.WebSocket.supported) {
+      return false;
+    }
+
+    if (kIsWeb) {
+      return _WebSocket != null && _WebSocket!.readyState == html.WebSocket.OPEN && gotHello;
+    } else {
+      return _IOSocket != null && _IOSocket!.closeCode == null && gotHello;
+    }
+  }
+
+  void closeSocket() {
+    if (kIsWeb) {
+      _WebSocket?.close();
+      _WebSocket = null;
+    } else {
+      _IOSocket?.close();
+      _IOSocket = null;
+    }
+  }
 
   bool isDisconnected = true;
   void disconnected() async {
     if (isDisconnected) return;
     isDisconnected = true;
-    _socket?.sink.close();
-    _socket = null;
+
+    closeSocket();
+
     await Future.delayed(Duration(seconds: 1));
     createConnection();
   }
 
-  void createConnection() {
+  void createConnection() async {
+    if (kIsWeb && !html.WebSocket.supported) {
+      return;
+    }
+
     print("Create socket connection");
     gotHello = false;
     isDisconnected = false;
@@ -107,14 +139,27 @@ class Socket {
       String overrideIp = const String.fromEnvironment("WSSIP");
       String socketUrl = overrideIp.isNotEmpty ? overrideIp : 'wss://api.apparyllis.com:8443';
 
-      _socket = WebSocketChannel.connect(Uri.parse(socketUrl));
+      if (kIsWeb && html.WebSocket.supported) {
+        _WebSocket = new html.WebSocket(socketUrl);
+      } else {
+        _IOSocket = await io.WebSocket.connect(socketUrl, compression: io.CompressionOptions(enabled: true, serverNoContextTakeover: true, clientNoContextTakeover: true, serverMaxWindowBits: 15, clientMaxWindowBits: 15));
+      }
 
-      _socket!.stream.handleError((err) => disconnected());
-      _socket!.stream.listen(onData);
+      if (kIsWeb && html.WebSocket.supported) {
+        _WebSocket!.onError.handleError((err) => disconnected());
+        _WebSocket!.onMessage.listen(onData);
 
-      sendAuthentication();
+        sendAuthentication();
 
-      _socket!.sink.done.then((value) => createConnection());
+        _WebSocket!.onClose.listen((value) => createConnection());
+      } else {
+        _IOSocket!.handleError((err) => disconnected());
+        _IOSocket!.listen(onData);
+
+        sendAuthentication();
+
+        _IOSocket!.done.then((value) => createConnection());
+      }
 
       if (pingTimer != null && pingTimer!.isActive) {
         pingTimer!.cancel();
@@ -135,7 +180,7 @@ class Socket {
       disconnected();
     }
     try {
-      _socket!.sink.add("ping");
+      sendSocketData("ping");
     } catch (e) {
       disconnected();
     }
@@ -296,7 +341,6 @@ class Socket {
     /*
     List<Document> initialDocs =
         await API().cache().searchForDocuments(sub.target, sub.query, "");
-  
     if (sub.documents.isEmpty) {
       sub.documents = initialDocs;
     }
@@ -320,7 +364,7 @@ class Socket {
   void requestDataListen(Subscription subscription) async {
     assert(isSocketLive());
     try {
-      _socket!.sink.add(jsonEncode({"target": subscription.target, "jwt": API().auth().getToken(), "uniqueId": uniqueConnectionId}, toEncodable: customEncode));
+      sendSocketData(jsonEncode({"target": subscription.target, "jwt": API().auth().getToken(), "uniqueId": uniqueConnectionId}, toEncodable: customEncode));
     } catch (e) {
       API().reportError(e, StackTrace.current);
       disconnected();
