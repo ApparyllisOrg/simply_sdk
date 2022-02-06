@@ -180,7 +180,7 @@ class Socket {
         API().cache().clearTypeCache(data["target"]);
       }
       for (Map<String, dynamic> result in data["results"]) {
-        propogateChanges(data["target"], result["id"], jsonDataToDocumentData(data["target"], result as Map<String, dynamic>), operationToChangeType(result["operationType"]));
+        propogateChanges(data["target"], result["id"], jsonDataToDocumentData(data["target"], result["content"] as Map<String, dynamic>), operationToChangeType(result["operationType"]));
       }
     }
   }
