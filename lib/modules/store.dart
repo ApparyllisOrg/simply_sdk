@@ -8,6 +8,8 @@ import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
 
 class Store {
+  bool storeInitialized = false;
+
   List<Document<MemberData>> _members = [];
   List<Document<CustomFrontData>> _customFronts = [];
   List<Document<GroupData>> _groups = [];
@@ -19,6 +21,7 @@ class Store {
   List<Document<FrontHistoryData>> getFronters() => _fronters;
 
   List<void Function(Document<FrontHistoryData>)> _frontChanges = [];
+  List<Function?> _onInitialized = [];
 
   Future<void> initializeStore() async {
     clearStore();
@@ -27,13 +30,27 @@ class Store {
     _groups = await API().groups().getAll();
     _fronters = await API().frontHistory().getCurrentFronters();
 
+    // Emit initial changes
+    if (_members.isNotEmpty) API().members().propogateChanges(_members.first, EChangeType.Update);
+    if (_customFronts.isNotEmpty) API().customFronts().propogateChanges(_customFronts.first, EChangeType.Update);
+    if (_groups.isNotEmpty) API().groups().propogateChanges(_groups.first, EChangeType.Update);
+    if (_fronters.isNotEmpty) API().frontHistory().propogateChanges(_fronters.first, EChangeType.Update);
+
     API().members().listenForChanges(memberChanged);
     API().customFronts().listenForChanges(customFrontChanged);
     API().groups().listenForChanges(groupChanged);
     API().frontHistory().listenForChanges(frontHistoryChanged);
+
+    storeInitialized = true;
+
+    _onInitialized.forEach((element) {
+      if (element != null) element();
+    });
   }
 
   void clearStore() {
+    storeInitialized = false;
+
     _members = [];
     _customFronts = [];
     _groups = [];
@@ -140,6 +157,14 @@ class Store {
 
   void cancelListenForFrontChanges(void Function(Document<FrontHistoryData>) func) {
     _frontChanges.remove(func);
+  }
+
+  void listenForInitializeChanges(Function func) {
+    _onInitialized.add(func);
+  }
+
+  void cancelListenForInitializeChanges(Function func) {
+    _onInitialized.remove(func);
   }
 
   void _notifyFrontChange(Document<FrontHistoryData> doc) {
