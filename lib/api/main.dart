@@ -23,6 +23,8 @@ class DocumentResponse {
   late String id;
   late Map<String, dynamic> content;
 
+  DocumentResponse();
+
   DocumentResponse.fromJson(Map<String, dynamic> json) {
     exists = json["exists"]!;
     id = json["id"]!;
@@ -175,7 +177,24 @@ void updateDocumentInList<ObjectType>(List<Document> documents, Document<ObjectT
 Future<Document<DataType>> getSimpleDocument<DataType>(String id, String url, String type, DataType Function(DocumentResponse data) createDoc, DataType Function() creatEmptyeDoc) async {
   var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("$url/$id", ""))).catchError(((e) => generateFailedResponse(e)));
   if (response.statusCode == 200) {
+    DataType data = createDoc(DocumentResponse.fromString(response.body));
+
+    Document<DataType> doc = Document<DataType>(true, id, data, type);
+
+    API().cache().updateToCache(type, id, doc.data);
+
+    return doc;
+  }
+
+  Map<String, dynamic>? maybeData = API().cache().getDocument(type, id);
+
+  if (maybeData != null) {
+    DocumentResponse fakeResponse = DocumentResponse();
+    fakeResponse.id = id;
+    fakeResponse.content = maybeData;
+    fakeResponse.exists = true;
     return Document<DataType>(true, id, createDoc(DocumentResponse.fromString(response.body)), type);
   }
+
   return Document<DataType>(true, id, creatEmptyeDoc(), type);
 }

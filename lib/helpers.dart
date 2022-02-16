@@ -66,12 +66,6 @@ T? readDataMapFromJson<T, K>(String propertyName, Map<String, dynamic> json) {
   return json[propertyName] as T?;
 }
 
-DocumentData? convertJsonToDataObject(Map<String, dynamic> json, String type) {
-  if (type == "Members") {
-    return MemberData().constructFromJson(json);
-  }
-}
-
 List<Map<String, dynamic>> convertServerResponseToList(Response response) {
   List list = jsonDecode(response.body);
   return list.map((e) => e as Map<String, dynamic>).toList();

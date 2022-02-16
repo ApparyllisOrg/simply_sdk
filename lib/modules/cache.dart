@@ -22,7 +22,7 @@ class Cache {
     markDirty();
   }
 
-  void updateToCache(String type, String id, Map<String, dynamic> _data, {bool triggerUpdateSubscription: true}) {
+  void updateToCache(String type, String id, Map<String, dynamic> _data) {
     Map<String, dynamic>? coll = _cache[type];
     if (coll != null) {
       if (coll.containsKey(id)) {
@@ -208,101 +208,39 @@ class Cache {
     Map<String, dynamic> dataCopy = Map.from(data);
     dataCopy["type"] = type;
     dataCopy["id"] = id;
-    updateToCache(type, id, dataCopy, triggerUpdateSubscription: doTriggerUpdateSubscription);
+    updateToCache(type, id, dataCopy);
     return id;
   }
 
   void updateDocument(String type, String id, Map<String, dynamic> data, {bool doTriggerUpdateSubscription: true}) async {
     Map<String, dynamic> dataCopy = Map.from(data);
-    updateToCache(type, id, dataCopy, triggerUpdateSubscription: doTriggerUpdateSubscription);
+    updateToCache(type, id, dataCopy);
   }
 
   Future<void> removeDocument(String type, String id, {bool doTriggerUpdateSubscription: true}) async {
     removeFromCache(type, id, triggerUpdateSubscription: doTriggerUpdateSubscription);
   }
 
-  Document? getDocument(String type, String id) {
+  Map<String, dynamic>? getDocument(String type, String id) {
     try {
-      Map<String, dynamic> docData;
+      Map<String, dynamic> docData = getItemFromType(type, id) ?? {};
 
-      try {
-        docData = getItemFromType(type, id) ?? {};
-        if (docData.isEmpty) {
-          return null;
-        }
-
-        Map<String, dynamic> sendData = Map<String, dynamic>();
-        docData.forEach((key, value) {
-          if (key != "id" && key != "type") {
-            sendData[key] = value;
-          }
-        });
-
-        DocumentData? docDataObject = convertJsonToDataObject(docData, type);
-        if (docDataObject != null) {
-          return Document(true, id, docDataObject, type, fromCache: true);
-        } else {
-          API().reportError("Unable to convert cached document data to a document data object. Attempt to convert type: $type", StackTrace.current);
-        }
+      if (docData.isEmpty) {
         return null;
-      } catch (e) {
-        print(e);
       }
+
+      Map<String, dynamic> sendData = Map<String, dynamic>();
+      docData.forEach((key, value) {
+        if (key != "id" && key != "type") {
+          sendData[key] = value;
+        }
+      });
+
+      return docData;
     } catch (e) {
-      API().reportError(e, StackTrace.current);
+      print(e);
     }
 
     return null;
   }
-  /*
-  Future<List<Document>> searchForDocuments(
-      String collection, Map<String, Query> queries, String orderBy,
-      {int start, int end, bool orderUp = true}) async {
-    List<Document> docs = [];
-
-    try {
-      Map<String, dynamic> cachedCollection = getCollectionCache(collection);
-
-      cachedCollection.forEach((key, value) {
-        if (queries.isEmpty) {
-          docs.add(Document(true, key, collection, value));
-        } else {
-          bool isSatisfied = true;
-          queries.forEach((queryKey, queryValue) {
-            if (value.containsKey(queryKey)) {
-              if (!queryValue.isSatisfied(value[queryKey])) {
-                isSatisfied = false;
-              }
-            }
-          });
-          if (isSatisfied)
-            docs.add(Document(true, key, collection, value, fromCache: true));
-        }
-      });
-
-      if (orderBy != null) {
-        docs.sort((Document a, Document b) => orderUp
-            ? a.value(orderBy, 0) >= b.value(orderBy, 0)
-                ? 1
-                : -1
-            : a.value(orderBy, 0) >= b.value(orderBy, 0)
-                ? -1
-                : 1);
-      }
-
-      if (end != null) {
-        if (start == null) start = 0;
-        List<Document> returnDocs = [];
-        for (int i = start; i < end && i < docs.length; i++) {
-          returnDocs.add(docs[i]);
-        }
-        return returnDocs;
-      }
-    } catch (e) {
-      API().reportError(e, StackTrace.current);
-    }
-
-    return docs;
-  }
-  */
 }
