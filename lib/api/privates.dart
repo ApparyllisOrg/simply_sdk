@@ -4,6 +4,14 @@ import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/types/document.dart';
 
+class Notification {
+  Notification({required this.timestamp, required this.title, required this.message});
+
+  int timestamp;
+  String title;
+  String message;
+}
+
 class PrivateData implements DocumentData {
   List<String>? notificationToken;
   int? latestVersion;
@@ -11,6 +19,7 @@ class PrivateData implements DocumentData {
   bool? termsOfServiceAccepted;
   int? whatsNew;
   int? generationsLeft;
+  List<Notification>? notifications;
 
   @override
   Map<String, dynamic> toJson() {
@@ -32,6 +41,9 @@ class PrivateData implements DocumentData {
     termsOfServiceAccepted = readDataFromJson("termsOfServiceAccepted", json);
     whatsNew = readDataFromJson("whatsNew", json);
     generationsLeft = readDataFromJson("generationsLeft", json);
+
+    var notifs = readDataArrayFromJson<dynamic>("notificationHistory", json);
+    notifications = (notifs ?? []).map((e) => Notification(timestamp: e["timestamp"], title: e["title"], message: e["message"])).toList();
   }
 }
 
