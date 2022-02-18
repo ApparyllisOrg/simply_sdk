@@ -39,6 +39,14 @@ class DocumentResponse {
   }
 }
 
+class CollectionResponse<Type> {
+  bool useOffline = true;
+  List<Map<String, dynamic>> onlineData = [];
+  List<Document<Type>> offlineData = [];
+
+  CollectionResponse();
+}
+
 DocumentData jsonDataToDocumentData(String type, Map<String, dynamic> data) {
   switch (type) {
     case "Members":
@@ -148,16 +156,23 @@ void deleteSimpleDocument(String type, String path, String id, DocumentData data
   propogateChanges(type, id, data, EChangeType.Delete);
 }
 
-Future<List<Map<String, dynamic>>> getCollection<ObjectType>(String path, String id, {String? query}) async {
+Future<CollectionResponse<ObjectType>> getCollection<ObjectType>(String path, String id, {String? query}) async {
   var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("$path/$id", query ?? ""))).catchError(((e) => generateFailedResponse(e)));
   if (response.statusCode == 200) {
-    return convertServerResponseToList(response);
+    CollectionResponse<ObjectType> res = CollectionResponse<ObjectType>();
+    res.useOffline = false;
+    res.onlineData = convertServerResponseToList(response);
+    return res;
   } else {
     Logger.root.fine("Failed get Collection result => ");
     Logger.root.fine(Uri.parse(API().connection().getRequestUrl("$path/$id", query ?? "")));
     Logger.root.fine(response.body);
   }
-  return [];
+
+  CollectionResponse<ObjectType> res = CollectionResponse<ObjectType>();
+  res.useOffline = false;
+  res.onlineData = convertServerResponseToList(response);
+  return res;
 }
 
 void updateDocumentInList<ObjectType>(List<Document> documents, Document<ObjectType> updatedDocument, EChangeType changeType) {

@@ -57,11 +57,13 @@ class AutomatedTimers extends Collection<AutomatedTimerData> {
   Future<List<Document<AutomatedTimerData>>> getAll() async {
     var collection = await getCollection<AutomatedTimerData>("v1/timers/automated/${API().auth().getUid()}", "");
 
-    List<Document<AutomatedTimerData>> timers = collection.map<Document<AutomatedTimerData>>((e) => Document(e["exists"], e["id"], AutomatedTimerData()..constructFromJson(e["content"]), type)).toList();
+    if (!collection.useOffline) {
+      List<Document<AutomatedTimerData>> timers = collection.onlineData.map<Document<AutomatedTimerData>>((e) => Document(e["exists"], e["id"], AutomatedTimerData()..constructFromJson(e["content"]), type)).toList();
+      API().cache().cacheListOfDocuments(timers);
+      return timers;
+    }
 
-    API().cache().cacheListOfDocuments(timers);
-
-    return timers;
+    return collection.offlineData;
   }
 
   @override

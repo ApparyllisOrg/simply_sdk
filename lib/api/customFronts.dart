@@ -63,11 +63,13 @@ class CustomFronts extends Collection<CustomFrontData> {
   Future<List<Document<CustomFrontData>>> getAll({String? uid}) async {
     var collection = await getCollection<CustomFrontData>("v1/customFronts/${uid ?? API().auth().getUid()}", "");
 
-    List<Document<CustomFrontData>> cfs = collection.map<Document<CustomFrontData>>((e) => Document(e["exists"], e["id"], CustomFrontData()..constructFromJson(e["content"]), type)).toList();
+    if (!collection.useOffline) {
+      List<Document<CustomFrontData>> cfs = collection.onlineData.map<Document<CustomFrontData>>((e) => Document(e["exists"], e["id"], CustomFrontData()..constructFromJson(e["content"]), type)).toList();
+      API().cache().cacheListOfDocuments(cfs);
+      return cfs;
+    }
 
-    API().cache().cacheListOfDocuments(cfs);
-
-    return cfs;
+    return collection.offlineData;
   }
 
   @override

@@ -103,11 +103,13 @@ class RepeatedTimers extends Collection<RepeatedTimerData> {
   Future<List<Document<RepeatedTimerData>>> getAll() async {
     var collection = await getCollection<RepeatedTimerData>("v1/timers/repeated/${API().auth().getUid()}", "");
 
-    List<Document<RepeatedTimerData>> timers = collection.map<Document<RepeatedTimerData>>((e) => Document(e["exists"], e["id"], RepeatedTimerData()..constructFromJson(e["content"]), type)).toList();
+    if (!collection.useOffline) {
+      List<Document<RepeatedTimerData>> timers = collection.onlineData.map<Document<RepeatedTimerData>>((e) => Document(e["exists"], e["id"], RepeatedTimerData()..constructFromJson(e["content"]), type)).toList();
+      API().cache().cacheListOfDocuments(timers);
+      return timers;
+    }
 
-    API().cache().cacheListOfDocuments(timers);
-
-    return timers;
+    return collection.offlineData;
   }
 
   @override

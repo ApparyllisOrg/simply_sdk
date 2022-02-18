@@ -81,21 +81,25 @@ class FrontHistory extends Collection<FrontHistoryData> {
   Future<List<Document<FrontHistoryData>>> getFrontHistoryInRange(int start, int end) async {
     var collection = await getCollection<FrontHistoryData>("v1/frontHistory/${API().auth().getUid()}", "", query: "startTime=$start&endTime=$end");
 
-    List<Document<FrontHistoryData>> fronts = collection.map<Document<FrontHistoryData>>((e) => Document(e["exists"], e["id"], FrontHistoryData()..constructFromJson(e["content"]), type)).toList();
+    if (!collection.useOffline) {
+      List<Document<FrontHistoryData>> fronts = collection.onlineData.map<Document<FrontHistoryData>>((e) => Document(e["exists"], e["id"], FrontHistoryData()..constructFromJson(e["content"]), type)).toList();
+      API().cache().cacheListOfDocuments(fronts);
+      return fronts;
+    }
 
-    API().cache().cacheListOfDocuments(fronts);
-
-    return fronts;
+    return collection.offlineData;
   }
 
   Future<List<Document<FrontHistoryData>>> getCurrentFronters() async {
     var collection = await getCollection<FrontHistoryData>("v1/fronters", "");
 
-    List<Document<FrontHistoryData>> fronts = collection.map<Document<FrontHistoryData>>((e) => Document(e["exists"], e["id"], FrontHistoryData()..constructFromJson(e["content"]), type)).toList();
+    if (!collection.useOffline) {
+      List<Document<FrontHistoryData>> fronts = collection.onlineData.map<Document<FrontHistoryData>>((e) => Document(e["exists"], e["id"], FrontHistoryData()..constructFromJson(e["content"]), type)).toList();
+      API().cache().cacheListOfDocuments(fronts);
+      return fronts;
+    }
 
-    API().cache().cacheListOfDocuments(fronts);
-
-    return fronts;
+    return collection.offlineData.where((element) => element.dataObject.live == true).toList();
   }
 
   @override
