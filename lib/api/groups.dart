@@ -69,6 +69,8 @@ class Groups extends Collection<GroupData> {
 
     List<Document<GroupData>> groups = collection.map<Document<GroupData>>((e) => Document(e["exists"], e["id"], GroupData()..constructFromJson(e["content"]), type)).toList();
 
+    API().cache().cacheListOfDocuments(groups);
+
     return groups;
   }
 
