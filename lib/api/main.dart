@@ -208,7 +208,7 @@ Future<Document<DataType>> getSimpleDocument<DataType>(String id, String url, St
     fakeResponse.id = id;
     fakeResponse.content = maybeData;
     fakeResponse.exists = true;
-    return Document<DataType>(true, id, createDoc(DocumentResponse.fromString(response.body)), type);
+    return Document<DataType>(true, id, createDoc(fakeResponse), type);
   }
 
   return Document<DataType>(true, id, creatEmptyeDoc(), type);
