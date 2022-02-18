@@ -196,7 +196,7 @@ Future<Document<DataType>> getSimpleDocument<DataType>(String id, String url, St
 
     Document<DataType> doc = Document<DataType>(true, id, data, type);
 
-    API().cache().updateToCache(type, id, doc.data);
+    API().cache().updateToCache(type, id, (doc.dataObject as DocumentData).toJson());
 
     return doc;
   }

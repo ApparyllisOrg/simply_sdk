@@ -43,6 +43,20 @@ void insertData(String propertyName, dynamic dataToInsert, Map<String, dynamic> 
   }
 }
 
+void insertDataMap(String propertyName, Map<String, dynamic>? dataToInsert, Map<String, dynamic> dataObject) {
+  if (dataToInsert != null) {
+    Map<String, dynamic> map = {};
+    dataToInsert.forEach((key, value) {
+      if (value is DocumentData) {
+        map[key] = value.toJson();
+      } else {
+        map[key] = value;
+      }
+    });
+    dataObject[propertyName] = map;
+  }
+}
+
 T? readDataFromJson<T>(String propertyName, Map<String, dynamic> json) {
   if (json[propertyName] is List) {
     return json[propertyName] as T;

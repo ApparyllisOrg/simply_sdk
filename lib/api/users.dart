@@ -144,12 +144,13 @@ class UserData implements DocumentData {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
 
-    // No need to fill in username, we can't directly set username..
+    // No need to fill in username, but we only fill it for cache purposes
+    insertData("username", username, payload);
     insertData("desc", desc, payload);
     insertData("isAsystem", isAsystem, payload);
     insertData("avatarUuid", avatarUuid, payload);
     insertData("color", color, payload);
-    insertData("fields", fields, payload);
+    insertDataMap("fields", fields, payload);
 
     return payload;
   }

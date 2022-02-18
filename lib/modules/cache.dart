@@ -75,7 +75,7 @@ class Cache {
 
   void cacheListOfDocuments(List<Document<dynamic>> docs) {
     docs.forEach((element) {
-      updateToCache(element.type, element.id, element.data);
+      updateToCache(element.type, element.id, (element.dataObject as DocumentData).toJson());
     });
     markDirty();
   }
