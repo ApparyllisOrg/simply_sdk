@@ -7,7 +7,7 @@ import '../simply_sdk.dart';
 http.Response generateFailedResponse(Exception e) {
   if (e is HttpException) Logger.root.fine("ERROR: " + e.uri.toString() + " => " + e.message);
   if (e is SocketException) Logger.root.fine("ERROR: " + e.address.toString() + " => " + e.message);
-  return http.Response("", 1);
+  return http.Response("", 503);
 }
 
 class SimplyHttpClient extends http.BaseClient {
