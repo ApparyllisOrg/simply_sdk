@@ -58,15 +58,13 @@ class Notes extends Collection<NoteData> {
 
   @override
   Future<List<Document<NoteData>>> getAll() async {
-    var collection = await getCollection<NoteData>("v1/notes/${API().auth().getUid()}", "");
+    var collection = await getCollection<NoteData>("v1/notes/${API().auth().getUid()}", "", type);
 
+    List<Document<NoteData>> notes = collection.data.map<Document<NoteData>>((e) => Document(e["exists"], e["id"], NoteData()..constructFromJson(e["content"]), type)).toList();
     if (!collection.useOffline) {
-      List<Document<NoteData>> notes = collection.onlineData.map<Document<NoteData>>((e) => Document(e["exists"], e["id"], NoteData()..constructFromJson(e["content"]), type)).toList();
       API().cache().cacheListOfDocuments(notes);
-      return notes;
     }
-
-    return collection.offlineData;
+    return notes;
   }
 
   Future<List<Document<NoteData>>> getNotesForMember(String member, String systemId) async {

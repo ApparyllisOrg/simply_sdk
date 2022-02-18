@@ -128,15 +128,13 @@ class Polls extends Collection<PollData> {
 
   @override
   Future<List<Document<PollData>>> getAll() async {
-    var collection = await getCollection<PollData>("v1/polls/${API().auth().getUid()}", "");
+    var collection = await getCollection<PollData>("v1/polls/${API().auth().getUid()}", "", type);
 
+    List<Document<PollData>> polls = collection.data.map<Document<PollData>>((e) => Document(e["exists"], e["id"], PollData()..constructFromJson(e["content"]), type)).toList();
     if (!collection.useOffline) {
-      List<Document<PollData>> polls = collection.onlineData.map<Document<PollData>>((e) => Document(e["exists"], e["id"], PollData()..constructFromJson(e["content"]), type)).toList();
       API().cache().cacheListOfDocuments(polls);
-      return polls;
     }
-
-    return collection.offlineData;
+    return polls;
   }
 
   @override

@@ -198,43 +198,31 @@ class Friends {
   // Return a list of all friends and their user data
   Future<List<Document<UserData>>> getFriends() {
     return Future(() async {
-      var collection = await getCollection<UserData>("v1/friends", "");
+      var collection = await getCollection<UserData>("v1/friends", "", "Users");
 
-      if (!collection.useOffline) {
-        List<Document<UserData>> friends = collection.onlineData.map<Document<UserData>>((e) => Document(e["exists"], e["id"], UserData()..constructFromJson(e["content"]), "friends")).toList();
-        API().cache().cacheListOfDocuments(friends);
-        return friends;
-      }
+      List<Document<UserData>> friends = collection.data.map<Document<UserData>>((e) => Document(e["exists"], e["id"], UserData()..constructFromJson(e["content"]), "friends")).toList();
 
-      return collection.offlineData;
+      return friends;
     });
   }
 
   Future<List<Document<UserData>>> getIncomingFriendRequests() {
     return Future(() async {
-      var collection = await getCollection<UserData>("v1/friends/requests/incoming", "");
+      var collection = await getCollection<UserData>("v1/friends/requests/incoming", "", "Users");
 
-      if (!collection.useOffline) {
-        List<Document<UserData>> friends = collection.onlineData.map<Document<UserData>>((e) => Document(e["exists"], e["id"], UserData()..constructFromJson(e["content"]), "friends")).toList();
-        API().cache().cacheListOfDocuments(friends);
-        return friends;
-      }
+      List<Document<UserData>> friends = collection.data.map<Document<UserData>>((e) => Document(e["exists"], e["id"], UserData()..constructFromJson(e["content"]), "friends")).toList();
 
-      return collection.offlineData;
+      return friends;
     });
   }
 
   Future<List<Document<UserData>>> getOutgoingFriendRequests() {
     return Future(() async {
-      var collection = await getCollection<UserData>("v1/friends/requests/outgoing", "");
+      var collection = await getCollection<UserData>("v1/friends/requests/outgoing", "", "Users");
 
-      if (!collection.useOffline) {
-        List<Document<UserData>> friends = collection.onlineData.map<Document<UserData>>((e) => Document(e["exists"], e["id"], UserData()..constructFromJson(e["content"]), "friends")).toList();
-        API().cache().cacheListOfDocuments(friends);
-        return friends;
-      }
+      List<Document<UserData>> friends = collection.data.map<Document<UserData>>((e) => Document(e["exists"], e["id"], UserData()..constructFromJson(e["content"]), "friends")).toList();
 
-      return collection.offlineData;
+      return friends;
     });
   }
 }

@@ -55,7 +55,7 @@ class Cache {
   Map<String, dynamic> getTypeCache(String type) {
     if (_cache.containsKey(type)) {
       Map<String, dynamic> data = _cache[type];
-      return data;
+      return data.cast<String, dynamic>();
     }
     return Map<String, dynamic>();
   }

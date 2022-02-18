@@ -59,15 +59,13 @@ class Tokens extends Collection<TokenData> {
 
   @override
   Future<List<Document<TokenData>>> getAll() async {
-    var collection = await getCollection<TokenData>("v1/tokens", "");
+    var collection = await getCollection<TokenData>("v1/tokens", "", type);
 
+    List<Document<TokenData>> tokens = collection.data.map<Document<TokenData>>((e) => Document(e["exists"], e["id"], TokenData()..constructFromJson(e["content"]), type)).toList();
     if (!collection.useOffline) {
-      List<Document<TokenData>> tokens = collection.onlineData.map<Document<TokenData>>((e) => Document(e["exists"], e["id"], TokenData()..constructFromJson(e["content"]), type)).toList();
       API().cache().cacheListOfDocuments(tokens);
-      return tokens;
     }
-
-    return collection.offlineData;
+    return tokens;
   }
 
   @deprecated
