@@ -202,6 +202,8 @@ class Friends {
 
       List<Document<UserData>> friends = collection.map<Document<UserData>>((e) => Document(e["exists"], e["id"], UserData()..constructFromJson(e["content"]), "friends")).toList();
 
+      API().cache().cacheListOfDocuments(friends);
+
       return friends;
     });
   }
@@ -212,6 +214,8 @@ class Friends {
 
       List<Document<UserData>> friends = collection.map<Document<UserData>>((e) => Document(e["exists"], e["id"], UserData()..constructFromJson(e["content"]), "friends")).toList();
 
+      API().cache().cacheListOfDocuments(friends);
+
       return friends;
     });
   }
@@ -221,6 +225,8 @@ class Friends {
       var collection = await getCollection<UserData>("v1/friends/requests/outgoing", "");
 
       List<Document<UserData>> friends = collection.map<Document<UserData>>((e) => Document(e["exists"], e["id"], UserData()..constructFromJson(e["content"]), "friends")).toList();
+
+      API().cache().cacheListOfDocuments(friends);
 
       return friends;
     });

@@ -132,6 +132,8 @@ class Polls extends Collection<PollData> {
 
     List<Document<PollData>> polls = collection.map<Document<PollData>>((e) => Document(e["exists"], e["id"], PollData()..constructFromJson(e["content"]), type)).toList();
 
+    API().cache().cacheListOfDocuments(polls);
+
     return polls;
   }
 

@@ -73,6 +73,13 @@ class Cache {
     return _cache.containsKey(type) && (_cache[type] as Map<String, dynamic>).length > 0;
   }
 
+  void cacheListOfDocuments(List<Document<dynamic>> docs) {
+    docs.forEach((element) {
+      updateToCache(element.type, element.id, element.data);
+    });
+    markDirty();
+  }
+
   Future<void> clear() {
     return Future(() async {
       try {

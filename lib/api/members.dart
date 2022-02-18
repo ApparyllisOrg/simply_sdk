@@ -78,6 +78,8 @@ class Members extends Collection<MemberData> {
 
     List<Document<MemberData>> members = collection.map<Document<MemberData>>((e) => Document(e["exists"], e["id"], MemberData()..constructFromJson(e["content"]), type)).toList();
 
+    API().cache().cacheListOfDocuments(members);
+
     return members;
   }
 

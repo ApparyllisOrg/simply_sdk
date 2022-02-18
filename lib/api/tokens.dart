@@ -63,6 +63,8 @@ class Tokens extends Collection<TokenData> {
 
     List<Document<TokenData>> notes = collection.map<Document<TokenData>>((e) => Document(e["exists"], e["id"], TokenData()..constructFromJson(e["content"]), type)).toList();
 
+    API().cache().cacheListOfDocuments(notes);
+
     return notes;
   }
 

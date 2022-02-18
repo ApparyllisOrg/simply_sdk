@@ -83,6 +83,8 @@ class FrontHistory extends Collection<FrontHistoryData> {
 
     List<Document<FrontHistoryData>> fronts = collection.map<Document<FrontHistoryData>>((e) => Document(e["exists"], e["id"], FrontHistoryData()..constructFromJson(e["content"]), type)).toList();
 
+    API().cache().cacheListOfDocuments(fronts);
+
     return fronts;
   }
 
@@ -90,6 +92,8 @@ class FrontHistory extends Collection<FrontHistoryData> {
     var collection = await getCollection<FrontHistoryData>("v1/fronters", "");
 
     List<Document<FrontHistoryData>> fronts = collection.map<Document<FrontHistoryData>>((e) => Document(e["exists"], e["id"], FrontHistoryData()..constructFromJson(e["content"]), type)).toList();
+
+    API().cache().cacheListOfDocuments(fronts);
 
     return fronts;
   }

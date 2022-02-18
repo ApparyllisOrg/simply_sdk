@@ -64,6 +64,8 @@ class Comments extends Collection<CommentData> {
 
     List<Document<CommentData>> comments = collection.map<Document<CommentData>>((e) => Document(e["exists"], e["id"], CommentData()..constructFromJson(e["content"]), type)).toList();
 
+    API().cache().cacheListOfDocuments(comments);
+
     return comments;
   }
 

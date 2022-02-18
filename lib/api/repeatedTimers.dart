@@ -105,6 +105,8 @@ class RepeatedTimers extends Collection<RepeatedTimerData> {
 
     List<Document<RepeatedTimerData>> timers = collection.map<Document<RepeatedTimerData>>((e) => Document(e["exists"], e["id"], RepeatedTimerData()..constructFromJson(e["content"]), type)).toList();
 
+    API().cache().cacheListOfDocuments(timers);
+
     return timers;
   }
 

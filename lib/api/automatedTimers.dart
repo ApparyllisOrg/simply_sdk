@@ -59,6 +59,8 @@ class AutomatedTimers extends Collection<AutomatedTimerData> {
 
     List<Document<AutomatedTimerData>> timers = collection.map<Document<AutomatedTimerData>>((e) => Document(e["exists"], e["id"], AutomatedTimerData()..constructFromJson(e["content"]), type)).toList();
 
+    API().cache().cacheListOfDocuments(timers);
+
     return timers;
   }
 
