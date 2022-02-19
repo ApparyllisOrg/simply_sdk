@@ -16,9 +16,10 @@ class Paginate extends StatefulWidget {
   final int sortOrder;
   // Ex: v1/fronters
   final String url;
+  final List<Widget> prefixWidgets;
   final DocumentConstructor documentConstructor;
 
-  const Paginate({Key? key, required this.itemBuilder, this.stepSize = 10, required this.getLoader, required this.emptyView, required this.sortBy, required this.sortOrder, required this.url, required this.documentConstructor}) : super(key: key);
+  const Paginate({Key? key, required this.itemBuilder, this.stepSize = 10, required this.getLoader, required this.emptyView, required this.sortBy, required this.sortOrder, required this.url, required this.documentConstructor, required this.prefixWidgets}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => PaginateState();
@@ -96,16 +97,22 @@ class PaginateState extends State<Paginate> {
 
     List<Widget> children = [];
 
+    if (isLoading) {
+      children.add(widget.getLoader());
+      return ListView(
+        children: children,
+        controller: _scrollController,
+      );
+    }
+
+    children.addAll(widget.prefixWidgets);
+
     for (int i = 0; i < docs.length; ++i) {
       var doc = docs[i];
       children.add(widget.itemBuilder(context, i, doc));
       children.add(SizedBox(
         height: 10,
       ));
-    }
-
-    if (isLoading) {
-      children.add(widget.getLoader());
     }
 
     return ListView(
