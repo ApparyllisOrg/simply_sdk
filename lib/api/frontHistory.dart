@@ -36,7 +36,9 @@ class FrontHistoryData implements DocumentData {
     insertData("member", member, payload);
     insertData("live", live, payload);
     insertData("customStatus", customStatus, payload);
-    // Never send comment count
+
+    // Only store comment count for cache reasons
+    insertData("commentCount", commentCount, payload);
 
     return payload;
   }
@@ -58,7 +60,8 @@ class FrontHistory extends Collection<FrontHistoryData> {
   String get type => "FrontHistory";
 
   @override
-  Document<FrontHistoryData> add(DocumentData values) {
+  Document<FrontHistoryData> add(FrontHistoryData values) {
+    values.commentCount = null;
     return addSimpleDocument(type, "v1/frontHistory", values);
   }
 
@@ -100,7 +103,8 @@ class FrontHistory extends Collection<FrontHistoryData> {
   }
 
   @override
-  void update(String documentId, DocumentData values) {
+  void update(String documentId, FrontHistoryData values) {
+    values.commentCount = null;
     updateSimpleDocument(type, "v1/frontHistory", documentId, values);
   }
 }
