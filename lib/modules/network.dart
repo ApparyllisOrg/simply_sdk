@@ -38,7 +38,7 @@ class NetworkRequest {
   }
 
   static NetworkRequest fromJson(Map<String, dynamic> data) {
-    return NetworkRequest(data["method"], data["path"], data["timestamp"], payload: data["payload"], query: data["query"]);
+    return NetworkRequest(HttpRequestMethod.values[data["method"]], data["path"], data["timestamp"], payload: data["payload"], query: data["query"]);
   }
 
   NetworkRequest(this.method, this.path, this.timestamp, {this.query, this.payload, this.onDone});
