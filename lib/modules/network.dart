@@ -95,6 +95,7 @@ class Network {
       bool syncExists = html.window.localStorage.containsKey("pendingRequests");
       List<String> savedRequestsCasted = syncExists ? getJsonPendingRequestsFromString(html.window.localStorage["pendingRequests"] ?? "") : [];
       loadPendingRequestsFromJson(savedRequestsCasted);
+      print("Loaded pending requests");
     } else {
       try {
         var dir = await getApplicationDocumentsDirectory();
@@ -114,6 +115,8 @@ class Network {
         } else {
           _pendingRequests = [];
         }
+
+        print("Loaded pending requests");
       } catch (e) {
         API().reportError(e, StackTrace.current);
         print(e);

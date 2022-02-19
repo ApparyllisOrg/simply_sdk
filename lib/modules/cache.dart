@@ -13,9 +13,8 @@ import '../simply_sdk.dart';
 
 class Cache {
   Map<String, dynamic> _cache = Map<String, dynamic>();
-  List<dynamic> _sync = [];
 
-  void removeFromCache(String type, String id, {bool triggerUpdateSubscription: true}) {
+  void removeFromCache(String type, String id) {
     if (_cache[type] != null) {
       _cache[type].remove(id);
     }
@@ -60,10 +59,6 @@ class Cache {
     return Map<String, dynamic>();
   }
 
-  List<dynamic> getSyncQueue() {
-    return _sync;
-  }
-
   void clearTypeCache(String type) {
     _cache.remove(type);
     markDirty();
@@ -84,7 +79,6 @@ class Cache {
     return Future(() async {
       try {
         _cache.clear();
-        _sync.clear();
         markDirty();
       } catch (e) {
         API().reportError(e, StackTrace.current);
@@ -113,10 +107,7 @@ class Cache {
         // Save cache
         html.window.localStorage["db"] = jsonEncode(_cache, toEncodable: customEncode);
 
-        // Save sync
-        html.window.localStorage["sync"] = jsonEncode(_sync, toEncodable: customEncode);
-
-        Logger.root.fine("Saved sync and cache");
+        Logger.root.fine("Saved cache");
       } catch (e) {
         dirty = true;
         API().reportError(e, StackTrace.current);
@@ -129,17 +120,12 @@ class Cache {
         var dir = await getApplicationDocumentsDirectory();
         await dir.create(recursive: true);
         var dbPath = dir.path + "/simply.db";
-        var syncPath = dir.path + "/simply_sync.db";
 
         // Save cache
         File file = File(dbPath);
         file.writeAsStringSync(jsonEncode(_cache, toEncodable: customEncode));
 
-        // Save sync
-        File syncFile = File(syncPath);
-        syncFile.writeAsStringSync(jsonEncode(_sync, toEncodable: customEncode));
-
-        print("Saved sync and cache");
+        print("Saved cache");
       } catch (e) {
         dirty = true;
         API().reportError(e, StackTrace.current);
@@ -159,18 +145,13 @@ class Cache {
 
     await Future(() async {
       if (kIsWeb) {
-        bool syncExists = html.window.localStorage.containsKey("sync");
         bool dbExists = html.window.localStorage.containsKey("db");
-
-        _sync = syncExists ? jsonDecode(html.window.localStorage["sync"] ?? "", reviver: customDecode) as List<dynamic> : [];
-
         _cache = dbExists ? jsonDecode(html.window.localStorage["db"] ?? "", reviver: customDecode) as Map<String, dynamic> : Map<String, dynamic>();
       } else {
         try {
           var dir = await getApplicationDocumentsDirectory();
           await dir.create(recursive: true);
           var dbPath = dir.path + "/simply.db";
-          var syncPath = dir.path + "/simply_sync.db";
 
           File file = File(dbPath);
           bool exists = await file.exists();
@@ -183,21 +164,10 @@ class Cache {
           } else {
             _cache = Map<String, dynamic>();
           }
-
-          File syncFile = File(syncPath);
-          bool syncExists = await syncFile.exists();
-
-          if (syncExists) {
-            String jsonObjectString = await syncFile.readAsString();
-            _sync = jsonDecode(jsonObjectString, reviver: customDecode) as List<dynamic>;
-          } else {
-            _sync = [];
-          }
         } catch (e) {
           API().reportError(e, StackTrace.current);
           print(e);
           _cache = Map<String, dynamic>();
-          _sync = [];
         }
       }
 
@@ -207,11 +177,7 @@ class Cache {
     });
   }
 
-  int getTime(var data) {
-    return data;
-  }
-
-  String insertDocument(String type, String id, Map<String, dynamic> data, {bool doTriggerUpdateSubscription: true}) {
+  String insertDocument(String type, String id, Map<String, dynamic> data) {
     Map<String, dynamic> dataCopy = Map.from(data);
     dataCopy["type"] = type;
     dataCopy["id"] = id;
@@ -219,13 +185,13 @@ class Cache {
     return id;
   }
 
-  void updateDocument(String type, String id, Map<String, dynamic> data, {bool doTriggerUpdateSubscription: true}) async {
+  void updateDocument(String type, String id, Map<String, dynamic> data) async {
     Map<String, dynamic> dataCopy = Map.from(data);
     updateToCache(type, id, dataCopy);
   }
 
-  Future<void> removeDocument(String type, String id, {bool doTriggerUpdateSubscription: true}) async {
-    removeFromCache(type, id, triggerUpdateSubscription: doTriggerUpdateSubscription);
+  Future<void> removeDocument(String type, String id) async {
+    removeFromCache(type, id);
   }
 
   Map<String, dynamic>? getDocument(String type, String id) {
