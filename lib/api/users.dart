@@ -218,7 +218,7 @@ class Users extends Collection<UserData> {
   }
 
   Future<RequestResponse> generateUserReport(GenerateUserReportData data) async {
-    if (data.customFronts == null && data.customFronts == null && data.members == null) {
+    if (data.customFronts == null && data.frontHistory == null && data.members == null) {
       return RequestResponse(false, "You must specify at least one generation type");
     }
     try {
