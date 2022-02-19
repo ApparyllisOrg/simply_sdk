@@ -75,8 +75,8 @@ class RepeatedTimerData implements DocumentData {
     name = readDataFromJson("name", json);
     message = readDataFromJson("message", json);
     dayInterval = readDataFromJson("dayInterval", json);
-    time = RepeatedTimerTimeData().constructFromJson(json["time"]);
-    startTime = RepeatedTimerStartTimeData().constructFromJson(json["startTime"]);
+    time = RepeatedTimerTimeData()..constructFromJson(json["time"]);
+    startTime = RepeatedTimerStartTimeData()..constructFromJson(json["startTime"]);
   }
 }
 
