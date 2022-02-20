@@ -65,6 +65,7 @@ class Members extends Collection<MemberData> {
   @override
   void delete(String documentId, Document originalDocument) {
     deleteSimpleDocument(type, "v1/member", documentId, originalDocument.dataObject);
+    API().store().getFronters().removeWhere((element) => element.dataObject.member == documentId);
   }
 
   @override

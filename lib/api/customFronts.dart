@@ -52,6 +52,7 @@ class CustomFronts extends Collection<CustomFrontData> {
   @override
   void delete(String documentId, Document originalDocument) {
     deleteSimpleDocument(type, "v1/customFront", documentId, originalDocument.dataObject);
+    API().store().getFronters().removeWhere((element) => element.dataObject.member == documentId);
   }
 
   @override
