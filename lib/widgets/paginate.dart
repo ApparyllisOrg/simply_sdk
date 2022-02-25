@@ -100,14 +100,6 @@ class PaginateState extends State<Paginate> {
 
     List<Widget> children = [];
 
-    if (isLoading) {
-      children.add(widget.getLoader());
-      return ListView(
-        children: children,
-        controller: _scrollController,
-      );
-    }
-
     children.addAll(widget.prefixWidgets);
 
     for (int i = 0; i < docs.length; ++i) {
@@ -116,6 +108,14 @@ class PaginateState extends State<Paginate> {
       children.add(SizedBox(
         height: 10,
       ));
+    }
+
+    if (isLoading) {
+      children.add(widget.getLoader());
+      return ListView(
+        children: children,
+        controller: _scrollController,
+      );
     }
 
     return ListView(
