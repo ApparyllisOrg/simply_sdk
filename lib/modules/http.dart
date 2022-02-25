@@ -27,7 +27,7 @@ class SimplyHttpClient extends http.BaseClient {
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) {
     Logger.root.fine("HTTP => ${request.method} => ${request.url}");
-    request.headers.addAll({"Authorization": API().auth().getToken() ?? "", "content-type": "application/json; charset=UTF-8", "accept-encoding": "gzip"});
+    request.headers.addAll({"Authorization": API().auth().getToken() ?? "", "content-type": "application/json; charset=UTF-8"});
     return _httpClient.send(request);
   }
 }
