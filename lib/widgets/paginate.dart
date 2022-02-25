@@ -61,7 +61,7 @@ class PaginateState extends State<Paginate> {
     }
 
     isLoading = true;
-    if (_scrollController.position.hasPixels) cachedOffset = _scrollController.position.pixels;
+    if (_scrollController.positions.isNotEmpty && _scrollController.position.hasPixels) cachedOffset = _scrollController.position.pixels;
     if (mounted) {
       setState(() {});
     }
@@ -86,7 +86,7 @@ class PaginateState extends State<Paginate> {
     if (mounted) {
       setState(() {});
     }
-    if (_scrollController.position.hasPixels) _scrollController.position.setPixels(cachedOffset);
+    if (_scrollController.positions.isNotEmpty && _scrollController.position.hasPixels) _scrollController.position.setPixels(cachedOffset);
   }
 
   Widget build(BuildContext context) {
