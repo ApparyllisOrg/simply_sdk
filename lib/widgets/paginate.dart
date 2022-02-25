@@ -31,7 +31,6 @@ class PaginateState extends State<Paginate> {
   bool reachedEnd = false;
 
   ScrollController _scrollController = ScrollController();
-  double cachedOffset = 0;
 
   List<Document> docs = [];
 
@@ -61,7 +60,6 @@ class PaginateState extends State<Paginate> {
     }
 
     isLoading = true;
-    if (_scrollController.positions.isNotEmpty && _scrollController.position.hasPixels) cachedOffset = _scrollController.position.pixels;
     if (mounted) {
       setState(() {});
     }
@@ -86,7 +84,6 @@ class PaginateState extends State<Paginate> {
     if (mounted) {
       setState(() {});
     }
-    if (_scrollController.positions.isNotEmpty && _scrollController.position.hasPixels) _scrollController.position.setPixels(cachedOffset);
   }
 
   Widget build(BuildContext context) {
