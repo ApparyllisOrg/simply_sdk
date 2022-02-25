@@ -70,8 +70,8 @@ class PollData implements DocumentData {
       insertData("allowAbstain", allowAbstain, payload);
       insertData("allowVeto", allowVeto, payload);
     }
-    insertData("options", options, payload);
-    insertData("votes", votes, payload);
+    insertDataArray("options", options, payload);
+    insertDataArray("votes", votes, payload);
     insertData("custom", custom, payload);
     insertData("endTime", endTime, payload);
 

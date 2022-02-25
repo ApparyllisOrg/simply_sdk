@@ -25,7 +25,7 @@ class GroupData implements DocumentData {
     insertData("desc", desc, payload);
     insertData("preventTrusted", preventTrusted, payload);
     insertData("emoji", emoji, payload);
-    insertData("members", members, payload);
+    insertDataArray("members", members, payload);
 
     return payload;
   }
