@@ -68,7 +68,7 @@ class Comments extends Collection<CommentData> {
       return comments;
     }
 
-    return API().cache().getDocumentsWhere<CommentData>("comments", (Document<CommentData> data) {
+    return API().cache().getDocumentsWhere<CommentData>("Comments", (Document<CommentData> data) {
       return data.dataObject.collection == type && data.dataObject.documentId == documentId;
     }, (Map<String, dynamic> data) => CommentData()..constructFromJson(data));
   }
