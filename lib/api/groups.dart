@@ -80,7 +80,7 @@ class Groups extends Collection<GroupData> {
   }
 
   void recursiveDeleteGroup(String groupId) {
-    Iterable<Document<GroupData>> groups = API().store().getAllGroups().where((element) => element.dataObject.parent == groupId);
+    Iterable<Document<GroupData>> groups = List.from(API().store().getAllGroups().where((element) => element.dataObject.parent == groupId));
     groups.forEach((element) {
       delete(element.id, element);
     });
