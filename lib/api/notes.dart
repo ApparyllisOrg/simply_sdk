@@ -68,10 +68,17 @@ class Notes extends Collection<NoteData> {
   }
 
   Future<List<Document<NoteData>>> getNotesForMember(String member, String systemId) async {
-    var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/notes/$systemId/$member', "")));
-    List<Map<String, dynamic>> convertedResponse = convertServerResponseToList(response);
-    List<Document<NoteData>> notes = convertedResponse.map<Document<NoteData>>((e) => Document(e["exists"], e["id"], NoteData()..constructFromJson(e["content"]), type)).toList();
-    return notes;
+    var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/notes/$systemId/$member', ""))).catchError((e) => generateFailedResponse(e));
+    if (response.statusCode == 200) {
+      List<Map<String, dynamic>> convertedResponse = convertServerResponseToList(response);
+      List<Document<NoteData>> notes = convertedResponse.map<Document<NoteData>>((e) => Document(e["exists"], e["id"], NoteData()..constructFromJson(e["content"]), type)).toList();
+      API().cache().cacheListOfDocuments(notes);
+      return notes;
+    }
+
+    return API().cache().getDocumentsWhere<NoteData>(type, (Document<NoteData> data) {
+      return data.dataObject.member == member;
+    }, (Map<String, dynamic> data) => NoteData()..constructFromJson(data));
   }
 
   @override

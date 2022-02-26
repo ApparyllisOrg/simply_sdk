@@ -216,4 +216,20 @@ class Cache {
 
     return null;
   }
+
+  List<Document<ObjectType>> getDocumentsWhere<ObjectType>(String type, bool Function(Document<ObjectType>) where, ObjectType Function(Map<String, dynamic>) toDocumentData) {
+    List<Document<ObjectType>> docs = [];
+
+    Map<String, dynamic> collection = getTypeCache(type);
+
+    collection.forEach((key, value) {
+      ObjectType dataType = toDocumentData(value as Map<String, dynamic>);
+      Document<ObjectType> tempDoc = Document<ObjectType>(true, key, dataType, type);
+      if (where(tempDoc)) {
+        docs.add(tempDoc);
+      }
+    });
+
+    return docs;
+  }
 }
