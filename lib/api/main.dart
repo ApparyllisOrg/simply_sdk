@@ -152,6 +152,8 @@ void deleteSimpleDocument(String type, String path, String id, DocumentData data
         DateTime.now().millisecondsSinceEpoch,
       ));
 
+  API().cache().removeDocument(type, id);
+
   propogateChanges(type, id, data, EChangeType.Delete);
 }
 
