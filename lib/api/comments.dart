@@ -60,13 +60,17 @@ class Comments extends Collection<CommentData> {
   }
 
   Future<List<Document<CommentData>>> getCommentsForDocument(String documentId, String type) async {
-    var collection = await getCollection<CommentData>("v1/comments/$type/$documentId", "", type);
+    var collection = await getCollection<CommentData>("v1/comments/$type/$documentId", "", type, skipCache: true);
 
     List<Document<CommentData>> comments = collection.data.map<Document<CommentData>>((e) => Document(e["exists"], e["id"], CommentData()..constructFromJson(e["content"]), type)).toList();
     if (!collection.useOffline) {
       API().cache().cacheListOfDocuments(comments);
+      return comments;
     }
-    return comments;
+
+    return API().cache().getDocumentsWhere<CommentData>(type, (Document<CommentData> data) {
+      return data.dataObject.collection == type && data.dataObject.documentId == documentId;
+    }, (Map<String, dynamic> data) => CommentData()..constructFromJson(data));
   }
 
   @override

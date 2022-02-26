@@ -105,6 +105,7 @@ class Socket {
         _WebSocket = WebSocketChannel.connect(Uri.parse(socketUrl));
       } else {
         _IOSocket = await io.WebSocket.connect(socketUrl, compression: io.CompressionOptions(enabled: true, serverNoContextTakeover: true, clientNoContextTakeover: true, serverMaxWindowBits: 15, clientMaxWindowBits: 15));
+        _IOSocket!.pingInterval = Duration(seconds: 3);
       }
 
       if (kIsWeb) {
