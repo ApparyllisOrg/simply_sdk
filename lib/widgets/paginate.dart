@@ -65,21 +65,23 @@ class PaginateState extends State<Paginate> {
     }
 
     var response = await getNextPage(widget.url, widget.sortBy, widget.sortOrder, widget.stepSize, currentOffset);
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      List<Map<String, dynamic>> responseDocs = (jsonDecode(response.body) as List<dynamic>).cast<Map<String, dynamic>>();
 
-    List<Map<String, dynamic>> responseDocs = (jsonDecode(response.body) as List<dynamic>).cast<Map<String, dynamic>>();
+      List<Document> newDocs = [];
+      responseDocs.forEach((element) {
+        newDocs.add(widget.documentConstructor(element["id"], element["content"]));
+      });
 
-    List<Document> newDocs = [];
-    responseDocs.forEach((element) {
-      newDocs.add(widget.documentConstructor(element["id"], element["content"]));
-    });
+      docs.addAll(newDocs);
 
-    docs.addAll(newDocs);
+      if (newDocs.length <= 0) {
+        reachedEnd = true;
+      }
 
-    if (newDocs.length <= 0) {
-      reachedEnd = true;
+      currentOffset += newDocs.length;
     }
 
-    currentOffset += newDocs.length;
     isLoading = false;
     if (mounted) {
       setState(() {});

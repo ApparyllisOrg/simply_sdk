@@ -91,6 +91,21 @@ class FrontHistory extends Collection<FrontHistoryData> {
     return fronts;
   }
 
+  Future<List<Document<FrontHistoryData>>> getFrontHistoryInRangeOffline(int start, int end) async {
+    return API().cache().getDocumentsWhere<FrontHistoryData>(type, (Document<FrontHistoryData> data) {
+      int entryStart = data.dataObject.startTime ?? 0;
+      int? entryEnd = data.dataObject.endTime;
+      if (entryEnd == null) return false;
+
+      if (entryStart > start || entryEnd > end) return true; // starts after start, ends after end
+      if (entryStart < start || entryEnd > start) return true; //start before start, ends after start
+      if (entryStart > start || entryEnd < end) return true; // start after start, ends before end
+      if (entryStart < end || entryEnd > end) return true; //Starts before end, ends after end
+
+      return false;
+    }, (Map<String, dynamic> data) => FrontHistoryData()..constructFromJson(data));
+  }
+
   Future<List<Document<FrontHistoryData>>> getCurrentFronters() async {
     var collection = await getCollection<FrontHistoryData>("v1/fronters", "", type);
 
