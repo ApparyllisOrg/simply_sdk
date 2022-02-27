@@ -69,7 +69,9 @@ class Groups extends Collection<GroupData> {
 
     List<Document<GroupData>> groups = collection.data.map<Document<GroupData>>((e) => Document(e["exists"], e["id"], GroupData()..constructFromJson(e["content"]), type)).toList();
     if (!collection.useOffline) {
-      API().cache().cacheListOfDocuments(groups);
+      if (uid == API().auth().getUid()) {
+        API().cache().cacheListOfDocuments(groups);
+      }
     }
     return groups;
   }
