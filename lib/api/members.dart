@@ -79,7 +79,7 @@ class Members extends Collection<MemberData> {
 
     List<Document<MemberData>> members = collection.data.map<Document<MemberData>>((e) => Document(e["exists"], e["id"], MemberData()..constructFromJson(e["content"]), type)).toList();
     if (!collection.useOffline) {
-      if (uid == API().auth().getUid()) {
+      if ((uid ?? API().auth().getUid()) == API().auth().getUid()) {
         API().cache().cacheListOfDocuments(members);
       }
     }

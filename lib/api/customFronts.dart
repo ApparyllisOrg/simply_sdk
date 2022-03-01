@@ -66,7 +66,7 @@ class CustomFronts extends Collection<CustomFrontData> {
 
     List<Document<CustomFrontData>> cfs = collection.data.map<Document<CustomFrontData>>((e) => Document(e["exists"], e["id"], CustomFrontData()..constructFromJson(e["content"]), type)).toList();
     if (!collection.useOffline) {
-      if (uid == API().auth().getUid()) {
+      if ((uid ?? API().auth().getUid()) == API().auth().getUid()) {
         API().cache().cacheListOfDocuments(cfs);
       }
     }
