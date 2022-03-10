@@ -162,7 +162,7 @@ class Friends {
       try {
         var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/friend/$userId/getFront", ""))).catchError(((e) => generateFailedResponse(e)));
         if (response.statusCode == 200) {
-          Map<String, dynamic> body = jsonDecode(jsonDecode(response.body)) as Map<String, dynamic>;
+          Map<String, dynamic> body = jsonDecode(response.body) as Map<String, dynamic>;
           return FriendFronters(frontStatuses: (body["statuses"] as Map<String, dynamic>).cast<String, String>(), fronters: (body["fronters"] as List<dynamic>).cast<String>());
         } else {
           return null;
