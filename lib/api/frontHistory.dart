@@ -86,6 +86,8 @@ class FrontHistory extends Collection<FrontHistoryData> {
 
     List<Document<FrontHistoryData>> fronts = collection.data.map<Document<FrontHistoryData>>((e) => Document(e["exists"], e["id"], FrontHistoryData()..constructFromJson(e["content"]), type)).toList();
     if (!collection.useOffline) {
+      List<Document<FrontHistoryData>> fhNotLive = API().cache().getDocumentsWhere<FrontHistoryData>(type, (doc) => (doc.dataObject.live ?? false) == false, (data) => FrontHistoryData()..constructFromJson(data));
+      fhNotLive.forEach((element) => API().cache().removeFromCache(type, element.id));
       API().cache().cacheListOfDocuments(fronts);
     }
     return fronts;
@@ -111,6 +113,8 @@ class FrontHistory extends Collection<FrontHistoryData> {
 
     List<Document<FrontHistoryData>> fronts = collection.data.map<Document<FrontHistoryData>>((e) => Document(e["exists"], e["id"], FrontHistoryData()..constructFromJson(e["content"]), type)).toList();
     if (!collection.useOffline) {
+      List<Document<FrontHistoryData>> fhLive = API().cache().getDocumentsWhere<FrontHistoryData>(type, (doc) => doc.dataObject.live ?? false, (data) => FrontHistoryData()..constructFromJson(data));
+      fhLive.forEach((element) => API().cache().removeFromCache(type, element.id));
       API().cache().cacheListOfDocuments(fronts);
     }
 

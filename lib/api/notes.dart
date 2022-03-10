@@ -62,6 +62,7 @@ class Notes extends Collection<NoteData> {
 
     List<Document<NoteData>> notes = collection.data.map<Document<NoteData>>((e) => Document(e["exists"], e["id"], NoteData()..constructFromJson(e["content"]), type)).toList();
     if (!collection.useOffline) {
+      API().cache().clearTypeCache(type);
       API().cache().cacheListOfDocuments(notes);
     }
     return notes;
