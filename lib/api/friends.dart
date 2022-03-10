@@ -22,6 +22,13 @@ class FriendsFrontData {
   FriendsFrontData(this.uid, this.frontString, this.customFrontString);
 }
 
+class FriendFronters {
+  final List<String> fronters;
+  final Map<String, String> frontStatuses;
+
+  FriendFronters({required this.fronters, required this.frontStatuses});
+}
+
 class FriendSettingsData implements DocumentData {
   bool? seeFront;
   bool? seeMembers;
@@ -150,19 +157,20 @@ class Friends {
   }
 
   // Return a list of all fronting member id's of user
-  Future<List<String>> getFriendFronters(String userId) {
+  Future<FriendFronters?> getFriendFronters(String userId) {
     return Future(() async {
       try {
         var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/friend/$userId/getFront", ""))).catchError(((e) => generateFailedResponse(e)));
         if (response.statusCode == 200) {
-          return (jsonDecode(response.body) as List).cast<String>();
+          Map<String, dynamic> body = jsonDecode(jsonDecode(response.body)) as Map<String, dynamic>;
+          return FriendFronters(frontStatuses: (body["statuses"] as Map<String, dynamic>).cast<String, String>(), fronters: (body["fronters"] as List<dynamic>).cast<String>());
         } else {
-          return [];
+          return null;
         }
       } catch (e) {
         Logger.root.fine("getFriendFronters failed with: " + e.toString());
       }
-      return [];
+      return null;
     });
   }
 
