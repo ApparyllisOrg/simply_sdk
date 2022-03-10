@@ -136,6 +136,7 @@ class UserData implements DocumentData {
   String? desc;
   bool? isAsystem;
   String? avatarUuid;
+  String? avatarUrl;
   String? color;
   Map<String, UserFieldData>? fields;
   bool? patron;
@@ -149,6 +150,7 @@ class UserData implements DocumentData {
     insertData("desc", desc, payload);
     insertData("isAsystem", isAsystem, payload);
     insertData("avatarUuid", avatarUuid, payload);
+    insertData("avatarUrl", avatarUrl, payload);
     insertData("color", color, payload);
     insertDataMap("fields", fields, payload);
 
@@ -161,6 +163,7 @@ class UserData implements DocumentData {
     desc = readDataFromJson("desc", json);
     isAsystem = readDataFromJson("isAsystem", json);
     avatarUuid = readDataFromJson("avatarUuid", json);
+    avatarUrl = readDataFromJson("avatarUrl", json);
     color = readDataFromJson("color", json);
     patron = readDataFromJson("patron", json);
 
