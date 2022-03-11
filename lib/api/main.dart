@@ -84,39 +84,39 @@ void propogateChanges(String type, String id, dynamic data, EChangeType changeTy
   switch (type) {
     case "Members":
     case "members":
-      API().members().propogateChanges(Document(true, id, data, type), changeType);
+      API().members().propogateChanges(Document(true, id, data, "Members"), changeType);
       break;
     case "CustomFronts":
     case "frontStatuses":
-      API().customFronts().propogateChanges(Document(true, id, data, type), changeType);
+      API().customFronts().propogateChanges(Document(true, id, data, "CustomFronts"), changeType);
       break;
     case "Groups":
     case "groups":
-      API().groups().propogateChanges(Document(true, id, data, type), changeType);
+      API().groups().propogateChanges(Document(true, id, data, "Groups"), changeType);
       break;
     case "Notes":
     case "notes":
-      API().notes().propogateChanges(Document(true, id, data, type), changeType);
+      API().notes().propogateChanges(Document(true, id, data, "Notes"), changeType);
       break;
     case "Polls":
     case "polls":
-      API().polls().propogateChanges(Document(true, id, data, type), changeType);
+      API().polls().propogateChanges(Document(true, id, data, "Polls"), changeType);
       break;
     case "RepeatedTimers":
     case "repeatedTimers":
-      API().repeatedTimers().propogateChanges(Document(true, id, data, type), changeType);
+      API().repeatedTimers().propogateChanges(Document(true, id, data, "RepeatedTimers"), changeType);
       break;
     case "AutomatedTimers":
     case "automatedTimers":
-      API().automatedTimers().propogateChanges(Document(true, id, data, type), changeType);
+      API().automatedTimers().propogateChanges(Document(true, id, data, "AutomatedTimers"), changeType);
       break;
     case "FrontHistory":
     case "frontHistory":
-      API().frontHistory().propogateChanges(Document(true, id, data, type), changeType);
+      API().frontHistory().propogateChanges(Document(true, id, data, "FrontHistory"), changeType);
       break;
     case "Comments":
     case "comments":
-      API().comments().propogateChanges(Document(true, id, data, type), changeType);
+      API().comments().propogateChanges(Document(true, id, data, "Comments"), changeType);
       break;
   }
 }
