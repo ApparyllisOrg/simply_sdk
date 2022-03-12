@@ -17,6 +17,7 @@ import '../simply_sdk.dart';
 enum HttpRequestMethod { Post, Patch, Delete, Get }
 
 List<int> acceptedResponseCodes = [0, 200, 409, 500, 501, 403, 404, 401, 406, 405, 204];
+List<int> reportResponseCodes = [409, 400];
 
 class NetworkRequest {
   final HttpRequestMethod method;
@@ -184,7 +185,12 @@ class Network {
             }
 
             int responseCode = response?.statusCode ?? 0;
+
             if (acceptedResponseCodes.contains(responseCode)) {
+              if (reportResponseCodes.contains(responseCode)) {
+                API().reportError("[$responseCode] during ${request.method} => ${request.path}", StackTrace.current);
+              }
+
               _pendingRequests.remove(request);
               if (request.onDone != null) request.onDone!();
             } else {
