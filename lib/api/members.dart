@@ -31,7 +31,7 @@ class MemberData implements DocumentData {
     insertData("avatarUrl", avatarUrl, payload);
     insertData("private", private, payload);
     insertData("preventTrusted", preventTrusted, payload);
-    insertData("preventFrontNotifs", preventFrontNotifs, payload);
+    insertData("preventsFrontNotifs", preventFrontNotifs, payload);
     insertData("info", info, payload);
 
     return payload;
@@ -48,7 +48,7 @@ class MemberData implements DocumentData {
     avatarUrl = readDataFromJson("avatarUrl", json);
     private = readDataFromJson("private", json);
     preventTrusted = readDataFromJson("preventTrusted", json);
-    preventFrontNotifs = readDataFromJson("preventFrontNotifs", json);
+    preventFrontNotifs = readDataFromJson("preventsFrontNotifs", json);
     info = readDataMapFromJson<Map<String, String>, String>("info", json);
   }
 }

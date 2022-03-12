@@ -188,7 +188,7 @@ class Network {
 
             if (acceptedResponseCodes.contains(responseCode)) {
               if (reportResponseCodes.contains(responseCode)) {
-                API().reportError("[$responseCode] during ${request.method} => ${request.path}", StackTrace.current);
+                API().reportError("[$responseCode] during ${request.method} => ${request.path}. Response is ${response?.body ?? ""}", StackTrace.current);
               }
 
               _pendingRequests.remove(request);
