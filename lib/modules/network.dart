@@ -51,6 +51,9 @@ class Network {
   List<NetworkRequest> _pendingRequests = [];
   int numFailedTicks = 0;
 
+  int getNumPendingRequests() => _pendingRequests.length;
+  int getNumFailedTicks() => numFailedTicks;
+
   void initialize() async {
     await loadPendingNetworkRequests();
     tick();
