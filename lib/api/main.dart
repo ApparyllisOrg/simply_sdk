@@ -63,11 +63,11 @@ DocumentData jsonDataToDocumentData(String type, Map<String, dynamic> data) {
     case "Polls":
     case "polls":
       return PollData()..constructFromJson(data);
-    case "RepeatedTimers":
-    case "repeatedTimers":
+    case "RepeatedReminders":
+    case "repeatedReminders":
       return RepeatedTimerData()..constructFromJson(data);
-    case "AutomatedTimers":
-    case "automatedTimers":
+    case "AutomatedReminders":
+    case "automatedReminders":
       return AutomatedTimerData()..constructFromJson(data);
     case "FrontHistory":
     case "frontHistory":
@@ -102,13 +102,13 @@ void propogateChanges(String type, String id, dynamic data, EChangeType changeTy
     case "polls":
       API().polls().propogateChanges(Document(true, id, data, "Polls"), changeType);
       break;
-    case "RepeatedTimers":
-    case "repeatedTimers":
-      API().repeatedTimers().propogateChanges(Document(true, id, data, "RepeatedTimers"), changeType);
+    case "RepeatedReminders":
+    case "repeatedReminders":
+      API().repeatedTimers().propogateChanges(Document(true, id, data, "RepeatedReminders"), changeType);
       break;
-    case "AutomatedTimers":
-    case "automatedTimers":
-      API().automatedTimers().propogateChanges(Document(true, id, data, "AutomatedTimers"), changeType);
+    case "AutomatedReminders":
+    case "automatedReminders":
+      API().automatedTimers().propogateChanges(Document(true, id, data, "AutomatedReminders"), changeType);
       break;
     case "FrontHistory":
     case "frontHistory":

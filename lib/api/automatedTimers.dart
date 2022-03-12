@@ -36,7 +36,7 @@ class AutomatedTimerData implements DocumentData {
 
 class AutomatedTimers extends Collection<AutomatedTimerData> {
   @override
-  String get type => "AutomatedTimers";
+  String get type => "AutomatedReminders";
 
   @override
   Document<AutomatedTimerData> add(DocumentData values) {
