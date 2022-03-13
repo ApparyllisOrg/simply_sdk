@@ -106,7 +106,7 @@ class API {
 
   void reportError(e, StackTrace trace) {
     try {
-      onErrorReported!(e, trace);
+      if (onErrorReported != null) onErrorReported!(e, trace);
     } catch (e) {}
   }
 

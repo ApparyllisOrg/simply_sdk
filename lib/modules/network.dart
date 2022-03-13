@@ -197,6 +197,9 @@ class Network {
               _pendingRequests.remove(request);
               if (request.onDone != null) request.onDone!();
             } else {
+              if (reportResponseCodes.contains(responseCode)) {
+                API().reportError("[$responseCode] during ${request.method} => ${request.path}. Response is ${response?.body ?? ""}", StackTrace.current);
+              }
               Logger.root.fine(response?.body);
             }
           } catch (e) {
