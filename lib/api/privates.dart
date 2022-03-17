@@ -1,8 +1,14 @@
+import 'dart:convert';
+
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
+import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
+
+import '../modules/http.dart';
+import '../modules/network.dart';
 
 class Notification {
   Notification({required this.timestamp, required this.title, required this.message});
@@ -75,7 +81,18 @@ class Privates extends Collection<PrivateData> {
   }
 
   @override
-  void update(String documentId, PrivateData values) {
-    updateSimpleDocument(type, "v1/user/private", documentId, values);
+  void update(String documentId, PrivateData values) async {
+    Map<String, dynamic> jsonPayload = values.toJson();
+
+    API().cache().updateDocument(type, documentId, jsonPayload);
+
+    propogateChanges(type, documentId, values, EChangeType.Update);
+
+    var response = await SimplyHttpClient().patch(Uri.parse(API().connection().getRequestUrl('v1/private/${API().auth().getUid()}', "")), body: jsonEncode(jsonPayload)).catchError(((e) => generateFailedResponse(e)));
+    if (response.statusCode == 200) {
+      return;
+    }
+
+    API().network().request(new NetworkRequest(HttpRequestMethod.Patch, 'v1/private/${API().auth().getUid()}', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
   }
 }
