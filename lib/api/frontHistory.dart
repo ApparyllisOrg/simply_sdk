@@ -108,8 +108,8 @@ class FrontHistory extends Collection<FrontHistoryData> {
     }, (Map<String, dynamic> data) => FrontHistoryData()..constructFromJson(data));
   }
 
-  Future<List<Document<FrontHistoryData>>> getCurrentFronters() async {
-    var collection = await getCollection<FrontHistoryData>("v1/fronters", "", type);
+  Future<List<Document<FrontHistoryData>>> getCurrentFronters({int? since}) async {
+    var collection = await getCollection<FrontHistoryData>("v1/fronters", "", type, since: since);
 
     List<Document<FrontHistoryData>> fronts = collection.data.map<Document<FrontHistoryData>>((e) => Document(e["exists"], e["id"], FrontHistoryData()..constructFromJson(e["content"]), type)).toList();
     if (!collection.useOffline) {

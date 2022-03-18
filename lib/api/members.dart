@@ -85,8 +85,8 @@ class Members extends Collection<MemberData> {
   }
 
   @override
-  Future<List<Document<MemberData>>> getAll({String? uid}) async {
-    var collection = await getCollection<MemberData>("v1/members/${(uid ?? API().auth().getUid()) ?? ""}", "", type);
+  Future<List<Document<MemberData>>> getAll({String? uid, int? since}) async {
+    var collection = await getCollection<MemberData>("v1/members/${(uid ?? API().auth().getUid()) ?? ""}", "", type, since: since);
 
     List<Document<MemberData>> members = collection.data.map<Document<MemberData>>((e) => Document(e["exists"], e["id"], MemberData()..constructFromJson(e["content"]), type)).toList();
     if (!collection.useOffline) {

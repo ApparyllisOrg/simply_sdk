@@ -3,6 +3,7 @@ import 'package:simply_sdk/api/frontHistory.dart';
 import 'package:simply_sdk/api/groups.dart';
 import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/api/members.dart';
+import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
@@ -45,6 +46,29 @@ class Store {
 
     _onInitialized.forEach((element) {
       if (element != null) element();
+    });
+  }
+
+  Future<void> updateStore(int since) async {
+    List<Document<MemberData>> _updateMembers = await API().members().getAll(since: since);
+    List<Document<CustomFrontData>> _updateCfs = await API().customFronts().getAll(since: since);
+    List<Document<GroupData>> _updateGroups = await API().groups().getAll(since: since);
+    List<Document<FrontHistoryData>> _updateFronts = await API().frontHistory().getCurrentFronters(since: since);
+
+    _updateMembers.forEach((element) {
+      updateDocumentInList(_members, element, EChangeType.Update);
+    });
+
+    _updateCfs.forEach((element) {
+      updateDocumentInList(_customFronts, element, EChangeType.Update);
+    });
+
+    _updateGroups.forEach((element) {
+      updateDocumentInList(_groups, element, EChangeType.Update);
+    });
+
+    _updateFronts.forEach((element) {
+      updateDocumentInList(_fronters, element, EChangeType.Update);
     });
   }
 

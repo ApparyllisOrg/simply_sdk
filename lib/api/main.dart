@@ -157,8 +157,9 @@ void deleteSimpleDocument(String type, String path, String id, DocumentData data
   propogateChanges(type, id, data, EChangeType.Delete);
 }
 
-Future<CollectionResponse<ObjectType>> getCollection<ObjectType>(String path, String id, String type, {String? query, skipCache: false}) async {
-  var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("$path/$id", query ?? ""))).catchError(((e) => generateFailedResponse(e)));
+Future<CollectionResponse<ObjectType>> getCollection<ObjectType>(String path, String id, String type, {String? query, skipCache: false, int? since}) async {
+  var useQuery = (query ?? "") + "&since${since != null ? since.toString() : 0}";
+  var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("$path/$id", useQuery))).catchError(((e) => generateFailedResponse(e)));
   if (response.statusCode == 200) {
     CollectionResponse<ObjectType> res = CollectionResponse<ObjectType>();
     res.useOffline = false;
@@ -166,7 +167,7 @@ Future<CollectionResponse<ObjectType>> getCollection<ObjectType>(String path, St
     return res;
   } else {
     Logger.root.fine("Failed get Collection result => ");
-    Logger.root.fine(Uri.parse(API().connection().getRequestUrl("$path/$id", query ?? "")));
+    Logger.root.fine(Uri.parse(API().connection().getRequestUrl("$path/$id", useQuery)));
     Logger.root.fine(response.body);
   }
 
