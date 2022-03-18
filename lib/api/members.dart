@@ -49,7 +49,18 @@ class MemberData implements DocumentData {
     private = readDataFromJson("private", json);
     preventTrusted = readDataFromJson("preventTrusted", json);
     preventFrontNotifs = readDataFromJson("preventsFrontNotifs", json);
-    info = readDataMapFromJson<Map<String, String>, String>("info", json);
+
+    if (json["info"] is Map<String, dynamic>) {
+      Map<String, dynamic> map = json["info"] as Map<String, dynamic>;
+      Map<String, String> infoFields = map.map<String, String>((key, value) {
+        if (value != null) {
+          return MapEntry(key, value as String);
+        }
+        return MapEntry(key, "");
+      });
+
+      info = infoFields;
+    }
   }
 }
 

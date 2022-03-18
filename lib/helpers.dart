@@ -86,19 +86,6 @@ List<T>? readDataArrayFromJson<T>(String propertyName, Map<String, dynamic> json
   return [];
 }
 
-T? readDataMapFromJson<T, K>(String propertyName, Map<String, dynamic> json) {
-  if (json[propertyName] is Map<String, dynamic>) {
-    Map<String, dynamic> map = json[propertyName] as Map<String, dynamic>;
-    return map.map((key, value) {
-      if (value != null) {
-        return MapEntry(key, value as K);
-      }
-      return MapEntry(key, K);
-    }) as T;
-  }
-  return json[propertyName] as T?;
-}
-
 List<Map<String, dynamic>> convertServerResponseToList(Response response) {
   List list = jsonDecode(response.body);
   return list.map((e) => e as Map<String, dynamic>).toList();

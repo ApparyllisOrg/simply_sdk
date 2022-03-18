@@ -88,7 +88,7 @@ class Privates extends Collection<PrivateData> {
 
     propogateChanges(type, documentId, values, EChangeType.Update);
 
-    var response = await SimplyHttpClient().patch(Uri.parse(API().connection().getRequestUrl('v1/private/${API().auth().getUid()}', "")), body: jsonEncode(jsonPayload)).catchError(((e) => generateFailedResponse(e)));
+    var response = await SimplyHttpClient().patch(Uri.parse(API().connection().getRequestUrl('v1/private/${API().auth().getUid()}', "")), body: jsonEncode(jsonPayload)).catchError(((e) => generateFailedResponse(e))).timeout(Duration(seconds: 10));
     if (response.statusCode == 200) {
       return;
     }

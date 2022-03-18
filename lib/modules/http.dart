@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -7,6 +8,7 @@ import '../simply_sdk.dart';
 http.Response generateFailedResponse(Exception e) {
   if (e is HttpException) Logger.root.fine("ERROR: " + e.uri.toString() + " => " + e.message);
   if (e is SocketException) Logger.root.fine("ERROR: " + e.address.toString() + " => " + e.message);
+  if (e is TimeoutException) Logger.root.fine("ERROR: Timeout: " + e.duration.toString() + " => " + (e.message ?? ""));
   return http.Response("", 503);
 }
 

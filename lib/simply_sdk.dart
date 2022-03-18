@@ -1,5 +1,6 @@
 library simply_sdk;
 
+import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:simply_sdk/api/automatedTimers.dart';
 import 'package:simply_sdk/api/comments.dart';
@@ -45,6 +46,10 @@ class API {
   }
 
   Future<void> initialize({APISettings? settings}) async {
+    FlutterError.onError = (FlutterErrorDetails details) {
+      reportError(details.exception, details.stack);
+    };
+
     await _cache.initialize("");
     _network.initialize();
     _socket.bindAuthChanged();
@@ -104,11 +109,11 @@ class API {
   PK pk() => _pk;
   Tokens tokens() => _tokens;
 
-  void reportError(e, StackTrace trace) {
+  void reportError(e, StackTrace? trace) {
     try {
       if (onErrorReported != null) onErrorReported!(e, trace);
     } catch (e) {}
   }
 
-  Function? onErrorReported;
+  void Function(Object, StackTrace?)? onErrorReported;
 }
