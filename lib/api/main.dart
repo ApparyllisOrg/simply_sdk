@@ -158,7 +158,7 @@ void deleteSimpleDocument(String type, String path, String id, DocumentData data
 }
 
 Future<CollectionResponse<ObjectType>> getCollection<ObjectType>(String path, String id, String type, {String? query, skipCache: false, int? since}) async {
-  var useQuery = (query ?? "") + "&since${since != null ? since.toString() : 0}";
+  var useQuery = (query ?? "") + "&since=${since != null ? since.toString() : 0}";
   var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("$path/$id", useQuery))).catchError(((e) => generateFailedResponse(e)));
   if (response.statusCode == 200) {
     CollectionResponse<ObjectType> res = CollectionResponse<ObjectType>();
