@@ -81,7 +81,7 @@ class Privates extends Collection<PrivateData> {
   }
 
   @override
-  void update(String documentId, PrivateData values) async {
+  Future<void> update(String documentId, PrivateData values) async {
     Map<String, dynamic> jsonPayload = values.toJson();
 
     API().cache().updateDocument(type, documentId, jsonPayload);
