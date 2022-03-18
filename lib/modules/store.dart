@@ -49,26 +49,15 @@ class Store {
     });
   }
 
+  // Edit this so that in the future we can use "since", in a way that takes in account deletions since
   Future<void> updateStore(int since) async {
-    List<Document<MemberData>> _updateMembers = await API().members().getAll(since: since);
-    List<Document<CustomFrontData>> _updateCfs = await API().customFronts().getAll(since: since);
-    List<Document<GroupData>> _updateGroups = await API().groups().getAll(since: since);
-    List<Document<FrontHistoryData>> _updateFronts = await API().frontHistory().getCurrentFronters(since: since);
+    _members = await API().members().getAll();
+    _customFronts = await API().customFronts().getAll();
+    _groups = await API().groups().getAll();
+    _fronters = await API().frontHistory().getCurrentFronters();
 
-    _updateMembers.forEach((element) {
-      updateDocumentInList(_members, element, EChangeType.Update);
-    });
-
-    _updateCfs.forEach((element) {
-      updateDocumentInList(_customFronts, element, EChangeType.Update);
-    });
-
-    _updateGroups.forEach((element) {
-      updateDocumentInList(_groups, element, EChangeType.Update);
-    });
-
-    _updateFronts.forEach((element) {
-      updateDocumentInList(_fronters, element, EChangeType.Update);
+    _fronters.forEach((element) {
+      _notifyFrontChange(element);
     });
   }
 
