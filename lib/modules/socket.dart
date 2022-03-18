@@ -99,7 +99,7 @@ class Socket {
     isDisconnected = false;
     try {
       String overrideIp = const String.fromEnvironment("WSSIP");
-      String socketUrl = overrideIp.isNotEmpty ? overrideIp : 'wss://api.apparyllis.com:8443';
+      String socketUrl = overrideIp.isNotEmpty ? overrideIp : 'wss://v2.apparyllis.com';
 
       if (kIsWeb) {
         _WebSocket = WebSocketChannel.connect(Uri.parse(socketUrl));
