@@ -231,8 +231,12 @@ class Users extends Collection<UserData> {
     return createFailResponseObject();
   }
 
-  Future<void> deleteAccount() async {
-    // Todo: Implement this
+  Future<RequestResponse> deleteAccount() async {
+    try {
+      var response = await SimplyHttpClient().delete(Uri.parse(API().connection().getRequestUrl("v1/user/${API().auth().getUid()}", "")), body: jsonEncode({"performDelete": true}));
+      return createResponseObject(response);
+    } catch (e) {}
+    return createFailResponseObject();
   }
 
   //Todo: Add generate user report
