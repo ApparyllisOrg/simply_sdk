@@ -18,8 +18,9 @@ class PKSyncSettings {
 class PKSyncAllSettings {
   final bool override;
   final bool add;
+  final bool privateByDefault;
 
-  PKSyncAllSettings(this.override, this.add);
+  PKSyncAllSettings(this.override, this.add, this.privateByDefault);
 }
 
 class PK {
@@ -102,7 +103,7 @@ class PK {
                 "useDisplayName": settings.useDisplayName,
                 "color": settings.syncColor,
               },
-              "syncOptions": {"add": allSettings.add, "overwrite": allSettings.override}
+              "syncOptions": {"add": allSettings.add, "overwrite": allSettings.override, "privateByDefault": allSettings.privateByDefault}
             }))
         .catchError(((e) => generateFailedResponse(e)));
     if (response.statusCode == 200) {
