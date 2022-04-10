@@ -167,6 +167,10 @@ class Socket {
   }
 
   void onReceivedData(event) async {
+    if (event == 'pong') {
+      return;
+    }
+
     Map<String, dynamic> data = jsonDecode(event, reviver: customDecode);
 
     String? msg = data["msg"];
