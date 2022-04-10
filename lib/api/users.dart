@@ -152,6 +152,10 @@ class UserData implements DocumentData {
     insertData("avatarUuid", avatarUuid, payload);
     insertData("avatarUrl", avatarUrl, payload);
     insertData("color", color, payload);
+
+    // Only insert patron for cache reasons
+    insertData("patron", patron, payload);
+
     insertDataMap("fields", fields, payload);
 
     return payload;
@@ -208,6 +212,7 @@ class Users extends Collection<UserData> {
   @override
   void update(String documentId, UserData values) {
     values.username = null;
+    values.patron = null;
     updateSimpleDocument(type, "v1/user", documentId, values);
   }
 
