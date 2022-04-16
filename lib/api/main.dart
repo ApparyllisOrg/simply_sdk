@@ -3,6 +3,10 @@ import 'dart:convert';
 import 'package:logging/logging.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:simply_sdk/api/automatedTimers.dart';
+import 'package:simply_sdk/api/being/medication.dart';
+import 'package:simply_sdk/api/being/medicationLogs.dart';
+import 'package:simply_sdk/api/being/symptomLogs.dart';
+import 'package:simply_sdk/api/being/symptoms.dart';
 import 'package:simply_sdk/api/comments.dart';
 import 'package:simply_sdk/api/customFronts.dart';
 import 'package:simply_sdk/api/frontHistory.dart';
@@ -48,6 +52,7 @@ class CollectionResponse<Type> {
 
 DocumentData jsonDataToDocumentData(String type, Map<String, dynamic> data) {
   switch (type) {
+    // Simply Plural
     case "Members":
     case "members":
       return MemberData()..constructFromJson(data);
@@ -75,58 +80,109 @@ DocumentData jsonDataToDocumentData(String type, Map<String, dynamic> data) {
     case "Comments":
     case "comments":
       return CommentData()..constructFromJson(data);
+
+    // Simply Being
+    case "medication":
+      return MedicationData()..constructFromJson(data);
+    case "medicationLogs":
+      return MedicationLogData()..constructFromJson(data);
+    case "symptoms":
+      return SymptomData()..constructFromJson(data);
+    case "symptomLogs":
+      return SymptomLogData()..constructFromJson(data);
   }
 
   return EmptyDocumentData();
 }
 
-void propogateChanges(String type, String id, dynamic data, EChangeType changeType) {
+void propogateChanges(
+    String type, String id, dynamic data, EChangeType changeType) {
   switch (type) {
+    // Simply Plural
     case "Members":
     case "members":
-      API().members().propogateChanges(Document(true, id, data, "Members"), changeType);
+      API()
+          .members()
+          .propogateChanges(Document(true, id, data, "Members"), changeType);
       break;
     case "CustomFronts":
     case "frontStatuses":
-      API().customFronts().propogateChanges(Document(true, id, data, "CustomFronts"), changeType);
+      API().customFronts().propogateChanges(
+          Document(true, id, data, "CustomFronts"), changeType);
       break;
     case "Groups":
     case "groups":
-      API().groups().propogateChanges(Document(true, id, data, "Groups"), changeType);
+      API()
+          .groups()
+          .propogateChanges(Document(true, id, data, "Groups"), changeType);
       break;
     case "Notes":
     case "notes":
-      API().notes().propogateChanges(Document(true, id, data, "Notes"), changeType);
+      API()
+          .notes()
+          .propogateChanges(Document(true, id, data, "Notes"), changeType);
       break;
     case "Polls":
     case "polls":
-      API().polls().propogateChanges(Document(true, id, data, "Polls"), changeType);
+      API()
+          .polls()
+          .propogateChanges(Document(true, id, data, "Polls"), changeType);
       break;
     case "RepeatedReminders":
     case "repeatedReminders":
-      API().repeatedTimers().propogateChanges(Document(true, id, data, "RepeatedReminders"), changeType);
+      API().repeatedTimers().propogateChanges(
+          Document(true, id, data, "RepeatedReminders"), changeType);
       break;
     case "AutomatedReminders":
     case "automatedReminders":
-      API().automatedTimers().propogateChanges(Document(true, id, data, "AutomatedReminders"), changeType);
+      API().automatedTimers().propogateChanges(
+          Document(true, id, data, "AutomatedReminders"), changeType);
       break;
     case "FrontHistory":
     case "frontHistory":
-      API().frontHistory().propogateChanges(Document(true, id, data, "FrontHistory"), changeType);
+      API().frontHistory().propogateChanges(
+          Document(true, id, data, "FrontHistory"), changeType);
       break;
     case "Comments":
     case "comments":
-      API().comments().propogateChanges(Document(true, id, data, "Comments"), changeType);
+      API()
+          .comments()
+          .propogateChanges(Document(true, id, data, "Comments"), changeType);
+      break;
+
+    // Simply Being
+    case "medication":
+      API()
+          .medication()
+          .propogateChanges(Document(true, id, data, "medication"), changeType);
+      break;
+    case "medicationLogs":
+      API().medicationLogs().propogateChanges(
+          Document(true, id, data, "medicationLogs"), changeType);
+      break;
+    case "symptoms":
+      API()
+          .symptoms()
+          .propogateChanges(Document(true, id, data, "symptoms"), changeType);
+      break;
+    case "symptomLogs":
+      API().symptomLogs().propogateChanges(
+          Document(true, id, data, "symptomLogs"), changeType);
       break;
   }
 }
 
-Document<T> addSimpleDocument<T>(String type, String path, DocumentData data, {String? overrideId}) {
+Document<T> addSimpleDocument<T>(String type, String path, DocumentData data,
+    {String? overrideId}) {
   String generatedId = ObjectId(clientMode: true).toHexString();
 
   Map<String, dynamic> jsonPayload = data.toJson();
 
-  API().network().request(new NetworkRequest(HttpRequestMethod.Post, "$path/${overrideId ?? generatedId}", DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
+  API().network().request(new NetworkRequest(
+      HttpRequestMethod.Post,
+      "$path/${overrideId ?? generatedId}",
+      DateTime.now().millisecondsSinceEpoch,
+      payload: jsonPayload));
 
   API().cache().insertDocument(type, generatedId, jsonPayload);
 
@@ -135,17 +191,21 @@ Document<T> addSimpleDocument<T>(String type, String path, DocumentData data, {S
   return Document(true, overrideId ?? generatedId, data as T, type);
 }
 
-void updateSimpleDocument(String type, String path, String documentId, DocumentData data) {
+void updateSimpleDocument(
+    String type, String path, String documentId, DocumentData data) {
   Map<String, dynamic> jsonPayload = data.toJson();
 
-  API().network().request(new NetworkRequest(HttpRequestMethod.Patch, "$path/$documentId", DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
+  API().network().request(new NetworkRequest(HttpRequestMethod.Patch,
+      "$path/$documentId", DateTime.now().millisecondsSinceEpoch,
+      payload: jsonPayload));
 
   API().cache().updateDocument(type, documentId, jsonPayload);
 
   propogateChanges(type, documentId, data, EChangeType.Update);
 }
 
-void deleteSimpleDocument(String type, String path, String id, DocumentData data) {
+void deleteSimpleDocument(
+    String type, String path, String id, DocumentData data) {
   API().network().request(new NetworkRequest(
         HttpRequestMethod.Delete,
         "$path/$id",
@@ -157,9 +217,14 @@ void deleteSimpleDocument(String type, String path, String id, DocumentData data
   propogateChanges(type, id, data, EChangeType.Delete);
 }
 
-Future<CollectionResponse<ObjectType>> getCollection<ObjectType>(String path, String id, String type, {String? query, skipCache: false, int? since}) async {
-  var useQuery = (query ?? "") + (since != null ? "&since=${since.toString()}" : "");
-  var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("$path/$id", useQuery))).catchError(((e) => generateFailedResponse(e)));
+Future<CollectionResponse<ObjectType>> getCollection<ObjectType>(
+    String path, String id, String type,
+    {String? query, skipCache: false, int? since}) async {
+  var useQuery =
+      (query ?? "") + (since != null ? "&since=${since.toString()}" : "");
+  var response = await SimplyHttpClient()
+      .get(Uri.parse(API().connection().getRequestUrl("$path/$id", useQuery)))
+      .catchError(((e) => generateFailedResponse(e)));
   if (response.statusCode == 200) {
     CollectionResponse<ObjectType> res = CollectionResponse<ObjectType>();
     res.useOffline = false;
@@ -167,7 +232,8 @@ Future<CollectionResponse<ObjectType>> getCollection<ObjectType>(String path, St
     return res;
   } else {
     Logger.root.fine("Failed get Collection result => ");
-    Logger.root.fine(Uri.parse(API().connection().getRequestUrl("$path/$id", useQuery)));
+    Logger.root.fine(
+        Uri.parse(API().connection().getRequestUrl("$path/$id", useQuery)));
     Logger.root.fine(response.body);
   }
 
@@ -191,11 +257,13 @@ Future<CollectionResponse<ObjectType>> getCollection<ObjectType>(String path, St
   return res;
 }
 
-void updateDocumentInList<ObjectType>(List<Document> documents, Document<ObjectType> updatedDocument, EChangeType changeType) {
+void updateDocumentInList<ObjectType>(List<Document> documents,
+    Document<ObjectType> updatedDocument, EChangeType changeType) {
   if (changeType == EChangeType.Delete) {
     documents.removeWhere((element) => element.id == updatedDocument.id);
   } else {
-    int index = documents.indexWhere((element) => element.id == updatedDocument.id);
+    int index =
+        documents.indexWhere((element) => element.id == updatedDocument.id);
     if (index >= 0) {
       documents[index].data.addAll(updatedDocument.data);
       documents[index].dataObject.constructFromJson(documents[index].data);
@@ -205,14 +273,23 @@ void updateDocumentInList<ObjectType>(List<Document> documents, Document<ObjectT
   }
 }
 
-Future<Document<DataType>> getSimpleDocument<DataType>(String id, String url, String type, DataType Function(DocumentResponse data) createDoc, DataType Function() creatEmptyeDoc) async {
-  var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("$url/$id", ""))).catchError(((e) => generateFailedResponse(e)));
+Future<Document<DataType>> getSimpleDocument<DataType>(
+    String id,
+    String url,
+    String type,
+    DataType Function(DocumentResponse data) createDoc,
+    DataType Function() creatEmptyeDoc) async {
+  var response = await SimplyHttpClient()
+      .get(Uri.parse(API().connection().getRequestUrl("$url/$id", "")))
+      .catchError(((e) => generateFailedResponse(e)));
   if (response.statusCode == 200) {
     DataType data = createDoc(DocumentResponse.fromString(response.body));
 
     Document<DataType> doc = Document<DataType>(true, id, data, type);
 
-    API().cache().updateToCache(type, id, (doc.dataObject as DocumentData).toJson());
+    API()
+        .cache()
+        .updateToCache(type, id, (doc.dataObject as DocumentData).toJson());
 
     return doc;
   }

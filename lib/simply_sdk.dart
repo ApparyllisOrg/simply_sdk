@@ -3,6 +3,9 @@ library simply_sdk;
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:simply_sdk/api/automatedTimers.dart';
+import 'package:simply_sdk/api/being/medication.dart';
+import 'package:simply_sdk/api/being/medicationLogs.dart';
+import 'package:simply_sdk/api/being/symptomLogs.dart';
 import 'package:simply_sdk/api/comments.dart';
 import 'package:simply_sdk/api/customFronts.dart';
 import 'package:simply_sdk/api/friends.dart';
@@ -24,6 +27,7 @@ import 'package:simply_sdk/modules/socket.dart';
 import 'package:simply_sdk/modules/store.dart';
 import 'package:simply_sdk/modules/subscriptions.dart';
 
+import 'api/being/symptoms.dart';
 import 'api/tokens.dart';
 import 'modules/network.dart';
 
@@ -64,7 +68,7 @@ class API {
   final DocumentSubscriptions _documentSubscriptions = DocumentSubscriptions();
   final RemoteConfig _remoteConfig = RemoteConfig();
 
-  // Declare Api globals
+  // Declare Simply Plural Api globals
   final AutomatedTimers _automatedTimers = AutomatedTimers();
   final Comments _comments = Comments();
   final CustomFronts _customFronts = CustomFronts();
@@ -82,6 +86,12 @@ class API {
   final PK _pk = PK();
   final Tokens _tokens = Tokens();
 
+  // Declare Simply Being Api globals
+  final Symptoms _symptoms = Symptoms();
+  final SymptomLogs _symptomLogs = SymptomLogs();
+  final Medication _medication = Medication();
+  final MedicationLogs _medicationLogs = MedicationLogs();
+
   // Declare global getters
   Auth auth() => _auth;
   Cache cache() => _cache;
@@ -91,7 +101,7 @@ class API {
   DocumentSubscriptions docSubscriptions() => _documentSubscriptions;
   RemoteConfig remoteConfig() => _remoteConfig;
 
-  // Declare Api global getters
+  // Declare Simply Plural Api global getters
   AutomatedTimers automatedTimers() => _automatedTimers;
   Comments comments() => _comments;
   CustomFronts customFronts() => _customFronts;
@@ -108,6 +118,12 @@ class API {
   Store store() => _store;
   PK pk() => _pk;
   Tokens tokens() => _tokens;
+
+  // Declare Simply Being Api global getters
+  Symptoms symptoms() => _symptoms;
+  SymptomLogs symptomLogs() => _symptomLogs;
+  Medication medication() => _medication;
+  MedicationLogs medicationLogs() => _medicationLogs;
 
   void reportError(e, StackTrace? trace) {
     try {
