@@ -29,6 +29,7 @@ import 'package:simply_sdk/modules/subscriptions.dart';
 
 import 'api/being/symptoms.dart';
 import 'api/tokens.dart';
+import 'modules/beingStore.dart';
 import 'modules/network.dart';
 
 class APISettings {}
@@ -91,6 +92,7 @@ class API {
   final SymptomLogs _symptomLogs = SymptomLogs();
   final Medication _medication = Medication();
   final MedicationLogs _medicationLogs = MedicationLogs();
+  final BeingStore _beingStore = BeingStore();
 
   // Declare global getters
   Auth auth() => _auth;
@@ -124,6 +126,7 @@ class API {
   SymptomLogs symptomLogs() => _symptomLogs;
   Medication medication() => _medication;
   MedicationLogs medicationLogs() => _medicationLogs;
+  BeingStore beingStore() => _beingStore;
 
   void reportError(e, StackTrace? trace) {
     try {
