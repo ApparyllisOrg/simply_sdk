@@ -59,7 +59,7 @@ class Symptoms extends Collection<SymptomData> {
   @override
   Future<List<Document<SymptomData>>> getAll({String? uid, int? since}) async {
     var collection = await getCollection<SymptomData>(
-        "being/v1/symptom", "", type,
+        "being/v1/symptoms", "", type,
         since: since);
 
     List<Document<SymptomData>> cfs = collection.data
