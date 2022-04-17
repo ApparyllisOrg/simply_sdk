@@ -24,7 +24,7 @@ import 'package:simply_sdk/modules/cache.dart';
 import 'package:simply_sdk/modules/config.dart';
 import 'package:simply_sdk/modules/connection.dart';
 import 'package:simply_sdk/modules/socket.dart';
-import 'package:simply_sdk/modules/store.dart';
+import 'package:simply_sdk/modules/pluralStore.dart';
 import 'package:simply_sdk/modules/subscriptions.dart';
 
 import 'api/being/symptoms.dart';
@@ -82,7 +82,7 @@ class API {
   final RepeatedTimers _repeatedTimers = RepeatedTimers();
   final Storage _storage = Storage();
   final Users _users = Users();
-  final Store _store = Store();
+  final PluralStore _pluralStore = PluralStore();
   final PK _pk = PK();
   final Tokens _tokens = Tokens();
 
@@ -115,7 +115,7 @@ class API {
   RepeatedTimers repeatedTimers() => _repeatedTimers;
   Storage storage() => _storage;
   Users users() => _users;
-  Store store() => _store;
+  PluralStore pluralStore() => _pluralStore;
   PK pk() => _pk;
   Tokens tokens() => _tokens;
 

@@ -76,6 +76,36 @@ class SymptomLogs extends Collection<SymptomLogData> {
     return cfs;
   }
 
+  Future<List<Document<SymptomLogData>>> getLogEntriesInRange(
+      int start, int end) async {
+    var collection = await getCollection<SymptomLogData>(
+        "being/v1/logs/symptoms", "", type,
+        query: "startTime=$start&endTime=$end", skipCache: true);
+
+    List<Document<SymptomLogData>> fronts = collection.data
+        .map<Document<SymptomLogData>>((e) => Document(e["exists"], e["id"],
+            SymptomLogData()..constructFromJson(e["content"]), type))
+        .toList();
+    if (!collection.useOffline) {
+      return getLogEntriesInRangeOffline(start, end);
+    }
+    return fronts;
+  }
+
+  Future<List<Document<SymptomLogData>>> getLogEntriesInRangeOffline(
+      int start, int end) async {
+    return API().cache().getDocumentsWhere<SymptomLogData>(type,
+        (Document<SymptomLogData> data) {
+      int time = data.dataObject.time ?? 0;
+
+      if (time >= start && time <= end) return true;
+
+      return false;
+    },
+        (Map<String, dynamic> data) =>
+            SymptomLogData()..constructFromJson(data));
+  }
+
   @override
   void update(String documentId, DocumentData values) {
     updateSimpleDocument(type, "being/v1/logs/symptom", documentId, values);
