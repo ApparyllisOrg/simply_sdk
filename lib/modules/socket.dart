@@ -19,6 +19,16 @@ class Socket {
   WebSocketChannel? _WebSocket;
   late String uniqueConnectionId;
 
+  List<void Function(String type, String msg)?> _OnMsgReceived = [];
+
+  void cancelListenForMessages(void Function(String type, String msg) func) {
+    _OnMsgReceived.remove(func);
+  }
+
+  void listenForMessages(void Function(String type, String msg) func) {
+    _OnMsgReceived.add(func);
+  }
+
   void bindAuthChanged() {
     API().auth().onAuthChange.add(authChanged);
   }
@@ -29,7 +39,8 @@ class Socket {
 
   void sendAuthentication() {
     try {
-      sendSocketData(jsonEncode({"op": "authenticate", "token": API().auth().getToken()}));
+      sendSocketData(
+          jsonEncode({"op": "authenticate", "token": API().auth().getToken()}));
     } catch (e) {}
   }
 
@@ -99,12 +110,19 @@ class Socket {
     isDisconnected = false;
     try {
       String overrideIp = const String.fromEnvironment("WSSIP");
-      String socketUrl = overrideIp.isNotEmpty ? overrideIp : 'wss://v2.apparyllis.com';
+      String socketUrl =
+          overrideIp.isNotEmpty ? overrideIp : 'wss://v2.apparyllis.com';
 
       if (kIsWeb) {
         _WebSocket = WebSocketChannel.connect(Uri.parse(socketUrl));
       } else {
-        _IOSocket = await io.WebSocket.connect(socketUrl, compression: io.CompressionOptions(enabled: true, serverNoContextTakeover: true, clientNoContextTakeover: true, serverMaxWindowBits: 15, clientMaxWindowBits: 15));
+        _IOSocket = await io.WebSocket.connect(socketUrl,
+            compression: io.CompressionOptions(
+                enabled: true,
+                serverNoContextTakeover: true,
+                clientNoContextTakeover: true,
+                serverMaxWindowBits: 15,
+                clientMaxWindowBits: 15));
         _IOSocket!.pingInterval = Duration(seconds: 3);
       }
 
@@ -185,8 +203,19 @@ class Socket {
         API().cache().clearTypeCache(data["target"]);
       }
       for (Map<String, dynamic> result in data["results"]) {
-        propogateChanges(data["target"], result["id"], jsonDataToDocumentData(data["target"], result["content"] as Map<String, dynamic>), operationToChangeType(result["operationType"]));
+        propogateChanges(
+            data["target"],
+            result["id"],
+            jsonDataToDocumentData(
+                data["target"], result["content"] as Map<String, dynamic>),
+            operationToChangeType(result["operationType"]));
       }
+    } else {
+      _OnMsgReceived.forEach((element) {
+        if (element != null) {
+          element(msg, data["data"] ?? "");
+        }
+      });
     }
   }
 }
