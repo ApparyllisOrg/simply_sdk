@@ -12,7 +12,8 @@ class PKSyncSettings {
   final bool syncDesc;
   final bool syncColor;
 
-  PKSyncSettings(this.syncName, this.useDisplayName, this.syncAvatar, this.syncPronouns, this.syncDesc, this.syncColor);
+  PKSyncSettings(this.syncName, this.useDisplayName, this.syncAvatar,
+      this.syncPronouns, this.syncDesc, this.syncColor);
 }
 
 class PKSyncAllSettings {
@@ -24,9 +25,13 @@ class PKSyncAllSettings {
 }
 
 class PK {
-  Future<RequestResponse> syncMemberToPk(String memberId, PKSyncSettings settings, String pkToken) async {
+  Future<RequestResponse> syncMemberToPk(
+      String memberId, PKSyncSettings settings, String pkToken) async {
     var response = await SimplyHttpClient()
-        .patch(Uri.parse(API().connection().getRequestUrl('v1/integrations/pluralkit/sync/member/$memberId', "direction=push")),
+        .patch(
+            Uri.parse(API().connection().getRequestUrl(
+                'v1/integrations/pluralkit/sync/member/$memberId',
+                "direction=push")),
             body: jsonEncode({
               "member": memberId,
               "token": pkToken,
@@ -46,9 +51,13 @@ class PK {
     return RequestResponse(false, response.body);
   }
 
-  Future<RequestResponse> syncMemberFromPk(String memberId, PKSyncSettings settings, String pkToken) async {
+  Future<RequestResponse> syncMemberFromPk(
+      String memberId, PKSyncSettings settings, String pkToken) async {
     var response = await SimplyHttpClient()
-        .patch(Uri.parse(API().connection().getRequestUrl('v1/integrations/pluralkit/sync/member/$memberId', "direction=pull")),
+        .patch(
+            Uri.parse(API().connection().getRequestUrl(
+                'v1/integrations/pluralkit/sync/member/$memberId',
+                "direction=pull")),
             body: jsonEncode({
               "member": memberId,
               "token": pkToken,
@@ -68,9 +77,12 @@ class PK {
     return RequestResponse(false, response.body);
   }
 
-  Future<RequestResponse> syncMembersToPk(PKSyncSettings settings, PKSyncAllSettings allSettings, String pkToken) async {
+  Future<RequestResponse> syncMembersToPk(PKSyncSettings settings,
+      PKSyncAllSettings allSettings, String pkToken) async {
     var response = await SimplyHttpClient()
-        .patch(Uri.parse(API().connection().getRequestUrl('v1/integrations/pluralkit/sync/members', "direction=push")),
+        .patch(
+            Uri.parse(API().connection().getRequestUrl(
+                'v1/integrations/pluralkit/sync/members', "direction=push")),
             body: jsonEncode({
               "token": pkToken,
               "options": {
@@ -81,7 +93,11 @@ class PK {
                 "useDisplayName": settings.useDisplayName,
                 "color": settings.syncColor,
               },
-              "syncOptions": {"add": allSettings.add, "overwrite": allSettings.override}
+              "syncOptions": {
+                "add": allSettings.add,
+                "overwrite": allSettings.override,
+                "privateByDefault": allSettings.privateByDefault
+              }
             }))
         .catchError(((e) => generateFailedResponse(e)));
     if (response.statusCode == 200) {
@@ -90,9 +106,12 @@ class PK {
     return RequestResponse(false, response.body);
   }
 
-  Future<RequestResponse> syncMembersFromPk(PKSyncSettings settings, PKSyncAllSettings allSettings, String pkToken) async {
+  Future<RequestResponse> syncMembersFromPk(PKSyncSettings settings,
+      PKSyncAllSettings allSettings, String pkToken) async {
     var response = await SimplyHttpClient()
-        .patch(Uri.parse(API().connection().getRequestUrl('v1/integrations/pluralkit/sync/members', "direction=pull")),
+        .patch(
+            Uri.parse(API().connection().getRequestUrl(
+                'v1/integrations/pluralkit/sync/members', "direction=pull")),
             body: jsonEncode({
               "token": pkToken,
               "options": {
@@ -103,7 +122,11 @@ class PK {
                 "useDisplayName": settings.useDisplayName,
                 "color": settings.syncColor,
               },
-              "syncOptions": {"add": allSettings.add, "overwrite": allSettings.override, "privateByDefault": allSettings.privateByDefault}
+              "syncOptions": {
+                "add": allSettings.add,
+                "overwrite": allSettings.override,
+                "privateByDefault": allSettings.privateByDefault
+              }
             }))
         .catchError(((e) => generateFailedResponse(e)));
     if (response.statusCode == 200) {

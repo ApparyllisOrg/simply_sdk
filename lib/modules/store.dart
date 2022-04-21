@@ -32,10 +32,18 @@ class Store {
     _fronters = await API().frontHistory().getCurrentFronters();
 
     // Emit initial changes
-    if (_members.isNotEmpty) API().members().propogateChanges(_members.first, EChangeType.Update);
-    if (_customFronts.isNotEmpty) API().customFronts().propogateChanges(_customFronts.first, EChangeType.Update);
-    if (_groups.isNotEmpty) API().groups().propogateChanges(_groups.first, EChangeType.Update);
-    if (_fronters.isNotEmpty) API().frontHistory().propogateChanges(_fronters.first, EChangeType.Update);
+    if (_members.isNotEmpty)
+      API().members().propogateChanges(_members.first, EChangeType.Update);
+    if (_customFronts.isNotEmpty)
+      API()
+          .customFronts()
+          .propogateChanges(_customFronts.first, EChangeType.Update);
+    if (_groups.isNotEmpty)
+      API().groups().propogateChanges(_groups.first, EChangeType.Update);
+    if (_fronters.isNotEmpty)
+      API()
+          .frontHistory()
+          .propogateChanges(_fronters.first, EChangeType.Update);
 
     API().members().listenForChanges(memberChanged);
     API().customFronts().listenForChanges(customFrontChanged);
@@ -76,32 +84,42 @@ class Store {
   }
 
   void memberChanged(Document<dynamic> data, EChangeType changeType) {
-    updateDocumentInList<MemberData>(_members, data as Document<MemberData>, changeType);
+    updateDocumentInList<MemberData>(
+        _members, data as Document<MemberData>, changeType);
   }
 
   void customFrontChanged(Document<dynamic> data, EChangeType changeType) {
-    updateDocumentInList<CustomFrontData>(_customFronts, data as Document<CustomFrontData>, changeType);
+    updateDocumentInList<CustomFrontData>(
+        _customFronts, data as Document<CustomFrontData>, changeType);
   }
 
   void groupChanged(Document<dynamic> data, EChangeType changeType) {
-    updateDocumentInList<GroupData>(_groups, data as Document<GroupData>, changeType);
+    updateDocumentInList<GroupData>(
+        _groups, data as Document<GroupData>, changeType);
   }
 
-  void frontHistoryChanged(Document<FrontHistoryData> data, EChangeType changeType) {
+  void frontHistoryChanged(
+      Document<FrontHistoryData> data, EChangeType changeType) {
     int index = _fronters.indexWhere((element) => element.id == data.id);
 
-    Document<FrontHistoryData>? previousFhDoc = index >= 0 ? _fronters[index] : null;
+    Document<FrontHistoryData>? previousFhDoc =
+        index >= 0 ? _fronters[index] : null;
 
     // Create a new instance so that when "updateDocumentInList", we still have the original values
     // Also copy the data, because we need a deep copy but dart doesn't have deep copy so we need to manually do it
     if (previousFhDoc != null) {
-      previousFhDoc = Document<FrontHistoryData>(true, previousFhDoc.id, FrontHistoryData.copyFrom(previousFhDoc.dataObject), previousFhDoc.type);
+      previousFhDoc = Document<FrontHistoryData>(
+          true,
+          previousFhDoc.id,
+          FrontHistoryData.copyFrom(previousFhDoc.dataObject),
+          previousFhDoc.type);
     }
 
     Document<FrontHistoryData> fhDoc = data;
 
     updateDocumentInList<FrontHistoryData>(_fronters, data, changeType);
-    _fronters.removeWhere((element) => (element.dataObject.live ?? true) == false);
+    _fronters
+        .removeWhere((element) => (element.dataObject.live ?? true) == false);
 
     if (previousFhDoc != null) {
       // If we're no longer a live fronter, notify of front change
@@ -120,7 +138,8 @@ class Store {
           _notifyFrontChange(fhDoc);
         }
       }
-    } else if (previousFhDoc != null && (previousFhDoc.dataObject.live ?? false) == true) {
+    } else if (previousFhDoc != null &&
+        (previousFhDoc.dataObject.live ?? false) == true) {
       _notifyFrontChange(fhDoc);
     } else if (previousFhDoc == null && data.dataObject.live == true) {
       _notifyFrontChange(fhDoc);
@@ -159,7 +178,8 @@ class Store {
   }
 
   Document<FrontHistoryData>? getFronterById(String id) {
-    int index = _fronters.indexWhere((element) => element.dataObject.member == id);
+    int index =
+        _fronters.indexWhere((element) => element.dataObject.member == id);
     if (index >= 0) return _fronters[index];
     return null;
   }
@@ -168,7 +188,8 @@ class Store {
     _frontChanges.add(func);
   }
 
-  void cancelListenForFrontChanges(void Function(Document<FrontHistoryData>) func) {
+  void cancelListenForFrontChanges(
+      void Function(Document<FrontHistoryData>) func) {
     _frontChanges.remove(func);
   }
 
