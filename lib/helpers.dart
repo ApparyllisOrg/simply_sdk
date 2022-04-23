@@ -107,5 +107,8 @@ class NameData {
 }
 
 Iterable<NameData> getNameData<T>(List<Document<T>> documents) {
-  return documents.map((e) => NameData(e.id, e.data["name"] ?? "Error"));
+  return documents.map((e) => NameData(
+        e.data["name"] ?? "Error",
+        e.id,
+      ));
 }
