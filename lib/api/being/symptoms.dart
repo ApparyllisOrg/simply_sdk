@@ -7,7 +7,6 @@ import 'package:simply_sdk/types/document.dart';
 class SymptomData implements DocumentData {
   String? name;
   String? desc;
-  String? color;
   String? group;
 
   @override
@@ -16,7 +15,6 @@ class SymptomData implements DocumentData {
 
     insertData("name", name, payload);
     insertData("desc", desc, payload);
-    insertData("color", color, payload);
     insertData("group", group, payload);
 
     return payload;
@@ -26,7 +24,6 @@ class SymptomData implements DocumentData {
   constructFromJson(Map<String, dynamic> json) {
     name = readDataFromJson("name", json);
     desc = readDataFromJson("desc", json);
-    color = readDataFromJson("color", json);
     group = readDataFromJson("group", json);
   }
 }

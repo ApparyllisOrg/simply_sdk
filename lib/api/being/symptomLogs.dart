@@ -5,7 +5,7 @@ import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
 
 class SymptomLogData implements DocumentData {
-  String? symptom;
+  String? ref;
   String? note;
   int? severity;
   int? time;
@@ -14,7 +14,7 @@ class SymptomLogData implements DocumentData {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
 
-    insertData("symptom", symptom, payload);
+    insertData("ref", ref, payload);
     insertData("note", note, payload);
     insertData("severity", severity, payload);
     insertData("time", time, payload);
@@ -24,7 +24,7 @@ class SymptomLogData implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    symptom = readDataFromJson("symptom", json);
+    ref = readDataFromJson("ref", json);
     note = readDataFromJson("note", json);
     severity = readDataFromJson("severity", json);
     time = readDataFromJson("time", json);
