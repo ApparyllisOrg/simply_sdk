@@ -102,8 +102,8 @@ class BeingStore {
   }
 
   void symptomLogChanged(Document<dynamic> data, EChangeType changeType) {
-    updateDocumentInList<MedicationData>(
-        _symptomLogs, data as Document<MedicationData>, changeType);
+    updateDocumentInList<SymptomLogData>(
+        _symptomLogs, data as Document<SymptomLogData>, changeType);
   }
 
   void medicationLogChanged(Document<dynamic> data, EChangeType changeType) {
