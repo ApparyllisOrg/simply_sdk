@@ -82,14 +82,15 @@ class MedicationLogs extends Collection<MedicationLogData> {
         "being/v1/logs/medications", "", type,
         query: "startTime=$start&endTime=$end", skipCache: true);
 
-    List<Document<MedicationLogData>> fronts = collection.data
+    List<Document<MedicationLogData>> logs = collection.data
         .map<Document<MedicationLogData>>((e) => Document(e["exists"], e["id"],
             MedicationLogData()..constructFromJson(e["content"]), type))
         .toList();
     if (!collection.useOffline) {
-      return getLogEntriesInRangeOffline(start, end);
+      API().cache().clearTypeCache(type);
+      API().cache().cacheListOfDocuments(logs);
     }
-    return fronts;
+    return logs;
   }
 
   Future<List<Document<MedicationLogData>>> getLogEntriesInRangeOffline(
