@@ -21,7 +21,7 @@ class RemoteConfig {
       int lastSync = _sharedPrefs.getInt(_configSync) ?? 0;
       int now = DateTime.now().millisecondsSinceEpoch;
 
-      int diff = now.compareTo(lastSync);
+      int diff = now - lastSync;
 
       // Check every 12 hours
       if (diff > 1000 * 60 * 60 * 12) {
@@ -53,8 +53,10 @@ class RemoteConfig {
   }
 
   void _loadConfig() {
-    if (_sharedPrefs.containsKey(_remoteConfig) && _sharedPrefs.getString(_remoteConfig)!.isNotEmpty) {
-      _currentConfig = jsonDecode(_sharedPrefs.getString(_remoteConfig)!) as Map<String, dynamic>;
+    if (_sharedPrefs.containsKey(_remoteConfig) &&
+        _sharedPrefs.getString(_remoteConfig)!.isNotEmpty) {
+      _currentConfig = jsonDecode(_sharedPrefs.getString(_remoteConfig)!)
+          as Map<String, dynamic>;
     } else {
       _currentConfig = Map<String, dynamic>();
     }
