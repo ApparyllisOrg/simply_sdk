@@ -288,10 +288,15 @@ class Friends {
           "v1/friends/requests/incoming", "", "Users",
           skipCache: true);
 
-      List<Document<UserData>> friends = collection.data
-          .map<Document<UserData>>((e) => Document(e["exists"], e["id"],
-              UserData()..constructFromJson(e["content"]), "friends"))
-          .toList();
+      List<Document<UserData>> friends = [];
+      collection.data.forEach((element) {
+        Document<UserData> doc = Document(element["exists"], element["id"],
+            UserData()..constructFromJson(element["content"]), "friends");
+        String? msg = element["content"]["message"];
+        if (msg != null) {
+          doc.data["message"] = msg;
+        }
+      });
 
       return friends;
     });
@@ -303,10 +308,15 @@ class Friends {
           "v1/friends/requests/outgoing", "", "Users",
           skipCache: true);
 
-      List<Document<UserData>> friends = collection.data
-          .map<Document<UserData>>((e) => Document(e["exists"], e["id"],
-              UserData()..constructFromJson(e["content"]), "friends"))
-          .toList();
+      List<Document<UserData>> friends = [];
+      collection.data.forEach((element) {
+        Document<UserData> doc = Document(element["exists"], element["id"],
+            UserData()..constructFromJson(element["content"]), "friends");
+        String? msg = element["content"]["message"];
+        if (msg != null) {
+          doc.data["message"] = msg;
+        }
+      });
 
       return friends;
     });
