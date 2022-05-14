@@ -319,4 +319,14 @@ class Users extends Collection<UserData> {
     } catch (e) {}
     return createFailResponseObject();
   }
+
+  Future<RequestResponse> exportData() async {
+    try {
+      var response = await SimplyHttpClient().post(Uri.parse(API()
+          .connection()
+          .getRequestUrl("v1/user/${API().auth().getUid()}/export", "")));
+      return createResponseObject(response);
+    } catch (e) {}
+    return createFailResponseObject();
+  }
 }
