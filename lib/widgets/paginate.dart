@@ -12,6 +12,7 @@ class Paginate extends StatefulWidget {
   final Function getLoader;
   final Function emptyView;
   final int stepSize;
+  final double spacingHeight;
   final String sortBy;
   final int sortOrder;
   // Ex: v1/fronters
@@ -19,7 +20,19 @@ class Paginate extends StatefulWidget {
   final List<Widget> prefixWidgets;
   final DocumentConstructor documentConstructor;
 
-  const Paginate({Key? key, required this.itemBuilder, this.stepSize = 10, required this.getLoader, required this.emptyView, required this.sortBy, required this.sortOrder, required this.url, required this.documentConstructor, required this.prefixWidgets}) : super(key: key);
+  const Paginate(
+      {Key? key,
+      required this.itemBuilder,
+      this.stepSize = 10,
+      required this.getLoader,
+      required this.emptyView,
+      required this.sortBy,
+      required this.sortOrder,
+      required this.url,
+      required this.documentConstructor,
+      required this.prefixWidgets,
+      this.spacingHeight = 10})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => PaginateState();
@@ -50,8 +63,13 @@ class PaginateState extends State<Paginate> {
     getNextBatch();
   }
 
-  static Future<Response> getNextPage(String url, String sortBy, int sortOrder, int stepSize, int currentOffset, {String? additionalQuery}) async {
-    return SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('$url', 'sortBy=$sortBy&sortOrder=$sortOrder&limit=$stepSize&start=$currentOffset&sortUp=true&${additionalQuery ?? ""}'))).catchError((e) => generateFailedResponse(e));
+  static Future<Response> getNextPage(
+      String url, String sortBy, int sortOrder, int stepSize, int currentOffset,
+      {String? additionalQuery}) async {
+    return SimplyHttpClient()
+        .get(Uri.parse(API().connection().getRequestUrl('$url',
+            'sortBy=$sortBy&sortOrder=$sortOrder&limit=$stepSize&start=$currentOffset&sortUp=true&${additionalQuery ?? ""}')))
+        .catchError((e) => generateFailedResponse(e));
   }
 
   void getNextBatch() async {
@@ -64,13 +82,17 @@ class PaginateState extends State<Paginate> {
       setState(() {});
     }
 
-    var response = await getNextPage(widget.url, widget.sortBy, widget.sortOrder, widget.stepSize, currentOffset);
+    var response = await getNextPage(widget.url, widget.sortBy,
+        widget.sortOrder, widget.stepSize, currentOffset);
     if (response.statusCode == 200 && response.body.isNotEmpty) {
-      List<Map<String, dynamic>> responseDocs = (jsonDecode(response.body) as List<dynamic>).cast<Map<String, dynamic>>();
+      List<Map<String, dynamic>> responseDocs =
+          (jsonDecode(response.body) as List<dynamic>)
+              .cast<Map<String, dynamic>>();
 
       List<Document> newDocs = [];
       responseDocs.forEach((element) {
-        newDocs.add(widget.documentConstructor(element["id"], element["content"]));
+        newDocs
+            .add(widget.documentConstructor(element["id"], element["content"]));
       });
 
       docs.addAll(newDocs);
@@ -105,7 +127,7 @@ class PaginateState extends State<Paginate> {
       var doc = docs[i];
       children.add(widget.itemBuilder(context, i, doc));
       children.add(SizedBox(
-        height: 10,
+        height: widget.spacingHeight,
       ));
     }
 
