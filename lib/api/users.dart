@@ -111,11 +111,13 @@ class GenerateUserReportDataFMem implements DocumentData {
 class GeneratedUserReportData implements DocumentData {
   String? url;
   int? createdAt;
+  GenerateUserReportData? usedSettings;
 
   @override
   constructFromJson(Map<String, dynamic> json) {
     url = readDataFromJson("url", json);
     createdAt = readDataFromJson("createdAt", json);
+    usedSettings = readDataFromJson("usedSettings", json);
   }
 
   @override
@@ -124,6 +126,7 @@ class GeneratedUserReportData implements DocumentData {
 
     insertData("url", url, payload);
     insertData("createdAt", createdAt, payload);
+    insertData("usedSettings", usedSettings, payload);
 
     return payload;
   }
