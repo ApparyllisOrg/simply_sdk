@@ -51,7 +51,8 @@ class GenerateUserReportDataFh implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    throw UnimplementedError("This is a to-server data object only, we never retrieve this from the server.");
+    throw UnimplementedError(
+        "This is a to-server data object only, we never retrieve this from the server.");
   }
 
   @override
@@ -73,7 +74,8 @@ class GenerateUserReportDataCf implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    throw UnimplementedError("This is a to-server data object only, we never retrieve this from the server.");
+    throw UnimplementedError(
+        "This is a to-server data object only, we never retrieve this from the server.");
   }
 
   @override
@@ -91,7 +93,8 @@ class GenerateUserReportDataFMem implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    throw UnimplementedError("This is a to-server data object only, we never retrieve this from the server.");
+    throw UnimplementedError(
+        "This is a to-server data object only, we never retrieve this from the server.");
   }
 
   @override
@@ -114,7 +117,8 @@ class GenerateUserReportData implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    throw UnimplementedError("This is a to-server data object only, we never retrieve this from the server.");
+    throw UnimplementedError(
+        "This is a to-server data object only, we never retrieve this from the server.");
   }
 
   @override
@@ -200,7 +204,12 @@ class Users extends Collection<UserData> {
 
   @override
   Future<Document<UserData>> get(String id) async {
-    return getSimpleDocument(id, "v1/user", "users", (DocumentResponse data) => UserData()..constructFromJson(data.content), () => UserData());
+    return getSimpleDocument(
+        id,
+        "v1/user",
+        "users",
+        (DocumentResponse data) => UserData()..constructFromJson(data.content),
+        () => UserData());
   }
 
   @deprecated
@@ -218,19 +227,29 @@ class Users extends Collection<UserData> {
 
   Future<RequestResponse> setUsername(String newUsername, String userId) async {
     try {
-      var response = await SimplyHttpClient().patch(Uri.parse(API().connection().getRequestUrl("v1/user/username/$userId", "")), body: jsonEncode({"username": newUsername}));
+      var response = await SimplyHttpClient().patch(
+          Uri.parse(
+              API().connection().getRequestUrl("v1/user/username/$userId", "")),
+          body: jsonEncode({"username": newUsername}));
 
       return createResponseObject(response);
     } catch (e) {}
     return createFailResponseObject();
   }
 
-  Future<RequestResponse> generateUserReport(GenerateUserReportData data) async {
-    if (data.customFronts == null && data.frontHistory == null && data.members == null) {
-      return RequestResponse(false, "You must specify at least one generation type");
+  Future<RequestResponse> generateUserReport(
+      GenerateUserReportData data) async {
+    if (data.customFronts == null &&
+        data.frontHistory == null &&
+        data.members == null) {
+      return RequestResponse(
+          false, "You must specify at least one generation type");
     }
     try {
-      var response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/user/generateReport", "")), body: jsonEncode(data.toJson()));
+      var response = await SimplyHttpClient().post(
+          Uri.parse(
+              API().connection().getRequestUrl("v1/user/generateReport", "")),
+          body: jsonEncode(data.toJson()));
       return createResponseObject(response);
     } catch (e) {}
     return createFailResponseObject();
@@ -238,11 +257,24 @@ class Users extends Collection<UserData> {
 
   Future<RequestResponse> deleteAccount() async {
     try {
-      var response = await SimplyHttpClient().delete(Uri.parse(API().connection().getRequestUrl("v1/user/${API().auth().getUid()}", "")), body: jsonEncode({"performDelete": true}));
+      var response = await SimplyHttpClient().delete(
+          Uri.parse(API()
+              .connection()
+              .getRequestUrl("v1/user/${API().auth().getUid()}", "")),
+          body: jsonEncode({"performDelete": true}));
       return createResponseObject(response);
     } catch (e) {}
     return createFailResponseObject();
   }
 
-  //Todo: Add generate user report
+  Future<RequestResponse> deleteUserReport(String reportId) async {
+    try {
+      var response = await SimplyHttpClient().delete(Uri.parse(API()
+          .connection()
+          .getRequestUrl(
+              "v1/user/${API().auth().getUid()}/report/$reportId", "")));
+      return createResponseObject(response);
+    } catch (e) {}
+    return createFailResponseObject();
+  }
 }
