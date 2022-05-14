@@ -296,6 +296,7 @@ class Friends {
         if (msg != null) {
           doc.data["message"] = msg;
         }
+        friends.add(doc);
       });
 
       return friends;
@@ -316,6 +317,7 @@ class Friends {
         if (msg != null) {
           doc.data["message"] = msg;
         }
+        friends.add(doc);
       });
 
       return friends;
