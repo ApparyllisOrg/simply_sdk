@@ -51,8 +51,11 @@ class GenerateUserReportDataFh implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    throw UnimplementedError(
-        "This is a to-server data object only, we never retrieve this from the server.");
+    start = readDataFromJson("start", json);
+    end = readDataFromJson("end", json);
+    includesMembers = readDataFromJson("includesMembers", json);
+    includesCfs = readDataFromJson("includesCfs", json);
+    privacyLevel = readDataFromJson("privacyLevel", json);
   }
 
   @override
@@ -74,8 +77,7 @@ class GenerateUserReportDataCf implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    throw UnimplementedError(
-        "This is a to-server data object only, we never retrieve this from the server.");
+    privacyLevel = readDataFromJson("privacyLevel", json);
   }
 
   @override
@@ -93,8 +95,8 @@ class GenerateUserReportDataFMem implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    throw UnimplementedError(
-        "This is a to-server data object only, we never retrieve this from the server.");
+    includeCustomFields = readDataFromJson("includeCustomFields", json);
+    privacyLevel = readDataFromJson("privacyLevel", json);
   }
 
   @override
@@ -117,7 +119,11 @@ class GeneratedUserReportData implements DocumentData {
   constructFromJson(Map<String, dynamic> json) {
     url = readDataFromJson("url", json);
     createdAt = readDataFromJson("createdAt", json);
-    usedSettings = readDataFromJson("usedSettings", json);
+
+    if (json["usedSettings"] != null) {
+      usedSettings = GenerateUserReportData()
+        ..constructFromJson(json["usedSettings"] as Map<String, dynamic>);
+    }
   }
 
   @override
@@ -141,8 +147,20 @@ class GenerateUserReportData implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    throw UnimplementedError(
-        "This is a to-server data object only, we never retrieve this from the server.");
+    if (json["frontHistory"] != null) {
+      frontHistory = GenerateUserReportDataFh()
+        ..constructFromJson(json["frontHistory"] as Map<String, dynamic>);
+    }
+
+    if (json["customFronts"] != null) {
+      customFronts = GenerateUserReportDataCf()
+        ..constructFromJson(json["customFronts"] as Map<String, dynamic>);
+    }
+
+    if (json["members"] != null) {
+      members = GenerateUserReportDataFMem()
+        ..constructFromJson(json["members"] as Map<String, dynamic>);
+    }
   }
 
   @override

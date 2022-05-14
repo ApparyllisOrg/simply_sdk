@@ -21,7 +21,10 @@ String updateTypeToString(EUpdateType type) {
   return "";
 }
 
-dynamic getHeader() => {"Content-Type": "application/json", "Authorization": API().auth().getToken()};
+dynamic getHeader() => {
+      "Content-Type": "application/json",
+      "Authorization": API().auth().getToken()
+    };
 
 dynamic customEncode(var obj) {
   if (obj is DateTime) {
@@ -33,7 +36,8 @@ Object? customDecode(dynamic key, dynamic value) {
   return value;
 }
 
-void insertData(String propertyName, dynamic dataToInsert, Map<String, dynamic> dataObject) {
+void insertData(String propertyName, dynamic dataToInsert,
+    Map<String, dynamic> dataObject) {
   if (dataToInsert != null) {
     if (dataToInsert is DocumentData) {
       dataObject[propertyName] = dataToInsert.toJson();
@@ -43,7 +47,8 @@ void insertData(String propertyName, dynamic dataToInsert, Map<String, dynamic> 
   }
 }
 
-void insertDataArray(String propertyName, List<dynamic>? dataToInsert, Map<String, dynamic> dataObject) {
+void insertDataArray(String propertyName, List<dynamic>? dataToInsert,
+    Map<String, dynamic> dataObject) {
   if (dataToInsert != null) {
     List<dynamic> list = [];
     dataToInsert.forEach((value) {
@@ -57,7 +62,8 @@ void insertDataArray(String propertyName, List<dynamic>? dataToInsert, Map<Strin
   }
 }
 
-void insertDataMap(String propertyName, Map<String, dynamic>? dataToInsert, Map<String, dynamic> dataObject) {
+void insertDataMap(String propertyName, Map<String, dynamic>? dataToInsert,
+    Map<String, dynamic> dataObject) {
   if (dataToInsert != null) {
     Map<String, dynamic> map = {};
     dataToInsert.forEach((key, value) {
@@ -78,7 +84,8 @@ T? readDataFromJson<T>(String propertyName, Map<String, dynamic> json) {
   return json[propertyName] as T?;
 }
 
-List<T>? readDataArrayFromJson<T>(String propertyName, Map<String, dynamic> json) {
+List<T>? readDataArrayFromJson<T>(
+    String propertyName, Map<String, dynamic> json) {
   if (json[propertyName] is List) {
     List<dynamic> array = json[propertyName] as List<dynamic>;
     return array.cast<T>();
