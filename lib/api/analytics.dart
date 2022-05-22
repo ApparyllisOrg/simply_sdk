@@ -8,7 +8,7 @@ import '../simply_sdk.dart';
 
 class AnalyticsValueData implements DocumentData {
   String? id;
-  double? value;
+  int? value;
 
   @override
   constructFromJson(Map<String, dynamic> json) {
@@ -77,13 +77,13 @@ class AnalyticsDurationsData implements DocumentData {
 }
 
 class AnalyticsData implements DocumentData {
-  AnalyticsTimingsData? timigs;
+  AnalyticsTimingsData? timings;
   AnalyticsDurationsData? values;
 
   @override
   constructFromJson(Map<String, dynamic> json) {
     if (json["timings"] != null) {
-      timigs = AnalyticsTimingsData()
+      timings = AnalyticsTimingsData()
         ..constructFromJson(json["timings"] as Map<String, dynamic>);
     }
 
