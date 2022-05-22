@@ -57,6 +57,7 @@ class AnalyticsDurationsData implements DocumentData {
   List<AnalyticsValueData>? averages;
   List<AnalyticsValueData>? maxes;
   List<AnalyticsValueData>? mins;
+  List<AnalyticsValueData>? nums;
 
   @override
   constructFromJson(Map<String, dynamic> json) {
@@ -67,6 +68,8 @@ class AnalyticsDurationsData implements DocumentData {
     maxes = readDataTypeArrayFromJson<AnalyticsValueData>("maxes", json,
         ((data) => AnalyticsValueData()..constructFromJson(data)));
     mins = readDataTypeArrayFromJson<AnalyticsValueData>("mins", json,
+        ((data) => AnalyticsValueData()..constructFromJson(data)));
+    nums = readDataTypeArrayFromJson<AnalyticsValueData>("nums", json,
         ((data) => AnalyticsValueData()..constructFromJson(data)));
   }
 
