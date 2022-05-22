@@ -100,11 +100,11 @@ class AnalyticsData implements DocumentData {
 }
 
 class Analytics {
-  Future<AnalyticsData?> get() {
+  Future<AnalyticsData?> get(int start, int end) {
     return Future(() async {
       var response = await SimplyHttpClient()
-          .get(Uri.parse(
-              API().connection().getRequestUrl('v1/user/analytics', "")))
+          .get(Uri.parse(API().connection().getRequestUrl(
+              'v1/user/analytics?startTime=$start&endTime=$end', "")))
           .catchError(((e) => generateFailedResponse(e)));
 
       var jsonResponse = jsonDecode(response.body);
