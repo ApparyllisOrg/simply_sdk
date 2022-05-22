@@ -93,6 +93,19 @@ List<T>? readDataArrayFromJson<T>(
   return [];
 }
 
+List<T>? readDataTypeArrayFromJson<T>(
+    String propertyName,
+    Map<String, dynamic> json,
+    T Function(Map<String, dynamic> data) createData) {
+  if (json[propertyName] is List) {
+    List<dynamic> array = json[propertyName] as List<dynamic>;
+    return array
+        .map<T>((entry) => createData(entry as Map<String, dynamic>))
+        .toList();
+  }
+  return [];
+}
+
 List<Map<String, dynamic>> convertServerResponseToList(Response response) {
   List list = jsonDecode(response.body);
   return list.map((e) => e as Map<String, dynamic>).toList();
