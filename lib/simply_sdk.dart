@@ -2,6 +2,7 @@ library simply_sdk;
 
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
+import 'package:simply_sdk/api/analytics.dart';
 import 'package:simply_sdk/api/automatedTimers.dart';
 import 'package:simply_sdk/api/comments.dart';
 import 'package:simply_sdk/api/customFronts.dart';
@@ -81,6 +82,7 @@ class API {
   final Store _store = Store();
   final PK _pk = PK();
   final Tokens _tokens = Tokens();
+  final Analytics _analytics = Analytics();
 
   // Declare global getters
   Auth auth() => _auth;
@@ -108,6 +110,7 @@ class API {
   Store store() => _store;
   PK pk() => _pk;
   Tokens tokens() => _tokens;
+  Analytics analytics() => _analytics;
 
   void reportError(e, StackTrace? trace) {
     try {
