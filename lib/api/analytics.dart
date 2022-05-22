@@ -104,7 +104,7 @@ class Analytics {
     return Future(() async {
       var response = await SimplyHttpClient()
           .get(Uri.parse(API().connection().getRequestUrl(
-              'v1/user/analytics?startTime=$start&endTime=$end', "")))
+              'v1/user/analytics', "startTime=$start&endTime=$end")))
           .catchError(((e) => generateFailedResponse(e)));
 
       var jsonResponse = jsonDecode(response.body);
