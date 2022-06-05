@@ -76,7 +76,7 @@ class Friends {
 
       return createResponseObject(response);
     } catch (e) {
-      Logger.root.fine("sendFriendRequest failed with: " + e.toString());
+      API().debug().logFine("sendFriendRequest failed with: " + e.toString());
     }
     return createFailResponseObject();
   }
@@ -95,7 +95,9 @@ class Friends {
 
         return createResponseObject(response);
       } catch (e) {
-        Logger.root.fine("respondToFriendRequest failed with: " + e.toString());
+        API()
+            .debug()
+            .logFine("respondToFriendRequest failed with: " + e.toString());
       }
       return createFailResponseObject();
     });
@@ -112,7 +114,9 @@ class Friends {
 
         return createResponseObject(response);
       } catch (e) {
-        Logger.root.fine("cancelFriendRequest failed with: " + e.toString());
+        API()
+            .debug()
+            .logFine("cancelFriendRequest failed with: " + e.toString());
       }
       return createFailResponseObject();
     });
@@ -129,7 +133,7 @@ class Friends {
 
         return createResponseObject(response);
       } catch (e) {
-        Logger.root.fine("removeFriend failed with: " + e.toString());
+        API().debug().logFine("removeFriend failed with: " + e.toString());
       }
       return createFailResponseObject();
     });
@@ -164,7 +168,9 @@ class Friends {
           return [];
         }
       } catch (e) {
-        Logger.root.fine("getFriendsFrontValues failed with: " + e.toString());
+        API()
+            .debug()
+            .logFine("getFriendsFrontValues failed with: " + e.toString());
       }
       return [];
     });
@@ -187,7 +193,9 @@ class Friends {
           return null;
         }
       } catch (e) {
-        Logger.root.fine("getFriendFrontValues failed with: " + e.toString());
+        API()
+            .debug()
+            .logFine("getFriendFrontValues failed with: " + e.toString());
       }
       return null;
     });
@@ -213,7 +221,7 @@ class Friends {
           return null;
         }
       } catch (e) {
-        Logger.root.fine("getFriendFronters failed with: " + e.toString());
+        API().debug().logFine("getFriendFronters failed with: " + e.toString());
       }
       return null;
     });

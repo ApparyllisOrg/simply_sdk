@@ -21,6 +21,7 @@ import 'package:simply_sdk/modules/auth.dart';
 import 'package:simply_sdk/modules/cache.dart';
 import 'package:simply_sdk/modules/config.dart';
 import 'package:simply_sdk/modules/connection.dart';
+import 'package:simply_sdk/modules/debug.dart';
 import 'package:simply_sdk/modules/socket.dart';
 import 'package:simply_sdk/modules/store.dart';
 import 'package:simply_sdk/modules/subscriptions.dart';
@@ -51,6 +52,7 @@ class API {
       reportError(details.exception, details.stack);
     };
 
+    await _debug.init();
     await _cache.initialize("");
     _network.initialize();
     _socket.bindAuthChanged();
@@ -64,6 +66,7 @@ class API {
   final Socket _socket = Socket();
   final DocumentSubscriptions _documentSubscriptions = DocumentSubscriptions();
   final RemoteConfig _remoteConfig = RemoteConfig();
+  final Debug _debug = Debug();
 
   // Declare Api globals
   final AutomatedTimers _automatedTimers = AutomatedTimers();
@@ -92,6 +95,7 @@ class API {
   Socket socket() => _socket;
   DocumentSubscriptions docSubscriptions() => _documentSubscriptions;
   RemoteConfig remoteConfig() => _remoteConfig;
+  Debug debug() => _debug;
 
   // Declare Api global getters
   AutomatedTimers automatedTimers() => _automatedTimers;

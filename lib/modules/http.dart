@@ -6,9 +6,17 @@ import 'package:logging/logging.dart';
 import '../simply_sdk.dart';
 
 http.Response generateFailedResponse(Exception e) {
-  if (e is HttpException) Logger.root.fine("ERROR: " + e.uri.toString() + " => " + e.message);
-  if (e is SocketException) Logger.root.fine("ERROR: " + e.address.toString() + " => " + e.message);
-  if (e is TimeoutException) Logger.root.fine("ERROR: Timeout: " + e.duration.toString() + " => " + (e.message ?? ""));
+  if (e is HttpException)
+    API().debug().logFine("ERROR: " + e.uri.toString() + " => " + e.message);
+  if (e is SocketException)
+    API()
+        .debug()
+        .logFine("ERROR: " + e.address.toString() + " => " + e.message);
+  if (e is TimeoutException)
+    API().debug().logFine("ERROR: Timeout: " +
+        e.duration.toString() +
+        " => " +
+        (e.message ?? ""));
   return http.Response("", 503);
 }
 
@@ -28,8 +36,11 @@ class SimplyHttpClient extends http.BaseClient {
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) {
-    Logger.root.fine("HTTP => ${request.method} => ${request.url}");
-    request.headers.addAll({"Authorization": API().auth().getToken() ?? "", "content-type": "application/json; charset=UTF-8"});
+    API().debug().logFine("HTTP => ${request.method} => ${request.url}");
+    request.headers.addAll({
+      "Authorization": API().auth().getToken() ?? "",
+      "content-type": "application/json; charset=UTF-8"
+    });
     return _httpClient.send(request);
   }
 }

@@ -65,12 +65,14 @@ class Cache {
   }
 
   bool hasDataInCacheForType(String type) {
-    return _cache.containsKey(type) && (_cache[type] as Map<String, dynamic>).length > 0;
+    return _cache.containsKey(type) &&
+        (_cache[type] as Map<String, dynamic>).length > 0;
   }
 
   void cacheListOfDocuments(List<Document<dynamic>> docs) {
     docs.forEach((element) {
-      updateToCache(element.type, element.id, (element.dataObject as DocumentData).toJson());
+      updateToCache(element.type, element.id,
+          (element.dataObject as DocumentData).toJson());
     });
     markDirty();
   }
@@ -105,9 +107,10 @@ class Cache {
       try {
         dirty = false;
         // Save cache
-        html.window.localStorage["db"] = jsonEncode(_cache, toEncodable: customEncode);
+        html.window.localStorage["db"] =
+            jsonEncode(_cache, toEncodable: customEncode);
 
-        Logger.root.fine("Saved cache");
+        API().debug().logFine("Saved cache");
       } catch (e) {
         dirty = true;
         API().reportError(e, StackTrace.current);
@@ -146,7 +149,10 @@ class Cache {
     await Future(() async {
       if (kIsWeb) {
         bool dbExists = html.window.localStorage.containsKey("db");
-        _cache = dbExists ? jsonDecode(html.window.localStorage["db"] ?? "", reviver: customDecode) as Map<String, dynamic> : Map<String, dynamic>();
+        _cache = dbExists
+            ? jsonDecode(html.window.localStorage["db"] ?? "",
+                reviver: customDecode) as Map<String, dynamic>
+            : Map<String, dynamic>();
       } else {
         try {
           var dir = await getApplicationDocumentsDirectory();
@@ -159,7 +165,8 @@ class Cache {
           if (exists) {
             String jsonObjectString = await file.readAsString();
             if (jsonObjectString.isNotEmpty) {
-              _cache = ((jsonDecode(jsonObjectString, reviver: customDecode)) ?? Map<String, dynamic>()) as Map<String, dynamic>;
+              _cache = ((jsonDecode(jsonObjectString, reviver: customDecode)) ??
+                  Map<String, dynamic>()) as Map<String, dynamic>;
             }
           } else {
             _cache = Map<String, dynamic>();
@@ -217,14 +224,18 @@ class Cache {
     return null;
   }
 
-  List<Document<ObjectType>> getDocumentsWhere<ObjectType>(String type, bool Function(Document<ObjectType>) where, ObjectType Function(Map<String, dynamic>) toDocumentData) {
+  List<Document<ObjectType>> getDocumentsWhere<ObjectType>(
+      String type,
+      bool Function(Document<ObjectType>) where,
+      ObjectType Function(Map<String, dynamic>) toDocumentData) {
     List<Document<ObjectType>> docs = [];
 
     Map<String, dynamic> collection = getTypeCache(type);
 
     collection.forEach((key, value) {
       ObjectType dataType = toDocumentData(value as Map<String, dynamic>);
-      Document<ObjectType> tempDoc = Document<ObjectType>(true, key, dataType, type);
+      Document<ObjectType> tempDoc =
+          Document<ObjectType>(true, key, dataType, type);
       if (where(tempDoc)) {
         docs.add(tempDoc);
       }
