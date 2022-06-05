@@ -178,7 +178,9 @@ class Socket {
 
   void onData(event) {
     gotHello = true;
-    API().debug().logFine("[SOCKET DATA RECEIVED] " + event.toString());
+    API()
+        .debug()
+        .logFine("[SOCKET DATA RECEIVED] " + event.toString(), bSave: false);
     if (event is String && event.isNotEmpty) {
       onReceivedData(event);
     }

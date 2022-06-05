@@ -36,10 +36,10 @@ class Debug {
     await load();
   }
 
-  void logFine(String msg) {
+  void logFine(String msg, {bool bSave = true}) {
     Logger.root.fine(msg);
     _bDirty = true;
-    _logs.add("[${getLogTime()}] FINE: $msg");
+    if (bSave) _logs.add("[${getLogTime()}] FINE: $msg");
   }
 
   void logInfo(String msg) {
@@ -83,7 +83,8 @@ class Debug {
           if (exists) {
             String jsonObjectString = await file.readAsString();
             if (jsonObjectString.isNotEmpty) {
-              _logs = ((jsonDecode(jsonObjectString)) ?? []) as List<String>;
+              _logs = (((jsonDecode(jsonObjectString)) ?? []) as List<dynamic>)
+                  .cast<String>();
             }
           } else {
             _logs = [];
