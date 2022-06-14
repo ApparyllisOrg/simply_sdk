@@ -184,23 +184,31 @@ void deleteSimpleDocument(
 
 Future<CollectionResponse<ObjectType>> getCollection<ObjectType>(
     String path, String id, String type,
-    {String? query, skipCache: false, int? since}) async {
+    {String? query,
+    skipCache: false,
+    int? since,
+    bool bForceOffline = false}) async {
   var useQuery =
       (query ?? "") + (since != null ? "&since=${since.toString()}" : "");
-  var response = await SimplyHttpClient()
-      .get(Uri.parse(API().connection().getRequestUrl("$path/$id", useQuery)))
-      .catchError(((e) => generateFailedResponse(e)));
+  var response = bForceOffline
+      ? Response("", 503)
+      : await SimplyHttpClient()
+          .get(Uri.parse(
+              API().connection().getRequestUrl("$path/$id", useQuery)))
+          .catchError(((e) => generateFailedResponse(e)));
   if (response.statusCode == 200) {
     CollectionResponse<ObjectType> res = CollectionResponse<ObjectType>();
     res.useOffline = false;
     res.data = convertServerResponseToList(response);
     return res;
   } else {
-    API().debug().logFine("Failed get Collection result => ");
-    API()
-        .debug()
-        .logFine(API().connection().getRequestUrl("$path/$id", useQuery));
-    API().debug().logFine(response.body);
+    if (!bForceOffline) {
+      API().debug().logFine("Failed get Collection result => ");
+      API()
+          .debug()
+          .logFine(API().connection().getRequestUrl("$path/$id", useQuery));
+      API().debug().logFine(response.body);
+    }
   }
 
   if (!skipCache) {

@@ -24,12 +24,15 @@ class Store {
   List<void Function(Document<FrontHistoryData>)> _frontChanges = [];
   List<Function?> _onInitialized = [];
 
-  Future<void> initializeStore() async {
+  Future<void> initializeStore({bool bForceOffline = false}) async {
     clearStore();
-    _members = await API().members().getAll();
-    _customFronts = await API().customFronts().getAll();
-    _groups = await API().groups().getAll();
-    _fronters = await API().frontHistory().getCurrentFronters();
+    _members = await API().members().getAll(bForceOffline: bForceOffline);
+    _customFronts =
+        await API().customFronts().getAll(bForceOffline: bForceOffline);
+    _groups = await API().groups().getAll(bForceOffline: bForceOffline);
+    _fronters = await API()
+        .frontHistory()
+        .getCurrentFronters(bForceOffline: bForceOffline);
 
     // Emit initial changes
     if (_members.isNotEmpty)

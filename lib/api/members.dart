@@ -75,20 +75,35 @@ class Members extends Collection<MemberData> {
 
   @override
   void delete(String documentId, Document originalDocument) {
-    deleteSimpleDocument(type, "v1/member", documentId, originalDocument.dataObject);
-    API().store().getFronters().removeWhere((element) => element.dataObject.member == documentId);
+    deleteSimpleDocument(
+        type, "v1/member", documentId, originalDocument.dataObject);
+    API()
+        .store()
+        .getFronters()
+        .removeWhere((element) => element.dataObject.member == documentId);
   }
 
   @override
   Future<Document<MemberData>> get(String id) async {
-    return getSimpleDocument(id, "v1/member/${API().auth().getUid()}", type, (data) => MemberData()..constructFromJson(data.content), () => MemberData());
+    return getSimpleDocument(
+        id,
+        "v1/member/${API().auth().getUid()}",
+        type,
+        (data) => MemberData()..constructFromJson(data.content),
+        () => MemberData());
   }
 
   @override
-  Future<List<Document<MemberData>>> getAll({String? uid, int? since}) async {
-    var collection = await getCollection<MemberData>("v1/members/${(uid ?? API().auth().getUid()) ?? ""}", "", type, since: since);
+  Future<List<Document<MemberData>>> getAll(
+      {String? uid, int? since, bool bForceOffline = false}) async {
+    var collection = await getCollection<MemberData>(
+        "v1/members/${(uid ?? API().auth().getUid()) ?? ""}", "", type,
+        since: since, bForceOffline: bForceOffline);
 
-    List<Document<MemberData>> members = collection.data.map<Document<MemberData>>((e) => Document(e["exists"], e["id"], MemberData()..constructFromJson(e["content"]), type)).toList();
+    List<Document<MemberData>> members = collection.data
+        .map<Document<MemberData>>((e) => Document(e["exists"], e["id"],
+            MemberData()..constructFromJson(e["content"]), type))
+        .toList();
     if (!collection.useOffline) {
       if ((uid ?? API().auth().getUid()) == API().auth().getUid()) {
         API().cache().clearTypeCache(type);

@@ -54,20 +54,32 @@ class Groups extends Collection<GroupData> {
 
   @override
   void delete(String documentId, Document originalDocument) {
-    deleteSimpleDocument(type, "v1/group", documentId, originalDocument.dataObject);
+    deleteSimpleDocument(
+        type, "v1/group", documentId, originalDocument.dataObject);
     recursiveDeleteGroup(documentId);
   }
 
   @override
   Future<Document<GroupData>> get(String id) async {
-    return getSimpleDocument(id, "v1/group/${API().auth().getUid()}", type, (data) => GroupData()..constructFromJson(data.content), () => GroupData());
+    return getSimpleDocument(
+        id,
+        "v1/group/${API().auth().getUid()}",
+        type,
+        (data) => GroupData()..constructFromJson(data.content),
+        () => GroupData());
   }
 
   @override
-  Future<List<Document<GroupData>>> getAll({String? uid, int? since}) async {
-    var collection = await getCollection<GroupData>("v1/groups/${uid ?? API().auth().getUid()}", "", type, since: since);
+  Future<List<Document<GroupData>>> getAll(
+      {String? uid, int? since, bool bForceOffline = false}) async {
+    var collection = await getCollection<GroupData>(
+        "v1/groups/${uid ?? API().auth().getUid()}", "", type,
+        since: since, bForceOffline: bForceOffline);
 
-    List<Document<GroupData>> groups = collection.data.map<Document<GroupData>>((e) => Document(e["exists"], e["id"], GroupData()..constructFromJson(e["content"]), type)).toList();
+    List<Document<GroupData>> groups = collection.data
+        .map<Document<GroupData>>((e) => Document(e["exists"], e["id"],
+            GroupData()..constructFromJson(e["content"]), type))
+        .toList();
     if (!collection.useOffline) {
       if ((uid ?? API().auth().getUid()) == API().auth().getUid()) {
         API().cache().clearTypeCache(type);
@@ -83,7 +95,10 @@ class Groups extends Collection<GroupData> {
   }
 
   void recursiveDeleteGroup(String groupId) {
-    Iterable<Document<GroupData>> groups = List.from(API().store().getAllGroups().where((element) => element.dataObject.parent == groupId));
+    Iterable<Document<GroupData>> groups = List.from(API()
+        .store()
+        .getAllGroups()
+        .where((element) => element.dataObject.parent == groupId));
     groups.forEach((element) {
       delete(element.id, element);
     });

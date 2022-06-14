@@ -67,12 +67,18 @@ class FrontHistory extends Collection<FrontHistoryData> {
 
   @override
   void delete(String documentId, Document originalDocument) {
-    deleteSimpleDocument(type, "v1/frontHistory", documentId, originalDocument.dataObject);
+    deleteSimpleDocument(
+        type, "v1/frontHistory", documentId, originalDocument.dataObject);
   }
 
   @override
   Future<Document<FrontHistoryData>> get(String id) async {
-    return getSimpleDocument(id, "v1/frontHistory/${API().auth().getUid()}", type, (data) => FrontHistoryData()..constructFromJson(data.content), () => FrontHistoryData());
+    return getSimpleDocument(
+        id,
+        "v1/frontHistory/${API().auth().getUid()}",
+        type,
+        (data) => FrontHistoryData()..constructFromJson(data.content),
+        () => FrontHistoryData());
   }
 
   @deprecated
@@ -81,40 +87,72 @@ class FrontHistory extends Collection<FrontHistoryData> {
     throw UnimplementedError();
   }
 
-  Future<List<Document<FrontHistoryData>>> getFrontHistoryInRange(int start, int end) async {
-    var collection = await getCollection<FrontHistoryData>("v1/frontHistory/${API().auth().getUid()}", "", type, query: "startTime=$start&endTime=$end", skipCache: true);
+  Future<List<Document<FrontHistoryData>>> getFrontHistoryInRange(
+      int start, int end) async {
+    var collection = await getCollection<FrontHistoryData>(
+        "v1/frontHistory/${API().auth().getUid()}", "", type,
+        query: "startTime=$start&endTime=$end", skipCache: true);
 
-    List<Document<FrontHistoryData>> fronts = collection.data.map<Document<FrontHistoryData>>((e) => Document(e["exists"], e["id"], FrontHistoryData()..constructFromJson(e["content"]), type)).toList();
+    List<Document<FrontHistoryData>> fronts = collection.data
+        .map<Document<FrontHistoryData>>((e) => Document(e["exists"], e["id"],
+            FrontHistoryData()..constructFromJson(e["content"]), type))
+        .toList();
     if (!collection.useOffline) {
-      List<Document<FrontHistoryData>> fhNotLive = API().cache().getDocumentsWhere<FrontHistoryData>(type, (doc) => (doc.dataObject.live ?? false) == false, (data) => FrontHistoryData()..constructFromJson(data));
-      fhNotLive.forEach((element) => API().cache().removeFromCache(type, element.id));
+      List<Document<FrontHistoryData>> fhNotLive = API()
+          .cache()
+          .getDocumentsWhere<FrontHistoryData>(
+              type,
+              (doc) => (doc.dataObject.live ?? false) == false,
+              (data) => FrontHistoryData()..constructFromJson(data));
+      fhNotLive.forEach(
+          (element) => API().cache().removeFromCache(type, element.id));
       API().cache().cacheListOfDocuments(fronts);
     }
     return fronts;
   }
 
-  Future<List<Document<FrontHistoryData>>> getFrontHistoryInRangeOffline(int start, int end) async {
-    return API().cache().getDocumentsWhere<FrontHistoryData>(type, (Document<FrontHistoryData> data) {
+  Future<List<Document<FrontHistoryData>>> getFrontHistoryInRangeOffline(
+      int start, int end) async {
+    return API().cache().getDocumentsWhere<FrontHistoryData>(type,
+        (Document<FrontHistoryData> data) {
       int entryStart = data.dataObject.startTime ?? 0;
       int? entryEnd = data.dataObject.endTime;
       if (entryEnd == null) return false;
 
-      if (entryStart > start || entryEnd > end) return true; // starts after start, ends after end
-      if (entryStart < start || entryEnd > start) return true; //start before start, ends after start
-      if (entryStart > start || entryEnd < end) return true; // start after start, ends before end
-      if (entryStart < end || entryEnd > end) return true; //Starts before end, ends after end
+      if (entryStart > start || entryEnd > end)
+        return true; // starts after start, ends after end
+      if (entryStart < start || entryEnd > start)
+        return true; //start before start, ends after start
+      if (entryStart > start || entryEnd < end)
+        return true; // start after start, ends before end
+      if (entryStart < end || entryEnd > end)
+        return true; //Starts before end, ends after end
 
       return false;
-    }, (Map<String, dynamic> data) => FrontHistoryData()..constructFromJson(data));
+    },
+        (Map<String, dynamic> data) =>
+            FrontHistoryData()..constructFromJson(data));
   }
 
-  Future<List<Document<FrontHistoryData>>> getCurrentFronters({int? since}) async {
-    var collection = await getCollection<FrontHistoryData>("v1/fronters", "", type, since: since);
+  Future<List<Document<FrontHistoryData>>> getCurrentFronters(
+      {int? since, bool bForceOffline = false}) async {
+    var collection = await getCollection<FrontHistoryData>(
+        "v1/fronters", "", type,
+        since: since, bForceOffline: bForceOffline);
 
-    List<Document<FrontHistoryData>> fronts = collection.data.map<Document<FrontHistoryData>>((e) => Document(e["exists"], e["id"], FrontHistoryData()..constructFromJson(e["content"]), type)).toList();
+    List<Document<FrontHistoryData>> fronts = collection.data
+        .map<Document<FrontHistoryData>>((e) => Document(e["exists"], e["id"],
+            FrontHistoryData()..constructFromJson(e["content"]), type))
+        .toList();
     if (!collection.useOffline) {
-      List<Document<FrontHistoryData>> fhLive = API().cache().getDocumentsWhere<FrontHistoryData>(type, (doc) => doc.dataObject.live ?? false, (data) => FrontHistoryData()..constructFromJson(data));
-      fhLive.forEach((element) => API().cache().removeFromCache(type, element.id));
+      List<Document<FrontHistoryData>> fhLive = API()
+          .cache()
+          .getDocumentsWhere<FrontHistoryData>(
+              type,
+              (doc) => doc.dataObject.live ?? false,
+              (data) => FrontHistoryData()..constructFromJson(data));
+      fhLive.forEach(
+          (element) => API().cache().removeFromCache(type, element.id));
       API().cache().cacheListOfDocuments(fronts);
     }
 
