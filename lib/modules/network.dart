@@ -65,6 +65,7 @@ class NetworkRequest {
 class Network {
   Network() {}
 
+  bool initialized = false;
   List<NetworkRequest> _pendingRequests = [];
   int numFailedTicks = 0;
 
@@ -94,7 +95,35 @@ class Network {
         .toList();
   }
 
+  Timer? saveTimer;
+  bool dirty = false;
+  void markDirty() {
+    dirty = true;
+    if (saveTimer?.isActive == true) saveTimer?.cancel();
+    saveTimer = Timer(Duration(milliseconds: 10), saveFromTimer);
+  }
+
+  void saveFromTimer() {
+    if (!initialized) {
+      markDirty();
+      return;
+    }
+
+    if (!dirty) {
+      return;
+    }
+
+    save();
+  }
+
   Future<void> save() async {
+    if (!initialized) {
+      markDirty();
+      return;
+    }
+
+    dirty = false;
+
     try {
       List<String> convertedData = [];
       _pendingRequests.forEach((element) {
@@ -145,6 +174,7 @@ class Network {
           _pendingRequests = [];
         }
 
+        initialized = true;
         print("Loaded pending requests");
       } catch (e) {
         API().reportError(e, StackTrace.current);
@@ -263,5 +293,6 @@ class Network {
 
   void request(NetworkRequest request) {
     _pendingRequests.add(request);
+    markDirty();
   }
 }
