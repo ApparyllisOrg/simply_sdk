@@ -195,6 +195,7 @@ Future<CollectionResponse<ObjectType>> getCollection<ObjectType>(
       : await SimplyHttpClient()
           .get(Uri.parse(
               API().connection().getRequestUrl("$path/$id", useQuery)))
+          .timeout(Duration(seconds: 10))
           .catchError(((e) => generateFailedResponse(e)));
   if (response.statusCode == 200) {
     CollectionResponse<ObjectType> res = CollectionResponse<ObjectType>();
