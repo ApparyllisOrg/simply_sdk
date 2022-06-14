@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:http/http.dart';
 import 'package:logging/logging.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:simply_sdk/api/automatedTimers.dart';
@@ -243,10 +244,13 @@ Future<Document<DataType>> getSimpleDocument<DataType>(
     String url,
     String type,
     DataType Function(DocumentResponse data) createDoc,
-    DataType Function() creatEmptyeDoc) async {
-  var response = await SimplyHttpClient()
-      .get(Uri.parse(API().connection().getRequestUrl("$url/$id", "")))
-      .catchError(((e) => generateFailedResponse(e)));
+    DataType Function() creatEmptyeDoc,
+    {bool bForceOffline = false}) async {
+  var response = bForceOffline
+      ? Response("", 503)
+      : await SimplyHttpClient()
+          .get(Uri.parse(API().connection().getRequestUrl("$url/$id", "")))
+          .catchError(((e) => generateFailedResponse(e)));
   if (response.statusCode == 200) {
     DataType data = createDoc(DocumentResponse.fromString(response.body));
 
