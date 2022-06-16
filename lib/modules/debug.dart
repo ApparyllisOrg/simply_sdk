@@ -67,9 +67,10 @@ class Debug {
       if (kIsWeb) {
         bool dbExists = html.window.localStorage.containsKey("logs");
         _logs = dbExists
-            ? jsonDecode(
+            ? (jsonDecode(
                 html.window.localStorage["logs"] ?? "",
-              ) as List<String>
+              ) as List<dynamic>)
+                .cast<String>()
             : [];
       } else {
         try {
