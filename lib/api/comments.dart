@@ -12,6 +12,7 @@ class CommentData implements DocumentData {
   String? text;
   String? documentId;
   String? collection;
+  bool? supportMarkdown;
 
   @override
   Map<String, dynamic> toJson() {
@@ -21,6 +22,7 @@ class CommentData implements DocumentData {
     insertData("text", text, payload);
     insertData("documentId", documentId, payload);
     insertData("collection", collection, payload);
+    insertData("supportMarkdown", supportMarkdown, payload);
 
     return payload;
   }
@@ -31,6 +33,7 @@ class CommentData implements DocumentData {
     text = readDataFromJson("text", json);
     documentId = readDataFromJson("documentId", json);
     collection = readDataFromJson("collection", json);
+    supportMarkdown = readDataFromJson("supportMarkdown", json);
   }
 }
 

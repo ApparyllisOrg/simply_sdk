@@ -59,6 +59,7 @@ class PollData implements DocumentData {
   List<PollVoteData>? votes;
   bool? custom;
   int? endTime;
+  bool? supportDescMarkdown;
 
   @override
   Map<String, dynamic> toJson() {
@@ -74,6 +75,7 @@ class PollData implements DocumentData {
     insertDataArray("votes", votes, payload);
     insertData("custom", custom, payload);
     insertData("endTime", endTime, payload);
+    insertData("supportDescMarkdown", supportDescMarkdown, payload);
 
     return payload;
   }
@@ -104,6 +106,7 @@ class PollData implements DocumentData {
 
     custom = readDataFromJson("custom", json);
     endTime = readDataFromJson("endTime", json);
+    supportDescMarkdown = readDataFromJson("supportDescMarkdown", json);
   }
 }
 

@@ -14,6 +14,7 @@ class NoteData implements DocumentData {
   String? color;
   String? member;
   int? date;
+  bool? supportMarkdown;
 
   @override
   Map<String, dynamic> toJson() {
@@ -24,6 +25,8 @@ class NoteData implements DocumentData {
     insertData("color", color, payload);
     insertData("member", member, payload);
     insertData("date", date, payload);
+    insertData("supportMarkdown", supportMarkdown, payload);
+
     return payload;
   }
 
@@ -34,6 +37,7 @@ class NoteData implements DocumentData {
     color = readDataFromJson("color", json);
     member = readDataFromJson("member", json);
     date = readDataFromJson("date", json);
+    supportMarkdown = readDataFromJson("supportMarkdown", json);
   }
 }
 
