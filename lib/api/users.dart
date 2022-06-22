@@ -18,6 +18,7 @@ class UserFieldData implements DocumentData {
   bool? private;
   bool? preventTrusted;
   int? type;
+  bool? supportMarkdown;
 
   @override
   constructFromJson(Map<String, dynamic> json) {
@@ -26,6 +27,7 @@ class UserFieldData implements DocumentData {
     private = readDataFromJson("private", json);
     preventTrusted = readDataFromJson("preventTrusted", json);
     type = readDataFromJson("type", json);
+    supportMarkdown = readDataFromJson("supportMarkdown", json);
   }
 
   @override
@@ -37,6 +39,7 @@ class UserFieldData implements DocumentData {
     insertData("private", private, payload);
     insertData("preventTrusted", preventTrusted, payload);
     insertData("type", type, payload);
+    insertData("supportMarkdown", supportMarkdown, payload);
 
     return payload;
   }
