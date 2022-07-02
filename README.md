@@ -1,6 +1,6 @@
 # simply_sdk
 
-SDK for the Apparyllis API. (https://github.com/Apparyllis/ApparyllisApi)
+SDK for the Apparyllis API. (https://github.com/ApparyllisOrg/SimplyPluralApi)
 
 ## Components
 
@@ -13,4 +13,4 @@ Main functionality currently consists of:
 
 ## Contribution
 
-Should you wish to contribute, please take a look at https://github.com/Apparyllis/ApparyllisApi to see which API you are talking to.  
+Should you wish to contribute, please take a look at https://github.com/ApparyllisOrg/SimplyPluralApi to see which API you are talking to.  
