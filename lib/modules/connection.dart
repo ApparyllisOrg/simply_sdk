@@ -37,5 +37,5 @@ class Connection {
     _currentHost = host;
   }
 
-  String configGet() => "https://sfo3.digitaloceanspaces.com/simply-plural/config/conf.json";
+  String configGet() => "https://dist.apparyllis.com/config/conf.json";
 }
