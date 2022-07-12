@@ -10,6 +10,7 @@ import 'package:simply_sdk/api/friends.dart';
 import 'package:simply_sdk/api/frontHistory.dart';
 import 'package:simply_sdk/api/groups.dart';
 import 'package:simply_sdk/api/members.dart';
+import 'package:simply_sdk/api/messages.dart';
 import 'package:simply_sdk/api/notes.dart';
 import 'package:simply_sdk/api/pk.dart';
 import 'package:simply_sdk/api/polls.dart';
@@ -86,6 +87,7 @@ class API {
   final PK _pk = PK();
   final Tokens _tokens = Tokens();
   final Analytics _analytics = Analytics();
+  final Messages _messages = Messages();
 
   // Declare global getters
   Auth auth() => _auth;
@@ -115,6 +117,7 @@ class API {
   PK pk() => _pk;
   Tokens tokens() => _tokens;
   Analytics analytics() => _analytics;
+  Messages messages() => _messages;
 
   void reportError(e, StackTrace? trace) {
     try {
