@@ -41,8 +41,8 @@ class Messages {
     }
   }
 
-  Future<bool> markRead() async {
-    var response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl('v1/messages/read', ""))).catchError(((e) => generateFailedResponse(e)));
+  Future<bool> markRead(int time) async {
+    var response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl('v1/messages/read', "")), body: {"time": time}).catchError(((e) => generateFailedResponse(e)));
 
     if (response.statusCode == 200) {
       return true;
