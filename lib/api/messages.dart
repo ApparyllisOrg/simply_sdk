@@ -9,12 +9,14 @@ class MessageData implements DocumentData {
   String? title;
   String? message;
   String? answer;
+  int? time;
 
   @override
   constructFromJson(Map<String, dynamic> json) {
     title = readDataFromJson("title", json);
     message = readDataFromJson("message", json);
     answer = readDataFromJson("answer", json);
+    time = readDataFromJson("time", json);
   }
 
   @override
