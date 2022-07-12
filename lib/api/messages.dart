@@ -5,6 +5,8 @@ import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/modules/http.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 
+import '../modules/network.dart';
+
 class MessageData implements DocumentData {
   String? title;
   String? message;
@@ -41,13 +43,7 @@ class Messages {
     }
   }
 
-  Future<bool> markRead(int time) async {
-    var response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl('v1/messages/read', "")), body: {"time": time}).catchError(((e) => generateFailedResponse(e)));
-
-    if (response.statusCode == 200) {
-      return true;
-    }
-
-    return false;
+  void markRead(int time) {
+    API().network().request(new NetworkRequest(HttpRequestMethod.Post, 'v1/messages/read', DateTime.now().millisecondsSinceEpoch, payload: {"time": time}));
   }
 }
