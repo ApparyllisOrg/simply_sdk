@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:simply_sdk/api/analytics.dart';
 import 'package:simply_sdk/api/automatedTimers.dart';
+import 'package:simply_sdk/api/chats.dart';
 import 'package:simply_sdk/api/comments.dart';
 import 'package:simply_sdk/api/customFronts.dart';
 import 'package:simply_sdk/api/friends.dart';
@@ -88,6 +89,8 @@ class API {
   final Tokens _tokens = Tokens();
   final Analytics _analytics = Analytics();
   final Messages _messages = Messages();
+  final ChannelCategories _channelCategories = ChannelCategories();
+  final Channels _channels = Channels();
 
   // Declare global getters
   Auth auth() => _auth;
@@ -118,6 +121,8 @@ class API {
   Tokens tokens() => _tokens;
   Analytics analytics() => _analytics;
   Messages messages() => _messages;
+  ChannelCategories channelCategories() => _channelCategories;
+  Channels channels() => _channels;
 
   void reportError(e, StackTrace? trace) {
     try {

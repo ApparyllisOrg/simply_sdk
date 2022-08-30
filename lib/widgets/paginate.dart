@@ -19,19 +19,10 @@ class Paginate extends StatefulWidget {
   final String url;
   final List<Widget> prefixWidgets;
   final DocumentConstructor documentConstructor;
+  final ValueChanged<List<Document>>? onBatchReceived;
 
   const Paginate(
-      {Key? key,
-      required this.itemBuilder,
-      this.stepSize = 10,
-      required this.getLoader,
-      required this.emptyView,
-      required this.sortBy,
-      required this.sortOrder,
-      required this.url,
-      required this.documentConstructor,
-      required this.prefixWidgets,
-      this.spacingHeight = 10})
+      {Key? key, required this.itemBuilder, this.stepSize = 10, this.onBatchReceived, required this.getLoader, required this.emptyView, required this.sortBy, required this.sortOrder, required this.url, required this.documentConstructor, required this.prefixWidgets, this.spacingHeight = 10})
       : super(key: key);
 
   @override
@@ -63,13 +54,8 @@ class PaginateState extends State<Paginate> {
     getNextBatch();
   }
 
-  static Future<Response> getNextPage(
-      String url, String sortBy, int sortOrder, int stepSize, int currentOffset,
-      {String? additionalQuery}) async {
-    return SimplyHttpClient()
-        .get(Uri.parse(API().connection().getRequestUrl('$url',
-            'sortBy=$sortBy&sortOrder=$sortOrder&limit=$stepSize&start=$currentOffset&sortUp=true&${additionalQuery ?? ""}')))
-        .catchError((e) => generateFailedResponse(e));
+  static Future<Response> getNextPage(String url, String sortBy, int sortOrder, int stepSize, int currentOffset, {String? additionalQuery}) async {
+    return SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('$url', 'sortBy=$sortBy&sortOrder=$sortOrder&limit=$stepSize&start=$currentOffset&sortUp=true&${additionalQuery ?? ""}'))).catchError((e) => generateFailedResponse(e));
   }
 
   void getNextBatch() async {
@@ -82,20 +68,20 @@ class PaginateState extends State<Paginate> {
       setState(() {});
     }
 
-    var response = await getNextPage(widget.url, widget.sortBy,
-        widget.sortOrder, widget.stepSize, currentOffset);
+    var response = await getNextPage(widget.url, widget.sortBy, widget.sortOrder, widget.stepSize, currentOffset);
     if (response.statusCode == 200 && response.body.isNotEmpty) {
-      List<Map<String, dynamic>> responseDocs =
-          (jsonDecode(response.body) as List<dynamic>)
-              .cast<Map<String, dynamic>>();
+      List<Map<String, dynamic>> responseDocs = (jsonDecode(response.body) as List<dynamic>).cast<Map<String, dynamic>>();
 
       List<Document> newDocs = [];
       responseDocs.forEach((element) {
-        newDocs
-            .add(widget.documentConstructor(element["id"], element["content"]));
+        newDocs.add(widget.documentConstructor(element["id"], element["content"]));
       });
 
       docs.addAll(newDocs);
+
+      if (widget.onBatchReceived != null) {
+        widget.onBatchReceived!(newDocs);
+      }
 
       if (newDocs.length <= 0) {
         reachedEnd = true;
