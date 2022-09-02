@@ -26,6 +26,7 @@ class PrivateData implements DocumentData {
   int? whatsNew;
   int? generationsLeft;
   List<Notification>? notifications;
+  List<String>? categories;
 
   @override
   Map<String, dynamic> toJson() {
@@ -36,6 +37,7 @@ class PrivateData implements DocumentData {
     insertData("location", location, payload);
     insertData("termsOfServiceAccepted", termsOfServiceAccepted, payload);
     insertData("whatsNew", whatsNew, payload);
+    insertDataArray("categories", categories, payload);
     return payload;
   }
 
@@ -50,6 +52,8 @@ class PrivateData implements DocumentData {
 
     var notifs = readDataArrayFromJson<dynamic>("notificationHistory", json);
     notifications = (notifs ?? []).map((e) => Notification(timestamp: e["timestamp"], title: e["title"], message: e["message"])).toList();
+
+    categories = readDataArrayFromJson<String>("categories", json);
   }
 }
 
