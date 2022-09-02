@@ -112,12 +112,12 @@ class ChatMessageDataId extends ChatMessageData {
 
 class ChannelCategoryData implements DocumentData {
   String? name;
-  String? color;
+  String? desc;
 
   @override
   constructFromJson(Map<String, dynamic> json) {
     name = readDataFromJson("name", json);
-    color = readDataFromJson("color", json);
+    desc = readDataFromJson("desc", json);
   }
 
   @override
@@ -125,7 +125,7 @@ class ChannelCategoryData implements DocumentData {
     Map<String, dynamic> payload = {};
 
     insertData("name", name, payload);
-    insertData("color", color, payload);
+    insertData("desc", desc, payload);
 
     return payload;
   }
