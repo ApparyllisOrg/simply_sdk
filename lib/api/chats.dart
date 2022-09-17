@@ -216,7 +216,7 @@ class ChatMessages extends AbstractModel {
   List<ChatMessageDataId> getRecentMessages() => _recentMessages;
 
   Future<List<Document<ChatMessageData>>> getMessages(int start, int amount) async {
-    var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/chat/messages/$categoryId", "?limit=$amount&start=$start&sortBy=writtenAt&sortOrder=1"))).catchError(((e) => generateFailedResponse(e)));
+    var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/chat/messages/$categoryId", "limit=$amount&start=$start&sortBy=writtenAt&sortOrder=1"))).catchError(((e) => generateFailedResponse(e)));
     if (response.statusCode == 200) {
       CollectionResponse<ChatMessageData> collection = CollectionResponse<ChatMessageData>();
       collection.useOffline = false;
