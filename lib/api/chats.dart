@@ -6,6 +6,7 @@ import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/abstractModel.dart';
 import 'package:simply_sdk/modules/collection.dart';
+import 'package:simply_sdk/modules/http.dart';
 import 'package:simply_sdk/modules/network.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
@@ -206,9 +207,25 @@ class ChannelCategories extends Collection<ChannelCategoryData> {
 }
 
 class ChatMessages extends AbstractModel {
-  ChatMessages();
+  String categoryId = "";
 
-  List<ChatMessageDataId> _cachedMessages = [];
+  void setCategoryId(String id) => categoryId = id;
+
+  List<ChatMessageDataId> _recentMessages = [];
+
+  List<ChatMessageDataId> getRecentMessages() => _recentMessages;
+
+  Future<List<Document<ChatMessageData>>> getMessages(int start, int amount) async {
+    var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/chat/messages/$categoryId", "?limit=$amount&start=$start&sortBy=writtenAt&sortOrder=1"))).catchError(((e) => generateFailedResponse(e)));
+    if (response.statusCode == 200) {
+      CollectionResponse<ChatMessageData> collection = CollectionResponse<ChatMessageData>();
+      collection.useOffline = false;
+      collection.data = convertServerResponseToList(response);
+      return collection.data.map<Document<ChatMessageData>>((e) => Document(e["exists"], e["id"], ChatMessageData()..constructFromJson(e["content"]), "chatMessages")).toList();
+    }
+
+    return [];
+  }
 
   Document<ChatMessageData> writeMessage(ChatMessageData data) {
     String generatedId = ObjectId(clientMode: true).toHexString();
@@ -232,8 +249,8 @@ class ChatMessages extends AbstractModel {
     _insertMessageToCache(message.dataObject, message.id);
 
     // Limit to caching 1000 messages, we don't want to store endlessly
-    if (_cachedMessages.length > 1000) {
-      _cachedMessages.removeAt(0);
+    if (_recentMessages.length > 1000) {
+      _recentMessages.removeAt(0);
     }
 
     return Document(true, message.id, message.dataObject, "chatMessages");
@@ -242,7 +259,7 @@ class ChatMessages extends AbstractModel {
   void deleteMessage(Document<ChatMessageData> message) {
     API().network().request(new NetworkRequest(HttpRequestMethod.Delete, "v1/chat/message/${message.id}", DateTime.now().millisecondsSinceEpoch));
 
-    _cachedMessages.removeWhere((element) => element.id == message.id);
+    _recentMessages.removeWhere((element) => element.id == message.id);
     notifyListeners();
 
     return;
@@ -250,18 +267,23 @@ class ChatMessages extends AbstractModel {
 
   void cacheMessages(List<Document<ChatMessageData>> listToCache) {
     listToCache.forEach((toCache) => _insertMessageToCache(toCache.dataObject, toCache.id));
+    sortMessages();
+  }
+
+  void sortMessages() {
+    _recentMessages.sort((a, b) => a.writtenAt! - b.writtenAt!);
   }
 
   void _insertMessageToCache(ChatMessageData data, String id) {
-    int previouslyCachedMessageIndex = _cachedMessages.indexWhere((element) => element.id == id);
+    int previouslyCachedMessageIndex = _recentMessages.indexWhere((element) => element.id == id);
     if (previouslyCachedMessageIndex >= 0) {
-      _cachedMessages[previouslyCachedMessageIndex] = ChatMessageDataId(data, id);
+      _recentMessages[previouslyCachedMessageIndex] = ChatMessageDataId(data, id);
     } else {
-      _cachedMessages.add(ChatMessageDataId(data, id));
+      _recentMessages.add(ChatMessageDataId(data, id));
 
-      // Limit to caching 1000 messages, we don't want to store endlessly
-      if (_cachedMessages.length > 1000) {
-        _cachedMessages.removeAt(0);
+      // Limit to caching 50 messages, we don't want to store endlessly
+      if (_recentMessages.length > 50) {
+        _recentMessages.removeAt(_recentMessages.length - 1); // Kick the oldest
       }
     }
 
@@ -270,18 +292,23 @@ class ChatMessages extends AbstractModel {
 
   @override
   copyFromJson(Map<String, dynamic> json) {
-    _cachedMessages = toList(json['_messages'], (json) => ChatMessageData()..constructFromJson(json));
+    _recentMessages = toList(json['messages'], (json) => ChatMessageData()..constructFromJson(json));
     return this;
   }
 
   @override
   Map<String, dynamic> toJson() {
-    return {'_messages': jsonEncode(_cachedMessages)};
+    return {"messages": jsonEncode(_recentMessages)};
   }
 
   @override
   void reset([bool notify = true]) {
     copyFromJson({});
     super.reset(notify);
+  }
+
+  @override
+  String getFileName() {
+    return 'messages_$categoryId';
   }
 }
