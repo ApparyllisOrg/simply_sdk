@@ -215,8 +215,10 @@ class ChatMessages extends AbstractModel {
 
   List<ChatMessageDataId> getRecentMessages() => _recentMessages;
 
-  Future<List<Document<ChatMessageData>>> getMessages(int start, int amount, String? skipTo) async {
-    String query = "limit=$amount&sortBy=writtenAt&sortOrder=-1";
+  Future<List<Document<ChatMessageData>>> getMessages(int start, int amount, String? skipTo, bool bOlder) async {
+    String order = bOlder ? "-1" : "1";
+
+    String query = "limit=$amount&sortBy=writtenAt&sortOrder=$order";
 
     if (skipTo != null) {
       query += "&skipTo=$skipTo";
