@@ -243,7 +243,7 @@ class ChatMessages extends AbstractModel {
     Map<String, dynamic> jsonPayload = data.toJson();
     API().network().request(new NetworkRequest(HttpRequestMethod.Post, "v1/chat/message/$generatedId", DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
 
-    _insertMessageToCache(data, generatedId);
+    _insertMessageToCache(data, generatedId, false);
 
     notifyListeners();
 
@@ -256,7 +256,7 @@ class ChatMessages extends AbstractModel {
 
     notifyListeners();
 
-    _insertMessageToCache(message.dataObject, message.id);
+    _insertMessageToCache(message.dataObject, message.id, true);
 
     // Limit to caching 1000 messages, we don't want to store endlessly
     if (_recentMessages.length > 1000) {
@@ -276,7 +276,7 @@ class ChatMessages extends AbstractModel {
   }
 
   void cacheMessages(List<Document<ChatMessageData>> listToCache) {
-    listToCache.forEach((toCache) => _insertMessageToCache(toCache.dataObject, toCache.id));
+    listToCache.forEach((toCache) => _insertMessageToCache(toCache.dataObject, toCache.id, false));
     sortMessages();
   }
 
@@ -284,11 +284,23 @@ class ChatMessages extends AbstractModel {
     _recentMessages.sort((a, b) => a.writtenAt! - b.writtenAt!);
   }
 
-  void _insertMessageToCache(ChatMessageData data, String id) {
+  void _insertMessageToCache(ChatMessageData data, String id, bool bUpdateOnly) {
     int previouslyCachedMessageIndex = _recentMessages.indexWhere((element) => element.id == id);
     if (previouslyCachedMessageIndex >= 0) {
-      _recentMessages[previouslyCachedMessageIndex] = ChatMessageDataId(data, id);
-    } else {
+      ChatMessageData oldData = _recentMessages[previouslyCachedMessageIndex];
+
+      // Copy old data such as channel, written at, reply to and writer as those can't change and we don't
+      // want to accidentally write an empty message
+      ChatMessageData newData = ChatMessageData()
+        ..channel = oldData.channel
+        ..writtenAt = oldData.writtenAt
+        ..replyTo = oldData.replyTo
+        ..writer = oldData.writer
+        ..message = data.message
+        ..updatedAt = data.updatedAt;
+
+      _recentMessages[previouslyCachedMessageIndex] = ChatMessageDataId(newData, id);
+    } else if (!bUpdateOnly) {
       _recentMessages.add(ChatMessageDataId(data, id));
 
       // Limit to caching 50 messages, we don't want to store endlessly
