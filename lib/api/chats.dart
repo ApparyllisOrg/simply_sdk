@@ -215,6 +215,19 @@ class ChatMessages extends AbstractModel {
 
   List<ChatMessageDataId> getRecentMessages() => _recentMessages;
 
+  Future<Document<ChatMessageData>?> getMessage(String msgId) async {
+    var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/chat/message/$msgId", ""))).catchError(((e) => generateFailedResponse(e)));
+    if (response.statusCode == 200) {
+      var decoded = jsonDecode(response.body) as Map<String, dynamic>;
+      ChatMessageData data = ChatMessageData()..constructFromJson(decoded["content"]);
+
+      Document<ChatMessageData> doc = Document<ChatMessageData>(true, msgId, data, "chatMessages");
+      return doc;
+    }
+
+    return null;
+  }
+
   Future<List<Document<ChatMessageData>>> getMessages(int start, int amount, String? skipTo, bool bOlder) async {
     String order = bOlder ? "-1" : "1";
 
