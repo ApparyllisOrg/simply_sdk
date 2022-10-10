@@ -296,7 +296,7 @@ class ChatMessages extends AbstractModel {
   }
 
   void sortMessages() {
-    _recentMessages.sort((a, b) => a.writtenAt! - b.writtenAt!);
+    _recentMessages.sort((a, b) => b.writtenAt! - a.writtenAt!);
   }
 
   void _insertMessageToCache(ChatMessageData data, String id, bool bUpdateOnly) {
