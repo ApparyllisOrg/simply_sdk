@@ -316,11 +316,11 @@ class ChatMessages extends AbstractModel {
 
       _recentMessages[previouslyCachedMessageIndex] = ChatMessageDataId(newData, id);
     } else if (!bUpdateOnly) {
-      _recentMessages.add(ChatMessageDataId(data, id));
+      _recentMessages.insert(0, ChatMessageDataId(data, id));
 
       // Limit to caching 50 messages, we don't want to store endlessly
       if (_recentMessages.length > 50) {
-        _recentMessages.removeAt(_recentMessages.length - 1); // Kick the oldest
+        _recentMessages.removeAt(0); // Kick the oldest
       }
     }
 
