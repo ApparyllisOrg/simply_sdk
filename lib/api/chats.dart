@@ -228,7 +228,7 @@ class ChatMessages extends AbstractModel {
     return null;
   }
 
-  Future<List<Document<ChatMessageData>>> getMessages(int start, int amount, String? skipTo, bool bOlder) async {
+  Future<List<Document<ChatMessageData>>> getMessages(int start, int amount, String? skipTo, bool bOlder, bool bFallbackToCache) async {
     String order = bOlder ? "-1" : "1";
 
     String query = "limit=$amount&sortBy=writtenAt&sortOrder=$order";
@@ -245,6 +245,8 @@ class ChatMessages extends AbstractModel {
       collection.useOffline = false;
       collection.data = convertServerResponseToList(response);
       return collection.data.map<Document<ChatMessageData>>((e) => Document(e["exists"], e["id"], ChatMessageData()..constructFromJson(e["content"]), "chatMessages")).toList();
+    } else if (bFallbackToCache) {
+      return getRecentMessages().map((e) => Document<ChatMessageData>(true, e.id!, e, "chatMessages")).toList();
     }
 
     return [];
