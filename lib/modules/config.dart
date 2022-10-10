@@ -45,7 +45,9 @@ class RemoteConfig {
       response = await get(url);
       _sharedPrefs.setInt(_configSync, now);
       _sharedPrefs.setString(_remoteConfig, response.body);
+      API().debug().logInfo("Loaded remote config");
     } catch (e) {
+      API().debug().logError("Failed to load remote config: ${e.toString()}");
       print(e);
     }
 
@@ -53,10 +55,8 @@ class RemoteConfig {
   }
 
   void _loadConfig() {
-    if (_sharedPrefs.containsKey(_remoteConfig) &&
-        _sharedPrefs.getString(_remoteConfig)!.isNotEmpty) {
-      _currentConfig = jsonDecode(_sharedPrefs.getString(_remoteConfig)!)
-          as Map<String, dynamic>;
+    if (_sharedPrefs.containsKey(_remoteConfig) && _sharedPrefs.getString(_remoteConfig)!.isNotEmpty) {
+      _currentConfig = jsonDecode(_sharedPrefs.getString(_remoteConfig)!) as Map<String, dynamic>;
     } else {
       _currentConfig = Map<String, dynamic>();
     }
