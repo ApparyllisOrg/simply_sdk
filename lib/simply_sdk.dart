@@ -24,6 +24,7 @@ import 'package:simply_sdk/modules/cache.dart';
 import 'package:simply_sdk/modules/config.dart';
 import 'package:simply_sdk/modules/connection.dart';
 import 'package:simply_sdk/modules/debug.dart';
+import 'package:simply_sdk/modules/events.dart';
 import 'package:simply_sdk/modules/socket.dart';
 import 'package:simply_sdk/modules/store.dart';
 import 'package:simply_sdk/modules/subscriptions.dart';
@@ -69,6 +70,7 @@ class API {
   final DocumentSubscriptions _documentSubscriptions = DocumentSubscriptions();
   final RemoteConfig _remoteConfig = RemoteConfig();
   final Debug _debug = Debug();
+  final Event _events = Event();
 
   // Declare Api globals
   final AutomatedTimers _automatedTimers = AutomatedTimers();
@@ -101,6 +103,7 @@ class API {
   DocumentSubscriptions docSubscriptions() => _documentSubscriptions;
   RemoteConfig remoteConfig() => _remoteConfig;
   Debug debug() => _debug;
+  Event event() => _events;
 
   // Declare Api global getters
   AutomatedTimers automatedTimers() => _automatedTimers;
