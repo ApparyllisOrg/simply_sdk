@@ -329,13 +329,13 @@ class ChatMessages extends AbstractModel {
 
   @override
   copyFromJson(Map<String, dynamic> json) {
-    _recentMessages = toList(json['messages'], (json) => ChatMessageData()..constructFromJson(json));
+    _recentMessages = (json['messages'] as List<dynamic>).map((json) => ChatMessageDataId(ChatMessageData()..constructFromJson(json), json["id"])).toList();
     return this;
   }
 
   @override
   Map<String, dynamic> toJson() {
-    return {"messages": jsonEncode(_recentMessages)};
+    return {"messages": _recentMessages};
   }
 
   @override
