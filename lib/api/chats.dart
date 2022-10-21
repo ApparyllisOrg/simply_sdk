@@ -138,7 +138,11 @@ class Channels extends Collection<ChannelData> {
 
   @override
   Document<ChannelData> add(DocumentData values) {
-    return addSimpleDocument(type, "v1/chat/channel", values);
+    throw UnimplementedError();
+  }
+
+  Document<ChannelData> addId(DocumentData values, String clientId) {
+    return addSimpleDocument(type, "v1/chat/channel", values, overrideId: clientId);
   }
 
   @override
@@ -175,7 +179,11 @@ class ChannelCategories extends Collection<ChannelCategoryData> {
 
   @override
   Document<ChannelCategoryData> add(DocumentData values) {
-    return addSimpleDocument(type, "v1/chat/category", values);
+    throw UnimplementedError();
+  }
+
+  Document<ChannelCategoryData> addId(DocumentData values, String clientId) {
+    return addSimpleDocument(type, "v1/chat/category", values, overrideId: clientId);
   }
 
   @override
