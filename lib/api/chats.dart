@@ -328,7 +328,7 @@ class ChatMessages extends AbstractModel {
 
       // Limit to caching 50 messages, we don't want to store endlessly
       if (_recentMessages.length > 50) {
-        _recentMessages.removeAt(_recentMessages.length - 50); // Kick the oldest
+        _recentMessages.removeAt(_recentMessages.length - 1); // Kick the oldest
       }
     }
 
