@@ -141,17 +141,17 @@ void propogateChanges(String type, String id, dynamic data, EChangeType changeTy
 }
 
 Document<T> addSimpleDocument<T>(String type, String path, DocumentData data, {String? overrideId}) {
-  String generatedId = ObjectId(clientMode: true).toHexString();
+  String usedId = overrideId ?? ObjectId(clientMode: true).toHexString();
 
   Map<String, dynamic> jsonPayload = data.toJson();
 
-  API().network().request(new NetworkRequest(HttpRequestMethod.Post, "$path/${overrideId ?? generatedId}", DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
+  API().network().request(new NetworkRequest(HttpRequestMethod.Post, "$path/$usedId", DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
 
-  API().cache().insertDocument(type, generatedId, jsonPayload);
+  API().cache().insertDocument(type, usedId, jsonPayload);
 
-  propogateChanges(type, generatedId, data, EChangeType.Add);
+  propogateChanges(type, usedId, data, EChangeType.Add);
 
-  return Document(true, overrideId ?? generatedId, data as T, type);
+  return Document(true, usedId, data as T, type);
 }
 
 void updateSimpleDocument(String type, String path, String documentId, DocumentData data) {
