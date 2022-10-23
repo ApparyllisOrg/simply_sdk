@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:universal_file/universal_file.dart';
+import "package:universal_html/html.dart" as html;
 
 abstract class AbstractModel extends ChangeNotifier {
   void reset([bool notify = true]) {
@@ -36,7 +37,8 @@ abstract class AbstractModel extends ChangeNotifier {
 
   Future<void> load() async {
     if (kIsWeb) {
-      // TODO: Add web load
+      bool dbExists = html.window.localStorage.containsKey(getFileName());
+      copyFromJson(jsonDecode(dbExists ? html.window.localStorage[getFileName()] ?? "" : ""));
     } else {
       String filePath = await getFilePath();
       File file = File(filePath);
@@ -46,6 +48,7 @@ abstract class AbstractModel extends ChangeNotifier {
         String string = await file.readAsString().catchError((e, s) {
           return "{}";
         });
+
         copyFromJson(jsonDecode(string));
       }
     }
@@ -53,7 +56,11 @@ abstract class AbstractModel extends ChangeNotifier {
 
   Future<void> save() async {
     if (kIsWeb) {
-      // TODO: Add web save
+      try {
+        html.window.localStorage[getFileName()] = jsonEncode(toJson());
+      } catch (e) {
+        print(e);
+      }
     } else {
       String filePath = await getFilePath();
       File file = File(filePath);
