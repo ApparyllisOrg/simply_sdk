@@ -38,7 +38,9 @@ abstract class AbstractModel extends ChangeNotifier {
   Future<void> load() async {
     if (kIsWeb) {
       bool dbExists = html.window.localStorage.containsKey(getFileName());
-      copyFromJson(jsonDecode(dbExists ? html.window.localStorage[getFileName()] ?? "" : ""));
+      if (dbExists) {
+        copyFromJson(jsonDecode(dbExists ? html.window.localStorage[getFileName()] ?? "{}" : "{}"));
+      }
     } else {
       String filePath = await getFilePath();
       File file = File(filePath);
