@@ -152,7 +152,7 @@ class Auth {
   }
 
   Future<String?> refreshToken(String? forceRefreshToken) async {
-    Response response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/auth/refresh", "")), headers: {"Authorization": forceRefreshToken ?? (credentials._lastRefreshToken ?? "")}).catchError(((e) => generateFailedResponse(e)));
+    Response response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/auth/refresh", "")), headers: {"Authorization": forceRefreshToken ?? (credentials._lastRefreshToken ?? "")}).catchError(((e) => generateFailedResponse(e)));
     if (response.statusCode == 200) {
       _getAuthDetailsFromResponse(response.body);
       return null;
@@ -164,7 +164,7 @@ class Auth {
   }
 
   Future<String?> remoteCheckIsRefreshTokenValid(String? forceRefreshToken) async {
-    Response response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/auth/refresh/valid", "")), headers: {"Authorization": forceRefreshToken ?? (credentials._lastRefreshToken ?? "")}).catchError(((e) => generateFailedResponse(e)));
+    Response response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/auth/refresh/valid", "")), headers: {"Authorization": forceRefreshToken ?? (credentials._lastRefreshToken ?? "")}).catchError(((e) => generateFailedResponse(e)));
 
     if (response.statusCode == 200) {
       return null;
