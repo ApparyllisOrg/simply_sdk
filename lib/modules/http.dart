@@ -35,7 +35,12 @@ class SimplyHttpClient extends http.BaseClient {
       API().debug().logFine("HTTP => ${request.method} => ${request.url}");
     }
 
-    request.headers.addAll({"Authorization": API().auth().getToken() ?? "", "content-type": "application/json; charset=UTF-8"});
+    request.headers.addAll({"content-type": "application/json; charset=UTF-8"});
+
+    if (!request.headers.containsKey("Authorization")) {
+      request.headers.addAll({"Authorization": API().auth().getToken() ?? ""});
+    }
+
     return _httpClient.send(request);
   }
 }
