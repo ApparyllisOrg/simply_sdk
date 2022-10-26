@@ -72,7 +72,7 @@ class Auth {
 
     String _lastToken = content["access"];
     String _lastRefreshToken = content["refresh"];
-    String _lastUid = jwtPayload["uid"];
+    String _lastUid = jwtPayload["sub"];
 
     bool previousAuthed = credentials.isAuthed();
 
