@@ -16,20 +16,7 @@ import '../simply_sdk.dart';
 
 enum HttpRequestMethod { Post, Patch, Delete, Get }
 
-List<int> acceptedResponseCodes = [
-  0,
-  200,
-  409,
-  500,
-  501,
-  403,
-  404,
-  401,
-  406,
-  405,
-  204,
-  400
-];
+List<int> acceptedResponseCodes = [0, 200, 409, 500, 501, 403, 404, 406, 405, 204, 400];
 List<int> ignoreResponseCodes = [502, 503, 504];
 List<int> reportResponseCodes = [400, 404, 405];
 
@@ -53,13 +40,10 @@ class NetworkRequest {
   }
 
   static NetworkRequest fromJson(Map<String, dynamic> data) {
-    return NetworkRequest(HttpRequestMethod.values[data["method"]],
-        data["path"], data["timestamp"],
-        payload: data["payload"], query: data["query"]);
+    return NetworkRequest(HttpRequestMethod.values[data["method"]], data["path"], data["timestamp"], payload: data["payload"], query: data["query"]);
   }
 
-  NetworkRequest(this.method, this.path, this.timestamp,
-      {this.query, this.payload, this.onDone});
+  NetworkRequest(this.method, this.path, this.timestamp, {this.query, this.payload, this.onDone});
 }
 
 class Network {
@@ -82,17 +66,13 @@ class Network {
   }
 
   List<String> getJsonPendingRequestsFromString(String data) {
-    List<dynamic> savedRequestsRaw =
-        jsonDecode(data, reviver: customDecode) as List<dynamic>;
+    List<dynamic> savedRequestsRaw = jsonDecode(data, reviver: customDecode) as List<dynamic>;
     return savedRequestsRaw.cast<String>();
   }
 
   void loadPendingRequestsFromJson(List<String> jsonList) {
     _pendingRequests = [];
-    _pendingRequests = jsonList
-        .map((e) =>
-            NetworkRequest.fromJson(jsonDecode(e) as Map<String, dynamic>))
-        .toList();
+    _pendingRequests = jsonList.map((e) => NetworkRequest.fromJson(jsonDecode(e) as Map<String, dynamic>)).toList();
   }
 
   Timer? saveTimer;
@@ -147,10 +127,7 @@ class Network {
   Future<void> loadPendingNetworkRequests() async {
     if (kIsWeb) {
       bool syncExists = html.window.localStorage.containsKey("pendingRequests");
-      List<String> savedRequestsCasted = syncExists
-          ? getJsonPendingRequestsFromString(
-              html.window.localStorage["pendingRequests"] ?? "")
-          : [];
+      List<String> savedRequestsCasted = syncExists ? getJsonPendingRequestsFromString(html.window.localStorage["pendingRequests"] ?? "") : [];
       loadPendingRequestsFromJson(savedRequestsCasted);
       print("Loaded pending requests");
     } else {
@@ -165,8 +142,7 @@ class Network {
         if (exists) {
           String jsonObjectString = await file.readAsString();
           if (jsonObjectString.isNotEmpty) {
-            loadPendingRequestsFromJson(
-                getJsonPendingRequestsFromString(jsonObjectString));
+            loadPendingRequestsFromJson(getJsonPendingRequestsFromString(jsonObjectString));
           } else {
             _pendingRequests = [];
           }
@@ -211,9 +187,7 @@ class Network {
         NetworkRequest request = _pendingRequests[i];
 
         requestsToSend.add(Future(() async {
-          String url = API()
-              .connection()
-              .getRequestUrl(request.path, request.query ?? "");
+          String url = API().connection().getRequestUrl(request.path, request.query ?? "");
 
           Uri uri = Uri.parse(url);
 
@@ -223,37 +197,22 @@ class Network {
             switch (request.method) {
               case HttpRequestMethod.Delete:
                 {
-                  response = await SimplyHttpClient().delete(uri, headers: {
-                    "Operation-Time": request.timestamp.toString()
-                  }).catchError(((e) => generateFailedResponse(e)));
+                  response = await SimplyHttpClient().delete(uri, headers: {"Operation-Time": request.timestamp.toString()}).catchError(((e) => generateFailedResponse(e)));
                   break;
                 }
               case HttpRequestMethod.Patch:
                 {
-                  response = await SimplyHttpClient()
-                      .patch(uri,
-                          headers: {
-                            "Operation-Time": request.timestamp.toString()
-                          },
-                          body: jsonEncode(request.payload ?? "{}"))
-                      .catchError(((e) => generateFailedResponse(e)));
+                  response = await SimplyHttpClient().patch(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload ?? "{}")).catchError(((e) => generateFailedResponse(e)));
                   break;
                 }
               case HttpRequestMethod.Post:
                 {
-                  response = await SimplyHttpClient()
-                      .post(uri,
-                          headers: {
-                            "Operation-Time": request.timestamp.toString()
-                          },
-                          body: jsonEncode(request.payload ?? "{}"))
-                      .catchError(((e) => generateFailedResponse(e)));
+                  response = await SimplyHttpClient().post(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload ?? "{}")).catchError(((e) => generateFailedResponse(e)));
                   break;
                 }
               default:
                 {
-                  API().reportError("Attempting to send an unsupported method",
-                      StackTrace.current);
+                  API().reportError("Attempting to send an unsupported method", StackTrace.current);
                   _pendingRequests.remove(request);
                   break;
                 }
@@ -261,19 +220,19 @@ class Network {
 
             int responseCode = response?.statusCode ?? 0;
 
+            if (responseCode == 401) {
+              await API().auth().refreshToken(null);
+            }
+
             if (acceptedResponseCodes.contains(responseCode)) {
               if (reportResponseCodes.contains(responseCode)) {
-                API().reportError(
-                    "[$responseCode] during ${request.method} => ${request.path}. Response is ${response?.body ?? ""}",
-                    StackTrace.current);
+                API().reportError("[$responseCode] during ${request.method} => ${request.path}. Response is ${response?.body ?? ""}", StackTrace.current);
               }
               _pendingRequests.remove(request);
               if (request.onDone != null) request.onDone!();
             } else {
               if (!ignoreResponseCodes.contains(responseCode)) {
-                API().reportError(
-                    "[$responseCode] during ${request.method} => ${request.path}. Response is ${response?.body ?? ""}",
-                    StackTrace.current);
+                API().reportError("[$responseCode] during ${request.method} => ${request.path}. Response is ${response?.body ?? ""}", StackTrace.current);
               }
               print(response?.body);
             }
@@ -283,8 +242,7 @@ class Network {
         }));
       }
       await Future.wait(requestsToSend);
-      rescheduleNextTick(numPendingRequests != _pendingRequests.length ||
-          _pendingRequests.length == 0);
+      rescheduleNextTick(numPendingRequests != _pendingRequests.length || _pendingRequests.length == 0);
     } catch (e) {
       API().reportError(e, StackTrace.current);
       rescheduleNextTick(false);

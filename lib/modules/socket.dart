@@ -5,6 +5,7 @@ import 'dart:io' as io;
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:simply_sdk/api/main.dart';
+import 'package:simply_sdk/modules/auth.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/types/document.dart';
 import 'package:web_socket_channel/io.dart';
@@ -33,14 +34,13 @@ class Socket {
     API().auth().onAuthChange.add(authChanged);
   }
 
-  void authChanged() {
+  void authChanged(AuthCredentials credentials) {
     sendAuthentication();
   }
 
   void sendAuthentication() {
     try {
-      sendSocketData(
-          jsonEncode({"op": "authenticate", "token": API().auth().getToken()}));
+      sendSocketData(jsonEncode({"op": "authenticate", "token": API().auth().getToken()}));
     } catch (e) {}
   }
 
@@ -110,19 +110,12 @@ class Socket {
     isDisconnected = false;
     try {
       String overrideIp = const String.fromEnvironment("WSSIP");
-      String socketUrl =
-          overrideIp.isNotEmpty ? overrideIp : 'wss://v2.apparyllis.com';
+      String socketUrl = overrideIp.isNotEmpty ? overrideIp : 'wss://v2.apparyllis.com';
 
       if (kIsWeb) {
         _WebSocket = WebSocketChannel.connect(Uri.parse(socketUrl));
       } else {
-        _IOSocket = await io.WebSocket.connect(socketUrl,
-            compression: io.CompressionOptions(
-                enabled: true,
-                serverNoContextTakeover: true,
-                clientNoContextTakeover: true,
-                serverMaxWindowBits: 15,
-                clientMaxWindowBits: 15));
+        _IOSocket = await io.WebSocket.connect(socketUrl, compression: io.CompressionOptions(enabled: true, serverNoContextTakeover: true, clientNoContextTakeover: true, serverMaxWindowBits: 15, clientMaxWindowBits: 15));
         _IOSocket!.pingInterval = Duration(seconds: 3);
       }
 
@@ -178,9 +171,7 @@ class Socket {
 
   void onData(event) {
     gotHello = true;
-    API()
-        .debug()
-        .logFine("[SOCKET DATA RECEIVED] " + event.toString(), bSave: false);
+    API().debug().logFine("[SOCKET DATA RECEIVED] " + event.toString(), bSave: false);
     if (event is String && event.isNotEmpty) {
       onReceivedData(event);
     }
@@ -205,12 +196,7 @@ class Socket {
         API().cache().clearTypeCache(data["target"]);
       }
       for (Map<String, dynamic> result in data["results"]) {
-        propogateChanges(
-            data["target"],
-            result["id"],
-            jsonDataToDocumentData(
-                data["target"], result["content"] as Map<String, dynamic>),
-            operationToChangeType(result["operationType"]));
+        propogateChanges(data["target"], result["id"], jsonDataToDocumentData(data["target"], result["content"] as Map<String, dynamic>), operationToChangeType(result["operationType"]));
       }
     } else {
       _OnMsgReceived.forEach((element) {
