@@ -23,19 +23,8 @@ class Auth {
 
   List<Function(AuthCredentials)?> onAuthChange = [];
 
-  Future<bool> initialize(String? forceRefreshToken) async {
+  Future<bool> initialize(String? fallbackToken) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-
-    if (forceRefreshToken != null) {
-      String? result = await refreshToken(forceRefreshToken);
-
-      // Unable to refresh your session, refresh token is no longer valid
-      if (result == null) {
-        return false;
-      }
-
-      return true;
-    }
 
     if ((pref.containsKey("access_key") && pref.containsKey("refresh_key"))) {
       String accessKey = pref.getString("access_key")!;
@@ -45,7 +34,18 @@ class Auth {
 
       credentials = AuthCredentials(accessKey, refreshKey, jwtPayload["uid"]);
 
-      String? result = await refreshToken(forceRefreshToken);
+      String? result = await refreshToken(null);
+
+      // Unable to refresh your session, refresh token is no longer valid
+      if (result == null) {
+        return false;
+      }
+
+      return true;
+    }
+
+    if (fallbackToken != null) {
+      String? result = await refreshToken(fallbackToken);
 
       // Unable to refresh your session, refresh token is no longer valid
       if (result == null) {
