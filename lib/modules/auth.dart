@@ -32,7 +32,7 @@ class Auth {
 
       Map<String, dynamic> jwtPayload = Jwt.parseJwt(accessKey);
 
-      credentials = AuthCredentials(accessKey, refreshKey, jwtPayload["uid"]);
+      credentials = AuthCredentials(accessKey, refreshKey, jwtPayload["sub"]);
 
       String? result = await refreshToken(null);
 
