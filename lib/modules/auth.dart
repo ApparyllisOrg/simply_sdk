@@ -158,7 +158,9 @@ class Auth {
       return null;
     }
 
-    _invalidateAuth();
+    if (response.statusCode == 401) {
+      _invalidateAuth();
+    }
 
     return response.body;
   }
