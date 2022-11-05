@@ -59,6 +59,8 @@ class API {
     await _cache.initialize("");
     _network.initialize();
     _socket.bindAuthChanged();
+
+    await _events.load();
   }
 
   // Declare globals
