@@ -163,6 +163,36 @@ class Auth {
     return response.body;
   }
 
+  Future<String?> changeEmail(String currentEmail, String newEmail, String password) async {
+    Response response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/auth/email/change", "")), body: jsonEncode({"oldEmail": currentEmail, "password": password, "newEmail": newEmail})).catchError(((e) => generateFailedResponse(e)));
+    if (response.statusCode == 200) {
+      _getAuthDetailsFromResponse(response.body);
+      return null;
+    }
+
+    return response.body;
+  }
+
+  Future<String?> requestResetPassword(String email) async {
+    Response response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/auth/password/reset", "")), body: jsonEncode({"email": email})).catchError(((e) => generateFailedResponse(e)));
+    if (response.statusCode == 200) {
+      _getAuthDetailsFromResponse(response.body);
+      return null;
+    }
+
+    return response.body;
+  }
+
+  Future<String?> requestVerify() async {
+    Response response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/auth/verification/request", ""))).catchError(((e) => generateFailedResponse(e)));
+    if (response.statusCode == 200) {
+      _getAuthDetailsFromResponse(response.body);
+      return null;
+    }
+
+    return response.body;
+  }
+
   Future<String?> refreshToken(String? forceRefreshToken) async {
     Response response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/auth/refresh", "")), headers: {"Authorization": forceRefreshToken ?? (credentials._lastRefreshToken ?? "")}).catchError(((e) => generateFailedResponse(e)));
     if (response.statusCode == 200) {
@@ -191,5 +221,21 @@ class Auth {
   String? getUid() => credentials._lastUid;
   bool isAuthenticated() {
     return credentials.isAuthed();
+  }
+
+  bool isVerified() {
+    if (isAuthenticated()) {
+      Map<String, dynamic> jwtPayload = Jwt.parseJwt(credentials._lastToken ?? "");
+      return jwtPayload["verified"] == true;
+    }
+    return false;
+  }
+
+  String getEmail() {
+    if (isAuthenticated()) {
+      Map<String, dynamic> jwtPayload = Jwt.parseJwt(credentials._lastToken ?? "");
+      return jwtPayload["email"]!;
+    }
+    return "";
   }
 }
