@@ -63,7 +63,7 @@ class Event extends AbstractModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return {"events": jsonEncode(pendingEvents)};
+    return {"events": pendingEvents};
   }
 
   @override
