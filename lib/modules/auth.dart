@@ -170,13 +170,16 @@ class Auth {
       return null;
     }
 
-    return response.body;
+    if (response.statusCode == 400) {
+      return "Invalid password or email";
+    } else {
+      return response.body;
+    }
   }
 
   Future<String?> requestResetPassword(String email) async {
     Response response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/auth/password/reset", "")), body: jsonEncode({"email": email})).catchError(((e) => generateFailedResponse(e)));
     if (response.statusCode == 200) {
-      _getAuthDetailsFromResponse(response.body);
       return null;
     }
 
@@ -186,7 +189,6 @@ class Auth {
   Future<String?> requestVerify() async {
     Response response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/auth/verification/request", ""))).catchError(((e) => generateFailedResponse(e)));
     if (response.statusCode == 200) {
-      _getAuthDetailsFromResponse(response.body);
       return null;
     }
 
