@@ -74,6 +74,6 @@ class Event extends AbstractModel {
 
   @override
   String getFileName() {
-    throw "events";
+    return "events";
   }
 }
