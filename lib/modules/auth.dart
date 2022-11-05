@@ -112,7 +112,11 @@ class Auth {
 
     _invalidateAuth();
 
-    return response.body;
+    if (response.statusCode == 400) {
+      return "Unknown user or password";
+    } else {
+      return response.body;
+    }
   }
 
   Future<String?> loginEmailPassword(String email, String password) async {
@@ -124,7 +128,11 @@ class Auth {
 
     _invalidateAuth();
 
-    return response.body;
+    if (response.statusCode == 400) {
+      return "Unknown user or password";
+    } else {
+      return response.body;
+    }
   }
 
   Future<String?> registerGoogle(String credential) async {
