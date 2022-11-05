@@ -178,7 +178,7 @@ class Auth {
   }
 
   Future<String?> requestResetPassword(String email) async {
-    Response response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/auth/password/reset", "")), body: jsonEncode({"email": email})).catchError(((e) => generateFailedResponse(e)));
+    Response response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/auth/password/reset", "email=$email"))).catchError(((e) => generateFailedResponse(e)));
     if (response.statusCode == 200) {
       return null;
     }
