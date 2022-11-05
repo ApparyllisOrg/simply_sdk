@@ -135,7 +135,11 @@ class Auth {
     }
   }
 
-  void logout() {
+  void logout() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.remove("access_key");
+    pref.remove("refresh_key");
+
     _invalidateAuth();
   }
 
