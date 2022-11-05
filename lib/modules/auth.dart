@@ -135,6 +135,10 @@ class Auth {
     }
   }
 
+  void logout() {
+    _invalidateAuth();
+  }
+
   Future<String?> registerGoogle(String credential) async {
     Response response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/auth/register/oauth/google", "")), body: jsonEncode({"credential": credential})).catchError(((e) => generateFailedResponse(e)));
     if (response.statusCode == 200) {
