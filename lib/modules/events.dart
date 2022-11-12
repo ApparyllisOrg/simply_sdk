@@ -69,7 +69,12 @@ class Event extends AbstractModel {
   @override
   copyFromJson(Map<String, dynamic> json) {
     if (json.containsKey("events")) {
-      pendingEvents = (json["events"] as List<dynamic>).map((e) => EventData("", 0)..constructFromJson(jsonDecode(e) as Map<String, dynamic>)).toList();
+      pendingEvents = (json["events"] as List<dynamic>).map((e) {
+        if (e is String) {
+          return EventData("", 0)..constructFromJson(jsonDecode(e) as Map<String, dynamic>);
+        }
+        return EventData("", 0)..constructFromJson(e as Map<String, dynamic>);
+      }).toList();
     } else {
       pendingEvents = [];
     }
