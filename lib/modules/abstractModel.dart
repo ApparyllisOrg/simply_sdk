@@ -39,7 +39,12 @@ abstract class AbstractModel extends ChangeNotifier {
     if (kIsWeb) {
       bool dbExists = html.window.localStorage.containsKey(getFileName());
       if (dbExists) {
-        copyFromJson(jsonDecode(dbExists ? html.window.localStorage[getFileName()] ?? "{}" : "{}"));
+        dynamic storedData = dbExists ? (html.window.localStorage[getFileName()] ?? "{}") : "{}";
+        if (storedData is String) {
+          copyFromJson(jsonDecode(storedData));
+        } else {
+          copyFromJson(storedData as Map<String, dynamic>);
+        }
       }
     } else {
       String filePath = await getFilePath();
