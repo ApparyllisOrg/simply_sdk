@@ -61,6 +61,8 @@ abstract class AbstractModel extends ChangeNotifier {
         } catch (e) {
           copyFromJson({});
         }
+      } else {
+        copyFromJson({});
       }
     }
   }
