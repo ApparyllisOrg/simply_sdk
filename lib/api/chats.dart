@@ -159,12 +159,12 @@ class Channels extends Collection<ChannelData> {
   Future<List<Document<ChannelData>>> getAll() async {
     var collection = await getCollection<ChannelData>("v1/chat/channels", "", type);
 
-    List<Document<ChannelData>> polls = collection.data.map<Document<ChannelData>>((e) => Document(e["exists"], e["id"], ChannelData()..constructFromJson(e["content"]), type)).toList();
+    List<Document<ChannelData>> channels = collection.data.map<Document<ChannelData>>((e) => Document(e["exists"], e["id"], ChannelData()..constructFromJson(e["content"]), type)).toList();
     if (!collection.useOffline) {
       API().cache().clearTypeCache(type);
-      API().cache().cacheListOfDocuments(polls);
+      API().cache().cacheListOfDocuments(channels);
     }
-    return polls;
+    return channels;
   }
 
   @override
@@ -200,12 +200,12 @@ class ChannelCategories extends Collection<ChannelCategoryData> {
   Future<List<Document<ChannelCategoryData>>> getAll() async {
     var collection = await getCollection<ChannelCategoryData>("v1/chat/categories", "", type);
 
-    List<Document<ChannelCategoryData>> polls = collection.data.map<Document<ChannelCategoryData>>((e) => Document(e["exists"], e["id"], ChannelCategoryData()..constructFromJson(e["content"]), type)).toList();
+    List<Document<ChannelCategoryData>> channels = collection.data.map<Document<ChannelCategoryData>>((e) => Document(e["exists"], e["id"], ChannelCategoryData()..constructFromJson(e["content"]), type)).toList();
     if (!collection.useOffline) {
       API().cache().clearTypeCache(type);
-      API().cache().cacheListOfDocuments(polls);
+      API().cache().cacheListOfDocuments(channels);
     }
-    return polls;
+    return channels;
   }
 
   @override
@@ -337,7 +337,12 @@ class ChatMessages extends AbstractModel {
 
   @override
   copyFromJson(Map<String, dynamic> json) {
-    _recentMessages = (json['messages'] as List<dynamic>).map((json) => ChatMessageDataId(ChatMessageData()..constructFromJson(json), json["id"])).toList();
+    if (json.containsKey("messages")) {
+      _recentMessages = (json['messages'] as List<dynamic>).map((json) => ChatMessageDataId(ChatMessageData()..constructFromJson(json), json["id"])).toList();
+    } else {
+      _recentMessages = [];
+    }
+
     return this;
   }
 
