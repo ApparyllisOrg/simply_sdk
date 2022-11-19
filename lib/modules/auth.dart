@@ -36,23 +36,23 @@ class Auth {
 
       String? result = await refreshToken(null);
 
-      // Unable to refresh your session, refresh token is no longer valid
       if (result == null) {
-        return false;
+        return true;
       }
 
-      return true;
+      // Unable to refresh your session, refresh token is no longer valid
+      return false;
     }
 
     if (fallbackToken != null) {
       String? result = await refreshToken(fallbackToken);
 
-      // Unable to refresh your session, refresh token is no longer valid
       if (result == null) {
-        return false;
+        return true;
       }
 
-      return true;
+      // Unable to refresh your session, refresh token is no longer valid
+      return false;
     }
 
     return false;
