@@ -10,11 +10,19 @@ class RequestResponse {
 }
 
 RequestResponse createResponseObject(Response response) {
-  var jsonResponse = jsonDecode(response.body);
-  if (response.statusCode == 200 && jsonResponse["success"] == true) {
-    return RequestResponse(true, jsonResponse["msg"] ?? "");
-  } else {
-    return RequestResponse(false, jsonResponse["msg"] ?? "");
+  try {
+    var jsonResponse = jsonDecode(response.body);
+    if (response.statusCode == 200 && jsonResponse["success"] == true) {
+      return RequestResponse(true, jsonResponse["msg"] ?? "");
+    } else {
+      return RequestResponse(false, jsonResponse["msg"] ?? "");
+    }
+  } catch (e) {
+    if (response.statusCode == 200) {
+      return RequestResponse(true, response.body);
+    } else {
+      return RequestResponse(false, response.body);
+    }
   }
 }
 
