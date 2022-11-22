@@ -266,7 +266,7 @@ class Users extends Collection<UserData> {
 
   Future<RequestResponse> setUsername(String newUsername, String userId) async {
     try {
-      var response = await SimplyHttpClient().patch(Uri.parse(API().connection().getRequestUrl("v1/user/username/$userId", "")), body: jsonEncode({"username": newUsername}));
+      var response = await SimplyHttpClient().patch(Uri.parse(API().connection().getRequestUrl("v1/user/username/$userId", "")), body: jsonEncode({"username": newUsername})).catchError((e) => generateFailedResponse(e));
 
       return createResponseObject(response);
     } catch (e) {}
@@ -278,7 +278,7 @@ class Users extends Collection<UserData> {
       return RequestResponse(false, "You must specify at least one generation type");
     }
     try {
-      var response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/user/generateReport", "")), body: jsonEncode(data.toJson()));
+      var response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/user/generateReport", "")), body: jsonEncode(data.toJson())).catchError((e) => generateFailedResponse(e));
       return createResponseObject(response);
     } catch (e) {}
     return createFailResponseObject();
@@ -286,7 +286,7 @@ class Users extends Collection<UserData> {
 
   Future<RequestResponse> deleteAccount() async {
     try {
-      var response = await SimplyHttpClient().delete(Uri.parse(API().connection().getRequestUrl("v1/user/${API().auth().getUid()}", "")), body: jsonEncode({"performDelete": true}));
+      var response = await SimplyHttpClient().delete(Uri.parse(API().connection().getRequestUrl("v1/user/${API().auth().getUid()}", "")), body: jsonEncode({"performDelete": true})).catchError((e) => generateFailedResponse(e));
       return createResponseObject(response);
     } catch (e) {}
     return createFailResponseObject();
@@ -294,7 +294,7 @@ class Users extends Collection<UserData> {
 
   Future<RequestResponse> deleteUserReport(String reportId) async {
     try {
-      var response = await SimplyHttpClient().delete(Uri.parse(API().connection().getRequestUrl("v1/user/${API().auth().getUid()}/report/$reportId", "")));
+      var response = await SimplyHttpClient().delete(Uri.parse(API().connection().getRequestUrl("v1/user/${API().auth().getUid()}/report/$reportId", ""))).catchError((e) => generateFailedResponse(e));
       return createResponseObject(response);
     } catch (e) {}
     return createFailResponseObject();
@@ -302,7 +302,7 @@ class Users extends Collection<UserData> {
 
   Future<RequestResponse> exportData() async {
     try {
-      var response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/user/${API().auth().getUid()}/export", "")));
+      var response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/user/${API().auth().getUid()}/export", ""))).catchError((e) => generateFailedResponse(e));
       return createResponseObject(response);
     } catch (e) {}
     return createFailResponseObject();
