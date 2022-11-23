@@ -24,6 +24,7 @@ import 'package:simply_sdk/modules/cache.dart';
 import 'package:simply_sdk/modules/config.dart';
 import 'package:simply_sdk/modules/connection.dart';
 import 'package:simply_sdk/modules/debug.dart';
+import 'package:simply_sdk/modules/eventListener.dart';
 import 'package:simply_sdk/modules/events.dart';
 import 'package:simply_sdk/modules/socket.dart';
 import 'package:simply_sdk/modules/store.dart';
@@ -73,6 +74,7 @@ class API {
   final RemoteConfig _remoteConfig = RemoteConfig();
   final Debug _debug = Debug();
   final Event _events = Event();
+  final EventListener _eventListener = EventListener();
 
   // Declare Api globals
   final AutomatedTimers _automatedTimers = AutomatedTimers();
@@ -106,6 +108,7 @@ class API {
   RemoteConfig remoteConfig() => _remoteConfig;
   Debug debug() => _debug;
   Event event() => _events;
+  EventListener eventListener() => _eventListener;
 
   // Declare Api global getters
   AutomatedTimers automatedTimers() => _automatedTimers;

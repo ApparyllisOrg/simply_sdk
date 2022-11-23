@@ -137,6 +137,10 @@ void propogateChanges(String type, String id, dynamic data, EChangeType changeTy
     case "channels":
       API().channels().propogateChanges(Document(true, id, data, "Comments"), changeType);
       break;
+    case "ChatMessages":
+    case "chatMessages":
+      API().eventListener().onEvent("chatMessages", Document(true, id, data, "ChatMessages"), changeType);
+      break;
   }
 }
 

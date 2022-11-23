@@ -215,9 +215,46 @@ class ChannelCategories extends Collection<ChannelCategoryData> {
 }
 
 class ChatMessages extends AbstractModel {
-  String categoryId = "";
+  String channelId = "";
 
-  void setCategoryId(String id) => categoryId = id;
+  ChatMessages() {
+    API().eventListener().registerCallback(onMessageChange);
+  }
+
+  void onMessageChange(String type, Document<dynamic> doc, EChangeType changeType) {
+    if (type == "chatMessages" || type == "ChatMessages") {
+      Document<ChatMessageData> msg = doc as Document<ChatMessageData>;
+      if (msg.dataObject.channel == channelId) {
+        if (changeType == EChangeType.Add) {
+          if (_recentMessages.indexWhere((element) => element.id == msg.id) == -1) {
+            if (_recentMessages.length > 0) {
+              if (_recentMessages.first.writtenAt! < msg.dataObject.writtenAt!) {
+                _insertMessageToCache(msg.dataObject, msg.id, false);
+                return;
+              }
+            }
+          }
+        }
+
+        if (changeType == EChangeType.Update) {
+          _recentMessages.forEach((element) {
+            if (element.id == msg.id) {
+              element.message = msg.dataObject.message!;
+              element.updatedAt = msg.dataObject.updatedAt;
+            }
+          });
+        }
+
+        if (changeType == EChangeType.Delete) {
+          _recentMessages.removeWhere((element) => element.id == msg.id);
+        }
+
+        notifyListeners();
+      }
+    }
+  }
+
+  void setCategoryId(String id) => channelId = id;
 
   List<ChatMessageDataId> _recentMessages = [];
 
@@ -247,7 +284,7 @@ class ChatMessages extends AbstractModel {
       query += "&skip=$start";
     }
 
-    var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/chat/messages/$categoryId", query))).catchError(((e) => generateFailedResponse(e)));
+    var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/chat/messages/$channelId", query))).catchError(((e) => generateFailedResponse(e)));
     if (response.statusCode == 200) {
       CollectionResponse<ChatMessageData> collection = CollectionResponse<ChatMessageData>();
       collection.useOffline = false;
@@ -359,6 +396,6 @@ class ChatMessages extends AbstractModel {
 
   @override
   String getFileName() {
-    return 'messages_$categoryId';
+    return 'messages_$channelId';
   }
 }
