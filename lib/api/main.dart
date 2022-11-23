@@ -86,6 +86,9 @@ DocumentData jsonDataToDocumentData(String type, Map<String, dynamic> data) {
     case "Channels":
     case "channels":
       return ChannelData()..constructFromJson(data);
+    case "ChatMessages":
+    case "chatMessages":
+      return ChatMessageData()..constructFromJson(data);
   }
 
   return EmptyDocumentData();
@@ -139,7 +142,7 @@ void propogateChanges(String type, String id, dynamic data, EChangeType changeTy
       break;
     case "ChatMessages":
     case "chatMessages":
-      API().eventListener().onEvent("chatMessages", Document(true, id, data, "ChatMessages"), changeType);
+      API().eventListener().onEvent("chatMessages", Document<ChatMessageData>(true, id, data, "ChatMessages"), changeType);
       break;
   }
 }
