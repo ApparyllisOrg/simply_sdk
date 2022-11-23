@@ -286,7 +286,7 @@ class Users extends Collection<UserData> {
 
   Future<RequestResponse> deleteAccount() async {
     try {
-      var response = await SimplyHttpClient().delete(Uri.parse(API().connection().getRequestUrl("v1/user/${API().auth().getUid()}", "")), body: jsonEncode({"performDelete": true})).catchError((e) => generateFailedResponse(e));
+      var response = await SimplyHttpClient().delete(Uri.parse(API().connection().getRequestUrl("v1/user/${API().auth().getUid()}", "")), body: jsonEncode({"performDelete": true})).catchError((e) => createResponseObject(e));
       return createResponseObject(response);
     } catch (e) {}
     return createFailResponseObject();
@@ -294,7 +294,7 @@ class Users extends Collection<UserData> {
 
   Future<RequestResponse> deleteUserReport(String reportId) async {
     try {
-      var response = await SimplyHttpClient().delete(Uri.parse(API().connection().getRequestUrl("v1/user/${API().auth().getUid()}/report/$reportId", ""))).catchError((e) => generateFailedResponse(e));
+      var response = await SimplyHttpClient().delete(Uri.parse(API().connection().getRequestUrl("v1/user/${API().auth().getUid()}/report/$reportId", ""))).catchError((e) => createResponseObject(e));
       return createResponseObject(response);
     } catch (e) {}
     return createFailResponseObject();
@@ -302,7 +302,7 @@ class Users extends Collection<UserData> {
 
   Future<RequestResponse> exportData() async {
     try {
-      var response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/user/${API().auth().getUid()}/export", ""))).catchError((e) => generateFailedResponse(e));
+      var response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/user/${API().auth().getUid()}/export", ""))).catchError((e) => createResponseObject(e));
       return createResponseObject(response);
     } catch (e) {}
     return createFailResponseObject();

@@ -145,9 +145,9 @@ class Auth {
     _invalidateAuth();
   }
 
-  Future<String?> registerGoogle(String credential) async {
-    Response response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/auth/register/oauth/google", "")), body: jsonEncode({"credential": credential})).catchError(((e) => generateFailedResponse(e))).timeout(Duration(seconds: 10));
-    ;
+  Future<String?> loginGoogle(String credential) async {
+    Response response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/auth/login/oauth/google", "")), body: jsonEncode({"credential": credential})).catchError(((e) => generateFailedResponse(e))).timeout(Duration(seconds: 10));
+
     if (response.statusCode == 200) {
       _getAuthDetailsFromResponse(response.body);
       return null;
@@ -158,9 +158,9 @@ class Auth {
     return response.body;
   }
 
-  Future<String?> loginGoogle(String credential) async {
-    Response response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/auth/login/oauth/google", "")), body: jsonEncode({"credential": credential})).catchError(((e) => generateFailedResponse(e))).timeout(Duration(seconds: 10));
-    ;
+  Future<String?> loginApple(String credential) async {
+    Response response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/auth/login/oauth/apple", "")), body: jsonEncode({"credential": credential})).catchError(((e) => generateFailedResponse(e))).timeout(Duration(seconds: 10));
+
     if (response.statusCode == 200) {
       _getAuthDetailsFromResponse(response.body);
       return null;
@@ -173,7 +173,7 @@ class Auth {
 
   Future<String?> changeEmail(String currentEmail, String newEmail, String password) async {
     Response response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/auth/email/change", "")), body: jsonEncode({"oldEmail": currentEmail, "password": password, "newEmail": newEmail})).catchError(((e) => generateFailedResponse(e))).timeout(Duration(seconds: 10));
-    ;
+
     if (response.statusCode == 200) {
       _getAuthDetailsFromResponse(response.body);
       return null;
@@ -188,7 +188,7 @@ class Auth {
 
   Future<String?> requestResetPassword(String email) async {
     Response response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/auth/password/reset", "email=$email"))).catchError(((e) => generateFailedResponse(e))).timeout(Duration(seconds: 10));
-    ;
+
     if (response.statusCode == 200) {
       return null;
     }
