@@ -226,13 +226,15 @@ class ChatMessages extends AbstractModel {
       Document<ChatMessageData> msg = doc as Document<ChatMessageData>;
       if (msg.dataObject.channel == channelId) {
         if (changeType == EChangeType.Add) {
-          if (_recentMessages.indexWhere((element) => element.id == msg.id) == -1) {
-            if (_recentMessages.length > 0) {
-              if (_recentMessages.first.writtenAt! < msg.dataObject.writtenAt!) {
-                _insertMessageToCache(msg.dataObject, msg.id, false);
-                return;
-              }
-            }
+          int msgIndex = _recentMessages.indexWhere((element) => element.id == msg.id);
+
+          if (msgIndex != -1) {
+            return;
+          }
+
+          if (_recentMessages.first.writtenAt! < msg.dataObject.writtenAt!) {
+            _insertMessageToCache(msg.dataObject, msg.id, false);
+            return;
           }
         }
 
