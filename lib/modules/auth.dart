@@ -23,7 +23,7 @@ class Auth {
 
   List<Function(AuthCredentials)?> onAuthChange = [];
 
-  Future<bool> initializeOffline(String? fallbackToken) async {
+  Future<bool> initializeOffline() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
 
     if ((pref.containsKey("access_key") && pref.containsKey("refresh_key"))) {

@@ -197,17 +197,22 @@ class Network {
             switch (request.method) {
               case HttpRequestMethod.Delete:
                 {
-                  response = await SimplyHttpClient().delete(uri, headers: {"Operation-Time": request.timestamp.toString()}).catchError(((e) => generateFailedResponse(e)));
+                  response = await SimplyHttpClient()
+                      .delete(uri, headers: {"Operation-Time": request.timestamp.toString()}).catchError(((e) => generateFailedResponse(e)));
                   break;
                 }
               case HttpRequestMethod.Patch:
                 {
-                  response = await SimplyHttpClient().patch(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload ?? "{}")).catchError(((e) => generateFailedResponse(e)));
+                  response = await SimplyHttpClient()
+                      .patch(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload ?? "{}"))
+                      .catchError(((e) => generateFailedResponse(e)));
                   break;
                 }
               case HttpRequestMethod.Post:
                 {
-                  response = await SimplyHttpClient().post(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload ?? "{}")).catchError(((e) => generateFailedResponse(e)));
+                  response = await SimplyHttpClient()
+                      .post(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload ?? "{}"))
+                      .catchError(((e) => generateFailedResponse(e)));
                   break;
                 }
               default:
@@ -226,13 +231,17 @@ class Network {
 
             if (acceptedResponseCodes.contains(responseCode)) {
               if (reportResponseCodes.contains(responseCode)) {
-                API().reportError("[$responseCode] during ${request.method} => ${request.path}. Response is ${response?.body ?? ""}", StackTrace.current);
+                String error = "[$responseCode] during ${request.method} => ${request.path}. Response is ${response?.body ?? ""}";
+                API().reportError(error, StackTrace.current);
+                API().debug().logError(error);
               }
               _pendingRequests.remove(request);
               if (request.onDone != null) request.onDone!();
             } else {
               if (!ignoreResponseCodes.contains(responseCode)) {
-                API().reportError("[$responseCode] during ${request.method} => ${request.path}. Response is ${response?.body ?? ""}", StackTrace.current);
+                String error = "[$responseCode] during ${request.method} => ${request.path}. Response is ${response?.body ?? ""}";
+                API().reportError(error, StackTrace.current);
+                API().debug().logError(error);
               }
               print(response?.body);
             }
