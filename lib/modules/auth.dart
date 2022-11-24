@@ -23,6 +23,20 @@ class Auth {
 
   List<Function(AuthCredentials)?> onAuthChange = [];
 
+  Future<bool> initializeOffline(String? fallbackToken) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+
+    if ((pref.containsKey("access_key") && pref.containsKey("refresh_key"))) {
+      String accessKey = pref.getString("access_key")!;
+      String refreshKey = pref.getString("refresh_key")!;
+      Map<String, dynamic> jwtPayload = Jwt.parseJwt(accessKey);
+      credentials = AuthCredentials(accessKey, refreshKey, jwtPayload["sub"]);
+      return credentials.isAuthed();
+    }
+
+    return false;
+  }
+
   Future<bool> initialize(String? fallbackToken) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
 
