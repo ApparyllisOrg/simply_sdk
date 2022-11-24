@@ -3,7 +3,6 @@ import 'package:simply_sdk/api/members.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
 
-import 'simply_sdk_test.dart';
 
 void runTests(userId) {
   test('initialize store', () async {

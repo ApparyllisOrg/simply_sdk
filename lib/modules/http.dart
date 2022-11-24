@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:logging/logging.dart';
-import 'package:simply_sdk/modules/network.dart';
 import '../simply_sdk.dart';
 
 List<String> nonLoggableRequests = ["/v1/event", "/v1/event/open"];

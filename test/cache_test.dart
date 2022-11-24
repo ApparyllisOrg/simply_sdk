@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 
-import 'simply_sdk_test.dart';
 
 void runTests(userId) {
   test('initialize cache', () async {

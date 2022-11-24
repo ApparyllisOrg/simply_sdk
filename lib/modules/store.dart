@@ -3,7 +3,6 @@ import 'package:simply_sdk/api/frontHistory.dart';
 import 'package:simply_sdk/api/groups.dart';
 import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/api/members.dart';
-import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';

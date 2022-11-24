@@ -1,8 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:simply_sdk/api/members.dart';
 import 'package:simply_sdk/api/pk.dart';
-import 'package:simply_sdk/api/privates.dart';
-import 'package:simply_sdk/api/users.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
 

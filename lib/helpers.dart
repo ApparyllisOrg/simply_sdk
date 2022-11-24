@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 
-import 'api/members.dart';
 import 'modules/collection.dart';
 
 enum EUpdateType { Add, Update, Remove }

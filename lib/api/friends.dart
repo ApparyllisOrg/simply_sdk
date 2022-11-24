@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:http/http.dart';
-import 'package:logging/logging.dart';
 import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/api/users.dart';
 import 'package:simply_sdk/helpers.dart';

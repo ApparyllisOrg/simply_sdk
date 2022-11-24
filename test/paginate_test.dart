@@ -1,11 +1,8 @@
 import 'package:http/http.dart';
-import 'package:simply_sdk/api/members.dart';
 import 'package:simply_sdk/helpers.dart';
-import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/widgets/paginate.dart';
 import 'package:test/test.dart';
 
-import 'simply_sdk_test.dart';
 
 void runTests(userId) {
   test('get first page', () async {

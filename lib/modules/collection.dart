@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:simply_sdk/types/document.dart';
 
 abstract class DocumentData {

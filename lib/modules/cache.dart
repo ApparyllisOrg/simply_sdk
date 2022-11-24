@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:logging/logging.dart';
-import 'package:simply_sdk/api/chats.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/types/document.dart';
 import "package:universal_html/html.dart" as html;

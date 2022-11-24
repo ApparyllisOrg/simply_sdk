@@ -8,7 +8,6 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:simply_sdk/helpers.dart';
 import "package:universal_html/html.dart" as html;
-import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:simply_sdk/modules/http.dart';
 

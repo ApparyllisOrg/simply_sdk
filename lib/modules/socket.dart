@@ -3,12 +3,9 @@ import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:flutter/foundation.dart';
-import 'package:logging/logging.dart';
 import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/modules/auth.dart';
 import 'package:simply_sdk/modules/collection.dart';
-import 'package:simply_sdk/types/document.dart';
-import 'package:web_socket_channel/io.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 

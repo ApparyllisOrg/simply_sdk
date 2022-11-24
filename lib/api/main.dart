@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:http/http.dart';
-import 'package:logging/logging.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:simply_sdk/api/automatedTimers.dart';
 import 'package:simply_sdk/api/chats.dart';
