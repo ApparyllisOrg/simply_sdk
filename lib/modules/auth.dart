@@ -118,7 +118,10 @@ class Auth {
   }
 
   Future<String?> registerEmailPassword(String email, String password) async {
-    Response response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/auth/register", "")), body: jsonEncode({"email": email, "password": password})).catchError(((e) => generateFailedResponse(e))).timeout(Duration(seconds: 10));
+    Response response = await SimplyHttpClient()
+        .post(Uri.parse(API().connection().getRequestUrl("v1/auth/register", "")), body: jsonEncode({"email": email, "password": password}))
+        .catchError(((e) => generateFailedResponse(e)))
+        .timeout(Duration(seconds: 10));
     ;
     if (response.statusCode == 200) {
       _getAuthDetailsFromResponse(response.body);
@@ -135,7 +138,10 @@ class Auth {
   }
 
   Future<String?> loginEmailPassword(String email, String password) async {
-    Response response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/auth/login", "")), body: jsonEncode({"email": email, "password": password})).catchError(((e) => generateFailedResponse(e))).timeout(Duration(seconds: 10));
+    Response response = await SimplyHttpClient()
+        .post(Uri.parse(API().connection().getRequestUrl("v1/auth/login", "")), body: jsonEncode({"email": email, "password": password}))
+        .catchError(((e) => generateFailedResponse(e)))
+        .timeout(Duration(seconds: 10));
     ;
     if (response.statusCode == 200) {
       _getAuthDetailsFromResponse(response.body);
@@ -160,7 +166,10 @@ class Auth {
   }
 
   Future<String?> loginGoogle(String credential) async {
-    Response response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/auth/login/oauth/google", "")), body: jsonEncode({"credential": credential})).catchError(((e) => generateFailedResponse(e))).timeout(Duration(seconds: 10));
+    Response response = await SimplyHttpClient()
+        .post(Uri.parse(API().connection().getRequestUrl("v1/auth/login/oauth/google", "")), body: jsonEncode({"credential": credential}))
+        .catchError(((e) => generateFailedResponse(e)))
+        .timeout(Duration(seconds: 10));
 
     if (response.statusCode == 200) {
       _getAuthDetailsFromResponse(response.body);
@@ -173,7 +182,10 @@ class Auth {
   }
 
   Future<String?> loginApple(String credential) async {
-    Response response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/auth/login/oauth/apple", "")), body: jsonEncode({"credential": credential})).catchError(((e) => generateFailedResponse(e))).timeout(Duration(seconds: 10));
+    Response response = await SimplyHttpClient()
+        .post(Uri.parse(API().connection().getRequestUrl("v1/auth/login/oauth/apple", "")), body: jsonEncode({"credential": credential}))
+        .catchError(((e) => generateFailedResponse(e)))
+        .timeout(Duration(seconds: 10));
 
     if (response.statusCode == 200) {
       _getAuthDetailsFromResponse(response.body);
@@ -186,7 +198,11 @@ class Auth {
   }
 
   Future<String?> changeEmail(String currentEmail, String newEmail, String password) async {
-    Response response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/auth/email/change", "")), body: jsonEncode({"oldEmail": currentEmail, "password": password, "newEmail": newEmail})).catchError(((e) => generateFailedResponse(e))).timeout(Duration(seconds: 10));
+    Response response = await SimplyHttpClient()
+        .post(Uri.parse(API().connection().getRequestUrl("v1/auth/email/change", "")),
+            body: jsonEncode({"oldEmail": currentEmail, "password": password, "newEmail": newEmail}))
+        .catchError(((e) => generateFailedResponse(e)))
+        .timeout(Duration(seconds: 10));
 
     if (response.statusCode == 200) {
       _getAuthDetailsFromResponse(response.body);
@@ -201,7 +217,10 @@ class Auth {
   }
 
   Future<String?> requestResetPassword(String email) async {
-    Response response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/auth/password/reset", "email=$email"))).catchError(((e) => generateFailedResponse(e))).timeout(Duration(seconds: 10));
+    Response response = await SimplyHttpClient()
+        .get(Uri.parse(API().connection().getRequestUrl("v1/auth/password/reset", "email=$email")))
+        .catchError(((e) => generateFailedResponse(e)))
+        .timeout(Duration(seconds: 10));
 
     if (response.statusCode == 200) {
       return null;
@@ -211,7 +230,10 @@ class Auth {
   }
 
   Future<String?> requestVerify() async {
-    Response response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/auth/verification/request", ""))).catchError(((e) => generateFailedResponse(e))).timeout(Duration(seconds: 10));
+    Response response = await SimplyHttpClient()
+        .post(Uri.parse(API().connection().getRequestUrl("v1/auth/verification/request", "")))
+        .catchError(((e) => generateFailedResponse(e)))
+        .timeout(Duration(seconds: 10));
     if (response.statusCode == 200) {
       return null;
     }
@@ -220,7 +242,11 @@ class Auth {
   }
 
   Future<String?> refreshToken(String? forceRefreshToken) async {
-    Response response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/auth/refresh", "")), headers: {"Authorization": forceRefreshToken ?? (credentials._lastRefreshToken ?? "")}).catchError(((e) => generateFailedResponse(e))).timeout(Duration(seconds: 10));
+    Response response = await SimplyHttpClient()
+        .get(Uri.parse(API().connection().getRequestUrl("v1/auth/refresh", "")),
+            headers: {"Authorization": forceRefreshToken ?? (credentials._lastRefreshToken ?? "")})
+        .catchError(((e) => generateFailedResponse(e)))
+        .timeout(Duration(seconds: 10));
     if (response.statusCode == 200) {
       _getAuthDetailsFromResponse(response.body);
       return null;
@@ -234,7 +260,8 @@ class Auth {
   }
 
   Future<String?> remoteCheckIsRefreshTokenValid(String? forceRefreshToken) async {
-    Response response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/auth/refresh/valid", "")), headers: {"Authorization": forceRefreshToken ?? (credentials._lastRefreshToken ?? "")}).catchError(((e) => generateFailedResponse(e)));
+    Response response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/auth/refresh/valid", "")),
+        headers: {"Authorization": forceRefreshToken ?? (credentials._lastRefreshToken ?? "")}).catchError(((e) => generateFailedResponse(e)));
 
     if (response.statusCode == 200) {
       return null;
@@ -252,9 +279,9 @@ class Auth {
   bool isVerified() {
     if (isAuthenticated()) {
       Map<String, dynamic> jwtPayload = Jwt.parseJwt(credentials._lastToken ?? "");
-      return jwtPayload["verified"] == true;
+      return jwtPayload["verified"] != false;
     }
-    return false;
+    return true;
   }
 
   String getEmail() {
