@@ -26,7 +26,7 @@ String getRandString(int len) {
 void main() {
   Logger.root.level = Level.ALL;
   API().connection().setCurrentHost("http://localhost:3000");
-  API().auth().setLastAuthToken("HvmRXTOBjp0nFbTxDx/t8ztim14BttGx2GQlS18cOAqLcf0569iDPEuEi16QxIjM", userId);
+  //API().auth().setLastAuthToken("HvmRXTOBjp0nFbTxDx/t8ztim14BttGx2GQlS18cOAqLcf0569iDPEuEi16QxIjM", userId);
   socket.runTests(userId);
   user.runTests(userId);
   pk.runTests(userId);

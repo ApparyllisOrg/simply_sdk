@@ -12,7 +12,7 @@ String pkUnitTestToken = "zsVjrLAbMii9qksAY5pxw11FO609XaCnp2LjF56p5zVRjrYCgycfHZ
 
 void runTests(userId) {
   test('sync all members from pk', () async {
-    API().pk().syncMembersFromPk(PKSyncSettings(true, false, true, true, true, true), PKSyncAllSettings(true, true), pkUnitTestToken);
+    //API().pk().syncMembersFromPk(PKSyncSettings(true, false, true, true, true, true), PKSyncAllSettings(true, true), pkUnitTestToken);
   });
 
   test('Update member in sp', () async {
@@ -35,6 +35,6 @@ void runTests(userId) {
   });
 
   test('sync all members to pk', () async {
-    API().pk().syncMembersToPk(PKSyncSettings(true, false, true, true, true, true), PKSyncAllSettings(true, true), pkUnitTestToken);
+    //API().pk().syncMembersToPk(PKSyncSettings(true, false, true, true, true, true), PKSyncAllSettings(true, true), pkUnitTestToken);
   });
 }
