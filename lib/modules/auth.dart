@@ -53,7 +53,7 @@ class Auth {
 
       credentials = AuthCredentials(accessKey, refreshKey, jwtPayload["sub"]);
 
-      String? result = await refreshToken(null);
+      String? result = await refreshToken(null, bNotify: false);
 
       if (result == null) {
         return true;
@@ -64,7 +64,7 @@ class Auth {
     }
 
     if (fallbackToken != null) {
-      String? result = await refreshToken(fallbackToken);
+      String? result = await refreshToken(fallbackToken, bNotify: false);
 
       if (result == null) {
         return true;
@@ -128,12 +128,12 @@ class Auth {
     }
   }
 
-  void _invalidateAuth() {
+  void _invalidateAuth({bool bNotify = true}) {
     bool previousAuthed = credentials.isAuthed();
 
     credentials = AuthCredentials(null, null, null);
 
-    if (credentials.isAuthed() != previousAuthed) {
+    if (credentials.isAuthed() != previousAuthed && bNotify) {
       _notifyAuthChange();
     }
   }
@@ -262,7 +262,7 @@ class Auth {
     return response.body;
   }
 
-  Future<String?> refreshToken(String? forceRefreshToken) async {
+  Future<String?> refreshToken(String? forceRefreshToken, {bool bNotify = true}) async {
     if (!credentials.isAuthed()) {
       return "Not authenticated";
     }
@@ -278,7 +278,7 @@ class Auth {
     }
 
     if (response.statusCode == 401) {
-      _invalidateAuth();
+      _invalidateAuth(bNotify: bNotify);
     }
 
     return response.body;
