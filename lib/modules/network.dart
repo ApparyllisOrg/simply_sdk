@@ -182,7 +182,7 @@ class Network {
     try {
       List<Future> requestsToSend = [];
       int numPendingRequests = _pendingRequests.length;
-      for (int i = 0; i < min(2, _pendingRequests.length); i++) {
+      for (int i = 0; i < min(2, _pendingRequests.length) && API().auth().isAuthenticated(); i++) {
         NetworkRequest request = _pendingRequests[i];
 
         requestsToSend.add(Future(() async {
@@ -225,7 +225,9 @@ class Network {
             int responseCode = response?.statusCode ?? 0;
 
             if (responseCode == 401) {
-              await API().auth().refreshToken(null);
+              if (API().auth().isAuthenticated()) {
+                await API().auth().refreshToken(null);
+              }
             }
 
             if (acceptedResponseCodes.contains(responseCode)) {

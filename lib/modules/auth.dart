@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:mongo_dart/mongo_dart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simply_sdk/modules/http.dart';
 import 'package:simply_sdk/simply_sdk.dart';
@@ -26,6 +27,8 @@ class Auth {
   Future<bool> initializeOffline() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
 
+    checkJwtValidity();
+
     if ((pref.containsKey("access_key") && pref.containsKey("refresh_key"))) {
       String accessKey = pref.getString("access_key")!;
       String refreshKey = pref.getString("refresh_key")!;
@@ -39,6 +42,8 @@ class Auth {
 
   Future<bool> initialize(String? fallbackToken) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
+
+    checkJwtValidity();
 
     if ((pref.containsKey("access_key") && pref.containsKey("refresh_key"))) {
       String accessKey = pref.getString("access_key")!;
@@ -78,6 +83,22 @@ class Auth {
         element(credentials);
       }
     });
+  }
+
+  void checkJwtValidity() async {
+    if (credentials.isAuthed()) {
+      try {
+        Map<String, dynamic> jwtPayload = Jwt.parseJwt(credentials._lastToken ?? "");
+        DateTime expiry = DateTime.fromMillisecondsSinceEpoch(jwtPayload["exp"] * 1000);
+        if (expiry.difference(DateTime.now()).inMinutes < 5) {
+          API().debug().logFine("JWT about to expire, refreshing token");
+          refreshToken(null);
+        }
+      } catch (e) {}
+    }
+
+    await Future.delayed(Duration(seconds: 5));
+    checkJwtValidity();
   }
 
   void _getAuthDetailsFromResponse(String response) async {
@@ -242,6 +263,10 @@ class Auth {
   }
 
   Future<String?> refreshToken(String? forceRefreshToken) async {
+    if (!credentials.isAuthed()) {
+      return "Not authenticated";
+    }
+
     Response response = await SimplyHttpClient()
         .get(Uri.parse(API().connection().getRequestUrl("v1/auth/refresh", "")),
             headers: {"Authorization": forceRefreshToken ?? (credentials._lastRefreshToken ?? "")})
