@@ -182,7 +182,7 @@ class Network {
     try {
       List<Future> requestsToSend = [];
       int numPendingRequests = _pendingRequests.length;
-      for (int i = 0; i < min(2, _pendingRequests.length) && API().auth().isAuthenticated(); i++) {
+      for (int i = 0; i < min(1, _pendingRequests.length) && API().auth().isAuthenticated(); i++) {
         NetworkRequest request = _pendingRequests[i];
 
         requestsToSend.add(Future(() async {
