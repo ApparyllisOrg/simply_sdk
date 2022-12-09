@@ -17,9 +17,9 @@ class EmptyDocumentData extends DocumentData {
 
 enum EChangeType { Add, Update, Delete }
 
-typedef DocumentChange<ObjectType> = void Function(Document<ObjectType>, EChangeType);
+typedef DocumentChange<ObjectType extends DocumentData> = void Function(Document<ObjectType>, EChangeType);
 
-abstract class Collection<ObjectType> {
+abstract class Collection<ObjectType extends DocumentData> {
   String type = "NONE";
 
   List<DocumentChange<ObjectType>?> boundChanges = [];

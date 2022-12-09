@@ -35,4 +35,8 @@ class Document<ObjectClass> {
     data = (dataObject as DocumentData).toJson();
     data = convertTime(this.data);
   }
+
+  void updateData() {
+    data = (dataObject as DocumentData).toJson();
+  }
 }
