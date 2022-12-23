@@ -262,6 +262,19 @@ class Auth {
     return response.body;
   }
 
+  Future<String?> forgotEmail(String username) async {
+    Response response = await SimplyHttpClient()
+        .post(Uri.parse(API().connection().getRequestUrl("v1/auth/forgotemail", "")), body: jsonEncode({"username": username}))
+        .catchError(((e) => generateFailedResponse(e)))
+        .timeout(Duration(seconds: 10));
+
+    if (response.statusCode == 200) {
+      return response.body;
+    }
+
+    return response.body;
+  }
+
   Future<String?> refreshToken(String? forceRefreshToken, {bool bNotify = true}) async {
     if (!credentials.isAuthed()) {
       return "Not authenticated";
