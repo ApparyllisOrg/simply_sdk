@@ -17,7 +17,7 @@ enum HttpRequestMethod { Post, Patch, Delete, Get }
 
 List<int> acceptedResponseCodes = [0, 200, 409, 500, 501, 403, 404, 406, 405, 204, 400];
 List<int> ignoreResponseCodes = [502, 503, 504];
-List<int> reportResponseCodes = [400, 404, 405];
+List<int> reportResponseCodes = [400, 405];
 
 class NetworkRequest {
   final HttpRequestMethod method;
@@ -182,7 +182,7 @@ class Network {
     try {
       List<Future> requestsToSend = [];
       int numPendingRequests = _pendingRequests.length;
-      for (int i = 0; i < min(1, _pendingRequests.length) && API().auth().isAuthenticated(); i++) {
+      for (int i = 0; i < min(1, _pendingRequests.length) && API().auth().canSendHttpRequests(); i++) {
         NetworkRequest request = _pendingRequests[i];
 
         requestsToSend.add(Future(() async {

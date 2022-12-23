@@ -23,6 +23,7 @@ class Auth {
   AuthCredentials credentials = AuthCredentials(null, null, null);
 
   List<Function(AuthCredentials)?> onAuthChange = [];
+  bool bIsRefreshingToken = false;
 
   Future<bool> initializeOffline() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -280,15 +281,21 @@ class Auth {
       return "Not authenticated";
     }
 
+    bIsRefreshingToken = true;
+
     Response response = await SimplyHttpClient()
         .get(Uri.parse(API().connection().getRequestUrl("v1/auth/refresh", "")),
             headers: {"Authorization": forceRefreshToken ?? (credentials._lastRefreshToken ?? "")})
         .catchError(((e) => generateFailedResponse(e)))
         .timeout(Duration(seconds: 10));
+
     if (response.statusCode == 200) {
       _getAuthDetailsFromResponse(response.body);
+      bIsRefreshingToken = false;
       return null;
     }
+
+    bIsRefreshingToken = false;
 
     if (response.statusCode == 401) {
       _invalidateAuth(bNotify: bNotify);
@@ -312,6 +319,10 @@ class Auth {
   String? getUid() => credentials._lastUid;
   bool isAuthenticated() {
     return credentials.isAuthed();
+  }
+
+  bool canSendHttpRequests() {
+    return credentials.isAuthed() && bIsRefreshingToken == false;
   }
 
   bool isVerified() {
