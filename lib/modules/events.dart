@@ -45,7 +45,9 @@ class Event extends AbstractModel {
   void sendPendingEvents() {
     if (pendingEvents.length > 0) {
       List<Map<String, dynamic>> toSendEvents = pendingEvents.map((e) => {"event": e.event, "time": e.time}).toList();
-      API().network().request(NetworkRequest(HttpRequestMethod.Post, "v1/event", DateTime.now().millisecondsSinceEpoch, payload: {"events": toSendEvents}));
+      API()
+          .network()
+          .request(NetworkRequest(HttpRequestMethod.Post, "v1/event", DateTime.now().millisecondsSinceEpoch, payload: {"events": toSendEvents}));
       pendingEvents.clear();
       save();
     }
@@ -57,7 +59,7 @@ class Event extends AbstractModel {
     sendPendingEvents();
   }
 
-  void reportOpen(String event) {
+  void reportOpen() {
     API().network().request(NetworkRequest(HttpRequestMethod.Post, "v1/event/open", DateTime.now().millisecondsSinceEpoch));
   }
 
