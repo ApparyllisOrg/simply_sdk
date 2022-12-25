@@ -17,7 +17,6 @@ enum HttpRequestMethod { Post, Patch, Delete, Get }
 
 List<int> acceptedResponseCodes = [0, 200, 409, 500, 501, 403, 404, 406, 405, 204, 400];
 List<int> ignoreResponseCodes = [502, 503, 504];
-List<int> reportResponseCodes = [400, 405];
 
 class NetworkRequest {
   final HttpRequestMethod method;
@@ -230,18 +229,19 @@ class Network {
               }
             }
 
+            String error = "[$responseCode] during ${request.method} => ${request.path}. Response is ${response?.body ?? ""}";
+
             if (acceptedResponseCodes.contains(responseCode)) {
-              if (reportResponseCodes.contains(responseCode)) {
-                String error = "[$responseCode] during ${request.method} => ${request.path}. Response is ${response?.body ?? ""}";
+              if (responseCode != 200) {
                 API().reportError(error, StackTrace.current);
-                API().debug().logError(error);
               }
               _pendingRequests.remove(request);
-              if (request.onDone != null) request.onDone!();
+
+              if (request.onDone != null) {
+                request.onDone!();
+              }
             } else {
               if (!ignoreResponseCodes.contains(responseCode)) {
-                String error = "[$responseCode] during ${request.method} => ${request.path}. Response is ${response?.body ?? ""}";
-                API().reportError(error, StackTrace.current);
                 API().debug().logError(error);
               }
               print(response?.body);
