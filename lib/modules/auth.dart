@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:mongo_dart/mongo_dart.dart';
@@ -130,6 +131,10 @@ class Auth {
   }
 
   void _invalidateAuth({bool bNotify = true}) {
+    String stack = StackTrace.current.toString();
+
+    API().debug().logInfo("Invalidating auth with following callstack: ${stack}");
+
     bool previousAuthed = credentials.isAuthed();
 
     credentials = AuthCredentials(null, null, null);
