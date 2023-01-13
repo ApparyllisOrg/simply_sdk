@@ -1,4 +1,3 @@
-
 import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
@@ -62,7 +61,8 @@ class Notes extends Collection<NoteData> {
   Future<List<Document<NoteData>>> getAll() async {
     var collection = await getCollection<NoteData>("v1/notes/${API().auth().getUid()}", "", type);
 
-    List<Document<NoteData>> notes = collection.data.map<Document<NoteData>>((e) => Document(e["exists"], e["id"], NoteData()..constructFromJson(e["content"]), type)).toList();
+    List<Document<NoteData>> notes =
+        collection.data.map<Document<NoteData>>((e) => Document(e["exists"], e["id"], NoteData()..constructFromJson(e["content"]), type)).toList();
     if (!collection.useOffline) {
       API().cache().clearTypeCache(type);
       API().cache().cacheListOfDocuments(notes);
@@ -71,10 +71,18 @@ class Notes extends Collection<NoteData> {
   }
 
   Future<List<Document<NoteData>>> getNotesForMember(String member, String systemId) async {
-    var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/notes/$systemId/$member', ""))).catchError((e) => generateFailedResponse(e));
+    if (!API().auth().canSendHttpRequests()) {
+      await API().auth().waitForAbilityToSendRequests();
+    }
+
+    var response = await SimplyHttpClient()
+        .get(Uri.parse(API().connection().getRequestUrl('v1/notes/$systemId/$member', "")))
+        .catchError((e) => generateFailedResponse(e));
     if (response.statusCode == 200) {
       List<Map<String, dynamic>> convertedResponse = convertServerResponseToList(response);
-      List<Document<NoteData>> notes = convertedResponse.map<Document<NoteData>>((e) => Document(e["exists"], e["id"], NoteData()..constructFromJson(e["content"]), type)).toList();
+      List<Document<NoteData>> notes = convertedResponse
+          .map<Document<NoteData>>((e) => Document(e["exists"], e["id"], NoteData()..constructFromJson(e["content"]), type))
+          .toList();
       API().cache().cacheListOfDocuments(notes);
       return notes;
     }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ class AuthCredentials {
 
 class Auth {
   AuthCredentials credentials = AuthCredentials(null, null, null);
+  Timer? _tokenRefreshTimer;
 
   List<Function(AuthCredentials)?> onAuthChange = [];
   bool bIsRefreshingToken = false;
@@ -29,9 +31,13 @@ class Auth {
   Future<bool> initializeOffline() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
 
-    checkJwtValidity();
+    API().debug().logInfo("Initializing auth offline");
+
+    resumeTokenRefreshing();
 
     if ((pref.containsKey("access_key") && pref.containsKey("refresh_key"))) {
+      API().debug().logInfo("Initializing auth from cache");
+
       String accessKey = pref.getString("access_key")!;
       String refreshKey = pref.getString("refresh_key")!;
       Map<String, dynamic> jwtPayload = Jwt.parseJwt(accessKey);
@@ -45,9 +51,13 @@ class Auth {
   Future<bool> initialize(String? fallbackToken) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
 
-    checkJwtValidity();
+    API().debug().logInfo("Initializing auth online");
+
+    resumeTokenRefreshing();
 
     if ((pref.containsKey("access_key") && pref.containsKey("refresh_key"))) {
+      API().debug().logInfo("Initializing auth from cache");
+
       String accessKey = pref.getString("access_key")!;
       String refreshKey = pref.getString("refresh_key")!;
 
@@ -87,7 +97,7 @@ class Auth {
     });
   }
 
-  void checkJwtValidity() async {
+  void checkJwtValidity(Timer? timer) async {
     if (credentials.isAuthed()) {
       try {
         Map<String, dynamic> jwtPayload = Jwt.parseJwt(credentials._lastToken ?? "");
@@ -98,9 +108,6 @@ class Auth {
         }
       } catch (e) {}
     }
-
-    await Future.delayed(Duration(seconds: 5));
-    checkJwtValidity();
   }
 
   void _getAuthDetailsFromResponse(String response) async {
@@ -286,6 +293,8 @@ class Auth {
       return "Not authenticated";
     }
 
+    if (bIsRefreshingToken) return "Already refreshing";
+
     bIsRefreshingToken = true;
 
     Response response = await SimplyHttpClient()
@@ -318,6 +327,37 @@ class Auth {
     }
 
     return response.body;
+  }
+
+  Future<void> waitForAbilityToSendRequests() async {
+    Completer completer = Completer();
+
+    if (canSendHttpRequests()) {
+      completer.complete();
+    } else {
+      await Future.delayed(Duration(milliseconds: 200));
+      return waitForAbilityToSendRequests();
+    }
+
+    return completer.future;
+  }
+
+  void suspendTokenRefreshing(bool writeToLog) {
+    if (_tokenRefreshTimer != null) {
+      _tokenRefreshTimer!.cancel();
+      _tokenRefreshTimer = null;
+    }
+
+    if (writeToLog) {
+      API().debug().logFine("Suspending token refresh");
+    }
+  }
+
+  void resumeTokenRefreshing() {
+    suspendTokenRefreshing(false);
+    checkJwtValidity(null);
+    _tokenRefreshTimer = Timer.periodic(Duration(seconds: 5), checkJwtValidity);
+    API().debug().logFine("Resuming token refresh");
   }
 
   String? getToken() => credentials._lastToken;

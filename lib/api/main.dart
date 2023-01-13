@@ -163,7 +163,9 @@ Document<T> addSimpleDocument<T>(String type, String path, DocumentData data, {S
 void updateSimpleDocument(String type, String path, String documentId, DocumentData data) {
   Map<String, dynamic> jsonPayload = data.toJson();
 
-  API().network().request(new NetworkRequest(HttpRequestMethod.Patch, "$path/$documentId", DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
+  API()
+      .network()
+      .request(new NetworkRequest(HttpRequestMethod.Patch, "$path/$documentId", DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
 
   API().cache().updateDocument(type, documentId, jsonPayload);
 
@@ -182,9 +184,19 @@ void deleteSimpleDocument(String type, String path, String id, DocumentData data
   propogateChanges(type, id, data, EChangeType.Delete);
 }
 
-Future<CollectionResponse<ObjectType>> getCollection<ObjectType>(String path, String id, String type, {String? query, skipCache: false, int? since, bool bForceOffline = false}) async {
+Future<CollectionResponse<ObjectType>> getCollection<ObjectType>(String path, String id, String type,
+    {String? query, skipCache: false, int? since, bool bForceOffline = false}) async {
+  if (!API().auth().canSendHttpRequests()) {
+    await API().auth().waitForAbilityToSendRequests();
+  }
+
   var useQuery = (query ?? "") + (since != null ? "&since=${since.toString()}" : "");
-  var response = bForceOffline ? Response("", 503) : await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("$path/$id", useQuery))).timeout(Duration(seconds: 10)).catchError(((e) => generateFailedResponse(e)));
+  var response = bForceOffline
+      ? Response("", 503)
+      : await SimplyHttpClient()
+          .get(Uri.parse(API().connection().getRequestUrl("$path/$id", useQuery)))
+          .timeout(Duration(seconds: 10))
+          .catchError(((e) => generateFailedResponse(e)));
   if (response.statusCode == 200) {
     CollectionResponse<ObjectType> res = CollectionResponse<ObjectType>();
     res.useOffline = false;
@@ -232,8 +244,16 @@ void updateDocumentInList<ObjectType>(List<Document> documents, Document<ObjectT
   }
 }
 
-Future<Document<DataType>> getSimpleDocument<DataType>(String id, String url, String type, DataType Function(DocumentResponse data) createDoc, DataType Function() creatEmptyeDoc, {bool bForceOffline = false}) async {
-  var response = bForceOffline ? Response("", 503) : await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("$url/$id", ""))).catchError(((e) => generateFailedResponse(e)));
+Future<Document<DataType>> getSimpleDocument<DataType>(
+    String id, String url, String type, DataType Function(DocumentResponse data) createDoc, DataType Function() creatEmptyeDoc,
+    {bool bForceOffline = false}) async {
+  if (!API().auth().canSendHttpRequests()) {
+    await API().auth().waitForAbilityToSendRequests();
+  }
+
+  var response = bForceOffline
+      ? Response("", 503)
+      : await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("$url/$id", ""))).catchError(((e) => generateFailedResponse(e)));
   if (response.statusCode == 200) {
     DataType data = createDoc(DocumentResponse.fromString(response.body));
 

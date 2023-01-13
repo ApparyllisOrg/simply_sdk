@@ -21,7 +21,18 @@ class Paginate extends StatefulWidget {
   final ValueChanged<List<Document>>? onBatchReceived;
 
   const Paginate(
-      {Key? key, required this.itemBuilder, this.stepSize = 10, this.onBatchReceived, required this.getLoader, required this.emptyView, required this.sortBy, required this.sortOrder, required this.url, required this.documentConstructor, required this.prefixWidgets, this.spacingHeight = 10})
+      {Key? key,
+      required this.itemBuilder,
+      this.stepSize = 10,
+      this.onBatchReceived,
+      required this.getLoader,
+      required this.emptyView,
+      required this.sortBy,
+      required this.sortOrder,
+      required this.url,
+      required this.documentConstructor,
+      required this.prefixWidgets,
+      this.spacingHeight = 10})
       : super(key: key);
 
   @override
@@ -54,7 +65,15 @@ class PaginateState extends State<Paginate> {
   }
 
   static Future<Response> getNextPage(String url, String sortBy, int sortOrder, int stepSize, int currentOffset, {String? additionalQuery}) async {
-    return SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('$url', 'sortBy=$sortBy&sortOrder=$sortOrder&limit=$stepSize&start=$currentOffset&sortUp=true&${additionalQuery ?? ""}'))).catchError((e) => generateFailedResponse(e));
+    if (!API().auth().canSendHttpRequests()) {
+      await API().auth().waitForAbilityToSendRequests();
+    }
+
+    return SimplyHttpClient()
+        .get(Uri.parse(API()
+            .connection()
+            .getRequestUrl('$url', 'sortBy=$sortBy&sortOrder=$sortOrder&limit=$stepSize&start=$currentOffset&sortUp=true&${additionalQuery ?? ""}')))
+        .catchError((e) => generateFailedResponse(e));
   }
 
   void getNextBatch() async {

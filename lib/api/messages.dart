@@ -29,7 +29,12 @@ class MessageData implements DocumentData {
 
 class Messages {
   Future<List<MessageData>> getMessages() async {
-    var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/messages', ""))).catchError(((e) => generateFailedResponse(e)));
+    if (!API().auth().canSendHttpRequests()) {
+      await API().auth().waitForAbilityToSendRequests();
+    }
+
+    var response =
+        await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/messages', ""))).catchError(((e) => generateFailedResponse(e)));
 
     var jsonResponse = jsonDecode(response.body);
 
@@ -44,6 +49,8 @@ class Messages {
   }
 
   void markRead(int time) {
-    API().network().request(new NetworkRequest(HttpRequestMethod.Post, 'v1/messages/read', DateTime.now().millisecondsSinceEpoch, payload: {"time": time}));
+    API()
+        .network()
+        .request(new NetworkRequest(HttpRequestMethod.Post, 'v1/messages/read', DateTime.now().millisecondsSinceEpoch, payload: {"time": time}));
   }
 }
