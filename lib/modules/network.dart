@@ -233,7 +233,7 @@ class Network {
 
             if (acceptedResponseCodes.contains(responseCode)) {
               if (responseCode != 200) {
-                API().reportError(error, StackTrace.current);
+                API().debug().logError(error);
               }
               _pendingRequests.remove(request);
 
