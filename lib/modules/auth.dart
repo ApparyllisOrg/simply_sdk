@@ -165,7 +165,7 @@ class Auth {
     _invalidateAuth();
 
     if (response.statusCode == 400) {
-      return "Unknown user or password";
+      return response.body;
     } else {
       return response.body;
     }
@@ -374,6 +374,14 @@ class Auth {
     if (isAuthenticated()) {
       Map<String, dynamic> jwtPayload = Jwt.parseJwt(credentials._lastToken ?? "");
       return jwtPayload["verified"] != false;
+    }
+    return true;
+  }
+
+  bool isOauth2() {
+    if (isAuthenticated()) {
+      Map<String, dynamic> jwtPayload = Jwt.parseJwt(credentials._lastToken ?? "");
+      return jwtPayload["oAuth2"] == true;
     }
     return true;
   }
