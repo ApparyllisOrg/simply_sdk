@@ -8,14 +8,14 @@ String _configSync = 'lastConfigSync';
 String _remoteConfig = 'remoteConfig';
 
 class RemoteConfig {
-  Map<String, dynamic> _currentConfig = Map<String, dynamic>();
-  late SharedPreferences _sharedPrefs;
 
   RemoteConfig() {
     _initialize();
   }
+  Map<String, dynamic> _currentConfig = Map<String, dynamic>();
+  late SharedPreferences _sharedPrefs;
 
-  void _initialize() async {
+  Future<void> _initialize() async {
     _sharedPrefs = await SharedPreferences.getInstance();
     if (_sharedPrefs.containsKey(_configSync)) {
       int lastSync = _sharedPrefs.getInt(_configSync) ?? 0;
@@ -34,7 +34,7 @@ class RemoteConfig {
     }
   }
 
-  void fetchConfig() async {
+  Future<void> fetchConfig() async {
     int now = DateTime.now().millisecondsSinceEpoch;
 
     _loadConfig();

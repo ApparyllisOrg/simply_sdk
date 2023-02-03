@@ -10,11 +10,11 @@ import 'package:simply_sdk/modules/http.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 
 class AuthCredentials {
+
+  AuthCredentials(this._lastToken, this._lastRefreshToken, this._lastUid);
   final String? _lastToken;
   final String? _lastRefreshToken;
   final String? _lastUid;
-
-  AuthCredentials(this._lastToken, this._lastRefreshToken, this._lastUid);
 
   bool isAuthed() {
     return _lastUid != null && _lastToken != null && _lastRefreshToken != null;
@@ -97,7 +97,7 @@ class Auth {
     });
   }
 
-  void checkJwtValidity(Timer? timer) async {
+  Future<void> checkJwtValidity(Timer? timer) async {
     if (credentials.isAuthed()) {
       try {
         Map<String, dynamic> jwtPayload = Jwt.parseJwt(credentials._lastToken ?? '');
@@ -110,7 +110,7 @@ class Auth {
     }
   }
 
-  void _getAuthDetailsFromResponse(String response) async {
+  Future<void> _getAuthDetailsFromResponse(String response) async {
     Map<String, dynamic> content = jsonDecode(response) as Map<String, dynamic>;
     Map<String, dynamic> jwtPayload = Jwt.parseJwt(content['access']);
 
@@ -191,7 +191,7 @@ class Auth {
     }
   }
 
-  void logout() async {
+  Future<void> logout() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     pref.remove('access_key');
     pref.remove('refresh_key');

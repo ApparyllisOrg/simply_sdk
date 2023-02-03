@@ -19,6 +19,8 @@ List<int> acceptedResponseCodes = [0, 200, 409, 500, 501, 403, 404, 406, 405, 20
 List<int> ignoreResponseCodes = [502, 503, 504];
 
 class NetworkRequest {
+
+  NetworkRequest(this.method, this.path, this.timestamp, {this.query, this.payload, this.onDone});
   final HttpRequestMethod method;
   final String path;
   final String? query;
@@ -40,8 +42,6 @@ class NetworkRequest {
   static NetworkRequest fromJson(Map<String, dynamic> data) {
     return NetworkRequest(HttpRequestMethod.values[data['method']], data['path'], data['timestamp'], payload: data['payload'], query: data['query']);
   }
-
-  NetworkRequest(this.method, this.path, this.timestamp, {this.query, this.payload, this.onDone});
 }
 
 class Network {
@@ -54,7 +54,7 @@ class Network {
   int getNumPendingRequests() => _pendingRequests.length;
   int getNumFailedTicks() => numFailedTicks;
 
-  void initialize() async {
+  Future<void> initialize() async {
     await loadPendingNetworkRequests();
     tick();
   }
@@ -113,7 +113,7 @@ class Network {
       } else {
         final dir = await getApplicationDocumentsDirectory();
         await dir.create(recursive: true);
-        final dbPath = dir.path + '/pendingRequests.db';
+        final dbPath = '${dir.path}/pendingRequests.db';
         File file = File(dbPath);
         file.writeAsStringSync(jsonEncode(convertedData));
       }
@@ -132,7 +132,7 @@ class Network {
       try {
         final dir = await getApplicationDocumentsDirectory();
         await dir.create(recursive: true);
-        final dbPath = dir.path + '/pendingRequests.db';
+        final dbPath = '${dir.path}/pendingRequests.db';
 
         File file = File(dbPath);
         bool exists = await file.exists();
@@ -158,7 +158,7 @@ class Network {
     }
   }
 
-  void rescheduleNextTick(bool success) async {
+  Future<void> rescheduleNextTick(bool success) async {
     await save();
 
     // If no pending requests succeeded, delay the attempts
@@ -177,7 +177,7 @@ class Network {
     tick();
   }
 
-  void tick() async {
+  Future<void> tick() async {
     try {
       List<Future> requestsToSend = [];
       int numPendingRequests = _pendingRequests.length;

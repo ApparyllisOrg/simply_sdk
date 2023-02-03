@@ -1,7 +1,7 @@
 import 'package:simply_sdk/types/document.dart';
 
 class DocumentSubscriptions {
-  Map<DocumentRef, List<Function>> _callbacks = {};
+  final Map<DocumentRef, List<Function>> _callbacks = {};
 
   void listenToDocument(DocumentRef ref, Function callback) {
     List<Function> functions = _callbacks[ref] ?? [];

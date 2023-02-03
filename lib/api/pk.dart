@@ -5,22 +5,22 @@ import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/request.dart';
 
 class PKSyncSettings {
+
+  PKSyncSettings(this.syncName, this.useDisplayName, this.syncAvatar, this.syncPronouns, this.syncDesc, this.syncColor);
   final bool syncName;
   final bool useDisplayName;
   final bool syncAvatar;
   final bool syncPronouns;
   final bool syncDesc;
   final bool syncColor;
-
-  PKSyncSettings(this.syncName, this.useDisplayName, this.syncAvatar, this.syncPronouns, this.syncDesc, this.syncColor);
 }
 
 class PKSyncAllSettings {
+
+  PKSyncAllSettings(this.override, this.add, this.privateByDefault);
   final bool override;
   final bool add;
   final bool privateByDefault;
-
-  PKSyncAllSettings(this.override, this.add, this.privateByDefault);
 }
 
 class PK {

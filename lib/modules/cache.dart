@@ -118,7 +118,7 @@ class Cache {
 
         final dir = await getApplicationDocumentsDirectory();
         await dir.create(recursive: true);
-        final dbPath = dir.path + '/simply.db';
+        final dbPath = '${dir.path}/simply.db';
 
         // Save cache
         File file = File(dbPath);
@@ -150,7 +150,7 @@ class Cache {
         try {
           final dir = await getApplicationDocumentsDirectory();
           await dir.create(recursive: true);
-          final dbPath = dir.path + '/simply.db';
+          final dbPath = '${dir.path}/simply.db';
 
           File file = File(dbPath);
           bool exists = await file.exists();
@@ -184,7 +184,7 @@ class Cache {
     return id;
   }
 
-  void updateDocument(String type, String id, Map<String, dynamic> data) async {
+  Future<void> updateDocument(String type, String id, Map<String, dynamic> data) async {
     Map<String, dynamic> dataCopy = Map.from(data);
     updateToCache(type, id, dataCopy);
   }

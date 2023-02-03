@@ -4,10 +4,10 @@ typedef DocumentId = String;
 typedef DocumentConstructor<Type> = Document<Type> Function(String, Map<String, dynamic>);
 
 class DocumentRef {
-  final String type;
-  final String id;
 
   DocumentRef(this.id, this.type);
+  final String type;
+  final String id;
 
   bool operator ==(other) {
     return other is DocumentRef && other.type == type && other.id == id;
@@ -19,6 +19,11 @@ class DocumentRef {
 }
 
 class Document<ObjectClass> {
+
+  Document(this.exists, this.id, this.dataObject, this.type, {this.fromCache = false}) {
+    data = (dataObject as DocumentData).toJson();
+    data = convertTime(this.data);
+  }
   final String id;
   final String type;
   final bool fromCache;
@@ -29,11 +34,6 @@ class Document<ObjectClass> {
 
   static Map<String, dynamic> convertTime(Map<String, dynamic> data) {
     return data;
-  }
-
-  Document(this.exists, this.id, this.dataObject, this.type, {this.fromCache = false}) {
-    data = (dataObject as DocumentData).toJson();
-    data = convertTime(this.data);
   }
 
   void updateData() {

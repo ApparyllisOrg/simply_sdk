@@ -17,7 +17,7 @@ class Socket {
   WebSocketChannel? _WebSocket;
   late String uniqueConnectionId;
 
-  List<void Function(String type, String msg)?> _OnMsgReceived = [];
+  final List<void Function(String type, String msg)?> _OnMsgReceived = [];
 
   void cancelListenForMessages(void Function(String type, String msg) func) {
     _OnMsgReceived.remove(func);
@@ -65,7 +65,7 @@ class Socket {
     }
   }
 
-  void reconnect() async {
+  Future<void> reconnect() async {
     await Future.delayed(const Duration(seconds: 1));
     reconnect();
   }
@@ -91,7 +91,7 @@ class Socket {
   }
 
   bool isDisconnected = true;
-  void disconnected() async {
+  Future<void> disconnected() async {
     if (isDisconnected) return;
     isDisconnected = true;
 
@@ -101,7 +101,7 @@ class Socket {
     createConnection();
   }
 
-  void createConnection() async {
+  Future<void> createConnection() async {
     print('Create socket connection');
     gotHello = false;
     isDisconnected = false;
@@ -168,13 +168,13 @@ class Socket {
 
   void onData(event) {
     gotHello = true;
-    API().debug().logFine('[SOCKET DATA RECEIVED] ' + event.toString(), bSave: false);
+    API().debug().logFine('[SOCKET DATA RECEIVED] $event', bSave: false);
     if (event is String && event.isNotEmpty) {
       onReceivedData(event);
     }
   }
 
-  void onReceivedData(event) async {
+  Future<void> onReceivedData(event) async {
     if (event == 'pong') {
       return;
     }

@@ -16,7 +16,7 @@ abstract class AbstractModel extends ChangeNotifier {
 
   bool _isSaveScheduled = false;
 
-  void scheduleSave() async {
+  Future<void> scheduleSave() async {
     if (_isSaveScheduled) {
       return;
     }
@@ -31,7 +31,7 @@ abstract class AbstractModel extends ChangeNotifier {
   Future<String> getFilePath() async {
     final dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
-    return dir.path + '/${getFileName()}.db';
+    return '${dir.path}/${getFileName()}.db';
   }
 
   Future<void> load() async {

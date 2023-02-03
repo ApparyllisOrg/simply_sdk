@@ -1,6 +1,14 @@
 import 'package:flutter/foundation.dart';
 
 class Connection {
+
+  Connection() {
+    if (kDebugMode) {
+      _currentHost = localHost;
+    } else {
+      _currentHost = prodHost;
+    }
+  }
   static const String localHost = 'http://localhost:8443';
   static const String prodHost = 'https://v2.apparyllis.com';
 
@@ -9,14 +17,6 @@ class Connection {
   String getCurrentHost() {
     String overrideIp = const String.fromEnvironment('IP');
     return overrideIp.isNotEmpty ? overrideIp : _currentHost;
-  }
-
-  Connection() {
-    if (kDebugMode) {
-      _currentHost = localHost;
-    } else {
-      _currentHost = prodHost;
-    }
   }
 
   String getRequestUrl(String path, String query) {

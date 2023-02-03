@@ -13,18 +13,18 @@ import 'package:simply_sdk/types/request.dart';
 import '../simply_sdk.dart';
 
 class FriendsFrontData {
+
+  FriendsFrontData(this.uid, this.frontString, this.customFrontString);
   final String uid;
   final String frontString;
   final String customFrontString;
-
-  FriendsFrontData(this.uid, this.frontString, this.customFrontString);
 }
 
 class FriendFronters {
-  final List<String> fronters;
-  final Map<String, String> frontStatuses;
 
   FriendFronters({required this.fronters, required this.frontStatuses});
+  final List<String> fronters;
+  final Map<String, String> frontStatuses;
 }
 
 class FriendSettingsData implements DocumentData {
@@ -69,7 +69,7 @@ class Friends {
 
       return createResponseObject(response);
     } catch (e) {
-      API().debug().logFine('sendFriendRequest failed with: ' + e.toString());
+      API().debug().logFine('sendFriendRequest failed with: $e');
     }
     return createFailResponseObject();
   }
@@ -84,7 +84,7 @@ class Friends {
 
         return createResponseObject(response);
       } catch (e) {
-        API().debug().logFine('respondToFriendRequest failed with: ' + e.toString());
+        API().debug().logFine('respondToFriendRequest failed with: $e');
       }
       return createFailResponseObject();
     });
@@ -99,7 +99,7 @@ class Friends {
 
         return createResponseObject(response);
       } catch (e) {
-        API().debug().logFine('cancelFriendRequest failed with: ' + e.toString());
+        API().debug().logFine('cancelFriendRequest failed with: $e');
       }
       return createFailResponseObject();
     });
@@ -114,7 +114,7 @@ class Friends {
 
         return createResponseObject(response);
       } catch (e) {
-        API().debug().logFine('removeFriend failed with: ' + e.toString());
+        API().debug().logFine('removeFriend failed with: $e');
       }
       return createFailResponseObject();
     });
@@ -148,7 +148,7 @@ class Friends {
           return [];
         }
       } catch (e) {
-        API().debug().logFine('getFriendsFrontValues failed with: ' + e.toString());
+        API().debug().logFine('getFriendsFrontValues failed with: $e');
       }
       return [];
     });
@@ -172,7 +172,7 @@ class Friends {
           return null;
         }
       } catch (e) {
-        API().debug().logFine('getFriendFrontValues failed with: ' + e.toString());
+        API().debug().logFine('getFriendFrontValues failed with: $e');
       }
       return null;
     });
@@ -198,7 +198,7 @@ class Friends {
           return null;
         }
       } catch (e) {
-        API().debug().logFine('getFriendFronters failed with: ' + e.toString());
+        API().debug().logFine('getFriendFronters failed with: $e');
       }
       return null;
     });
@@ -241,7 +241,7 @@ class Friends {
   }
 
   // Update the settings for a friend
-  void updateFriend(String uid, FriendSettingsData settings) async {
+  Future<void> updateFriend(String uid, FriendSettingsData settings) async {
     API()
         .network()
         .request(new NetworkRequest(HttpRequestMethod.Patch, 'v1/friend/$uid', DateTime.now().millisecondsSinceEpoch, payload: settings.toJson()));

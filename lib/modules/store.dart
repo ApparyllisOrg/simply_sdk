@@ -21,7 +21,7 @@ class Store {
   List<Document<FrontHistoryData>> getFronters() => _fronters;
 
   List<void Function(Document<FrontHistoryData>)> _frontChanges = [];
-  List<Function?> _onInitialized = [];
+  final List<Function?> _onInitialized = [];
 
   Future<void> initializeStore({bool bForceOffline = false}) async {
     clearStore();

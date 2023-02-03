@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:http/http.dart';
 
 class RequestResponse {
-  final bool success;
-  final String message;
 
   RequestResponse(this.success, this.message);
+  final bool success;
+  final String message;
 }
 
 RequestResponse createResponseObject(Response response) {

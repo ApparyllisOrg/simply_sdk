@@ -7,10 +7,10 @@ import 'package:simply_sdk/modules/network.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 
 class EventData extends DocumentData {
-  String? event;
-  int? time;
 
   EventData(this.event, this.time);
+  String? event;
+  int? time;
 
   @override
   constructFromJson(Map<String, dynamic> json) {

@@ -20,9 +20,6 @@ import 'package:simply_sdk/types/document.dart';
 import '../simply_sdk.dart';
 
 class DocumentResponse {
-  late bool exists;
-  late String id;
-  late Map<String, dynamic> content;
 
   DocumentResponse();
 
@@ -38,13 +35,16 @@ class DocumentResponse {
     id = json['id']!;
     content = json['content']!;
   }
+  late bool exists;
+  late String id;
+  late Map<String, dynamic> content;
 }
 
 class CollectionResponse<Type> {
-  bool useOffline = true;
-  List<Map<String, dynamic>> data = [];
 
   CollectionResponse();
+  bool useOffline = true;
+  List<Map<String, dynamic>> data = [];
 }
 
 DocumentData jsonDataToDocumentData(String type, Map<String, dynamic> data) {

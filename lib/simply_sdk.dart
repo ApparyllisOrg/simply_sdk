@@ -36,13 +36,6 @@ import 'modules/network.dart';
 class APISettings {}
 
 class API {
-  static API? _instance;
-
-  API._() {
-    Logger.root.onRecord.listen((record) {
-      print('${record.level.name}: ${record.time}: ${record.message}');
-    });
-  }
 
   factory API() {
     if (_instance == null) {
@@ -50,6 +43,13 @@ class API {
     }
     return _instance!;
   }
+
+  API._() {
+    Logger.root.onRecord.listen((record) {
+      print('${record.level.name}: ${record.time}: ${record.message}');
+    });
+  }
+  static API? _instance;
 
   Future<void> initialize({APISettings? settings}) async {
     FlutterError.onError = (FlutterErrorDetails details) {

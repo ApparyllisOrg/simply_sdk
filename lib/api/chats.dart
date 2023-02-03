@@ -68,7 +68,6 @@ class ChatMessageData implements DocumentData {
 }
 
 class ChatMessageDataId extends ChatMessageData {
-  String? id;
 
   ChatMessageDataId(ChatMessageData data, String inId) {
     message = data.message;
@@ -79,6 +78,7 @@ class ChatMessageDataId extends ChatMessageData {
     updatedAt = data.updatedAt;
     id = inId;
   }
+  String? id;
 
   @override
   constructFromJson(Map<String, dynamic> json) {
@@ -214,11 +214,11 @@ class ChannelCategories extends Collection<ChannelCategoryData> {
 }
 
 class ChatMessages extends AbstractModel {
-  String channelId = '';
 
   ChatMessages() {
     API().eventListener().registerCallback(onMessageChange);
   }
+  String channelId = '';
 
   void onMessageChange(String type, Document<dynamic> doc, EChangeType changeType) {
     if (type == 'chatMessages' || type == 'ChatMessages') {

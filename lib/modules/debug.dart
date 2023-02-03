@@ -75,7 +75,7 @@ class Debug {
         try {
           final dir = await getApplicationDocumentsDirectory();
           await dir.create(recursive: true);
-          final dbPath = dir.path + '/logs.db';
+          final dbPath = '${dir.path}/logs.db';
 
           File file = File(dbPath);
           bool exists = await file.exists();
@@ -101,7 +101,7 @@ class Debug {
     });
   }
 
-  void save() async {
+  Future<void> save() async {
     // Limit to 1000 entries...
     if (_logs.length > 1000) {
       _logs = _logs.sublist(_logs.length - 1000, _logs.length);
@@ -119,7 +119,7 @@ class Debug {
       try {
         final dir = await getApplicationDocumentsDirectory();
         await dir.create(recursive: true);
-        final dbPath = dir.path + '/logs.db';
+        final dbPath = '${dir.path}/logs.db';
 
         File file = File(dbPath);
         file.writeAsStringSync(jsonEncode(_logs));

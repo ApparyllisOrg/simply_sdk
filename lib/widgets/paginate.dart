@@ -7,18 +7,6 @@ import 'package:simply_sdk/simply_sdk.dart';
 import '../types/document.dart';
 
 class Paginate extends StatefulWidget {
-  final Function itemBuilder;
-  final Function getLoader;
-  final Function emptyView;
-  final int stepSize;
-  final double spacingHeight;
-  final String sortBy;
-  final int sortOrder;
-  // Ex: v1/fronters
-  final String url;
-  final List<Widget> prefixWidgets;
-  final DocumentConstructor documentConstructor;
-  final ValueChanged<List<Document>>? onBatchReceived;
 
   const Paginate(
       {Key? key,
@@ -34,6 +22,18 @@ class Paginate extends StatefulWidget {
       required this.prefixWidgets,
       this.spacingHeight = 10})
       : super(key: key);
+  final Function itemBuilder;
+  final Function getLoader;
+  final Function emptyView;
+  final int stepSize;
+  final double spacingHeight;
+  final String sortBy;
+  final int sortOrder;
+  // Ex: v1/fronters
+  final String url;
+  final List<Widget> prefixWidgets;
+  final DocumentConstructor documentConstructor;
+  final ValueChanged<List<Document>>? onBatchReceived;
 
   @override
   State<StatefulWidget> createState() => PaginateState();
@@ -44,7 +44,7 @@ class PaginateState extends State<Paginate> {
   bool isLoading = false;
   bool reachedEnd = false;
 
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   List<Document> docs = [];
 
@@ -76,7 +76,7 @@ class PaginateState extends State<Paginate> {
         .catchError((e) => generateFailedResponse(e));
   }
 
-  void getNextBatch() async {
+  Future<void> getNextBatch() async {
     if (reachedEnd || isLoading) {
       return;
     }
