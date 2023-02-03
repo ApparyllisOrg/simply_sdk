@@ -10,17 +10,17 @@ enum EUpdateType { Add, Update, Remove }
 String updateTypeToString(EUpdateType type) {
   switch (type) {
     case EUpdateType.Add:
-      return "insert";
+      return 'insert';
     case EUpdateType.Update:
-      return "update";
+      return 'update';
     case EUpdateType.Remove:
-      return "delete";
+      return 'delete';
   }
 
-  return "";
+  return '';
 }
 
-dynamic getHeader() => {"Content-Type": "application/json", "Authorization": API().auth().getToken()};
+dynamic getHeader() => {'Content-Type': 'application/json', 'Authorization': API().auth().getToken()};
 
 dynamic customEncode(var obj) {
   if (obj is DateTime) {

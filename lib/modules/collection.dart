@@ -20,7 +20,7 @@ enum EChangeType { Add, Update, Delete }
 typedef DocumentChange<ObjectType extends DocumentData> = void Function(Document<ObjectType>, EChangeType);
 
 abstract class Collection<ObjectType extends DocumentData> {
-  String type = "NONE";
+  String type = 'NONE';
 
   List<DocumentChange<ObjectType>?> boundChanges = [];
 

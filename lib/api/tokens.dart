@@ -15,20 +15,20 @@ class TokenData implements DocumentData {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
 
-    insertData("title", token, payload);
+    insertData('title', token, payload);
     int permission = 0;
     if (read == true) permission |= 0x01;
     if (write == true) permission |= 0x02;
     if (delete == true) permission |= 0x04;
 
-    insertData("permission", permission, payload);
+    insertData('permission', permission, payload);
     return payload;
   }
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    token = readDataFromJson("token", json);
-    int permission = readDataFromJson("permission", json);
+    token = readDataFromJson('token', json);
+    int permission = readDataFromJson('permission', json);
     read = (permission & 0x01) != 0;
     write = (permission & 0x02) != 0;
     delete = (permission & 0x04) != 0;
@@ -37,28 +37,28 @@ class TokenData implements DocumentData {
 
 class Tokens extends Collection<TokenData> {
   @override
-  String get type => "Tokens";
+  String get type => 'Tokens';
 
   @override
   Document<TokenData> add(DocumentData values) {
-    return addSimpleDocument(type, "v1/token", values);
+    return addSimpleDocument(type, 'v1/token', values);
   }
 
   @override
   void delete(String documentId, Document originalDocument) {
-    deleteSimpleDocument(type, "v1/token", documentId, originalDocument.dataObject);
+    deleteSimpleDocument(type, 'v1/token', documentId, originalDocument.dataObject);
   }
 
   @override
   Future<Document<TokenData>> get(String id) async {
-    return getSimpleDocument(id, "v1/token/$id", type, (data) => TokenData()..constructFromJson(data.content), () => TokenData());
+    return getSimpleDocument(id, 'v1/token/$id', type, (data) => TokenData()..constructFromJson(data.content), () => TokenData());
   }
 
   @override
   Future<List<Document<TokenData>>> getAll() async {
-    var collection = await getCollection<TokenData>("v1/tokens", "", type);
+    final collection = await getCollection<TokenData>('v1/tokens', '', type);
 
-    List<Document<TokenData>> tokens = collection.data.map<Document<TokenData>>((e) => Document(e["exists"], e["id"], TokenData()..constructFromJson(e["content"]), type)).toList();
+    List<Document<TokenData>> tokens = collection.data.map<Document<TokenData>>((e) => Document(e['exists'], e['id'], TokenData()..constructFromJson(e['content']), type)).toList();
     if (!collection.useOffline) {
       API().cache().cacheListOfDocuments(tokens);
     }

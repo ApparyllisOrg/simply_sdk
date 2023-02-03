@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:universal_file/universal_file.dart';
-import "package:universal_html/html.dart" as html;
+import 'package:universal_html/html.dart' as html;
 
 abstract class AbstractModel extends ChangeNotifier {
   void reset([bool notify = true]) {
@@ -29,16 +29,16 @@ abstract class AbstractModel extends ChangeNotifier {
   String getFileName();
 
   Future<String> getFilePath() async {
-    var dir = await getApplicationDocumentsDirectory();
+    final dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
-    return dir.path + "/${getFileName()}.db";
+    return dir.path + '/${getFileName()}.db';
   }
 
   Future<void> load() async {
     if (kIsWeb) {
       bool dbExists = html.window.localStorage.containsKey(getFileName());
       if (dbExists) {
-        dynamic storedData = dbExists ? (html.window.localStorage[getFileName()] ?? "{}") : "{}";
+        dynamic storedData = dbExists ? (html.window.localStorage[getFileName()] ?? '{}') : '{}';
         if (storedData is String) {
           copyFromJson(jsonDecode(storedData));
         } else {
@@ -52,7 +52,7 @@ abstract class AbstractModel extends ChangeNotifier {
 
       if (bExists) {
         String string = await file.readAsString().catchError((e, s) {
-          return "{}";
+          return '{}';
         });
 
         try {

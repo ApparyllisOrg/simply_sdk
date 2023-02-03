@@ -19,24 +19,24 @@ class UserFieldData implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    name = readDataFromJson("name", json);
-    order = readDataFromJson("order", json);
-    private = readDataFromJson("private", json);
-    preventTrusted = readDataFromJson("preventTrusted", json);
-    type = readDataFromJson("type", json);
-    supportMarkdown = readDataFromJson("supportMarkdown", json);
+    name = readDataFromJson('name', json);
+    order = readDataFromJson('order', json);
+    private = readDataFromJson('private', json);
+    preventTrusted = readDataFromJson('preventTrusted', json);
+    type = readDataFromJson('type', json);
+    supportMarkdown = readDataFromJson('supportMarkdown', json);
   }
 
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
 
-    insertData("name", name, payload);
-    insertData("order", order, payload);
-    insertData("private", private, payload);
-    insertData("preventTrusted", preventTrusted, payload);
-    insertData("type", type, payload);
-    insertData("supportMarkdown", supportMarkdown, payload);
+    insertData('name', name, payload);
+    insertData('order', order, payload);
+    insertData('private', private, payload);
+    insertData('preventTrusted', preventTrusted, payload);
+    insertData('type', type, payload);
+    insertData('supportMarkdown', supportMarkdown, payload);
 
     return payload;
   }
@@ -51,22 +51,22 @@ class GenerateUserReportDataFh implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    start = readDataFromJson("start", json);
-    end = readDataFromJson("end", json);
-    includesMembers = readDataFromJson("includesMembers", json);
-    includesCfs = readDataFromJson("includesCfs", json);
-    privacyLevel = readDataFromJson("privacyLevel", json);
+    start = readDataFromJson('start', json);
+    end = readDataFromJson('end', json);
+    includesMembers = readDataFromJson('includesMembers', json);
+    includesCfs = readDataFromJson('includesCfs', json);
+    privacyLevel = readDataFromJson('privacyLevel', json);
   }
 
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
 
-    insertData("start", start, payload);
-    insertData("end", end, payload);
-    insertData("includeMembers", includesMembers, payload);
-    insertData("includeCustomFronts", includesCfs, payload);
-    insertData("privacyLevel", privacyLevel, payload);
+    insertData('start', start, payload);
+    insertData('end', end, payload);
+    insertData('includeMembers', includesMembers, payload);
+    insertData('includeCustomFronts', includesCfs, payload);
+    insertData('privacyLevel', privacyLevel, payload);
 
     return payload;
   }
@@ -77,13 +77,13 @@ class GenerateUserReportDataCf implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    privacyLevel = readDataFromJson("privacyLevel", json);
+    privacyLevel = readDataFromJson('privacyLevel', json);
   }
 
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
-    insertData("privacyLevel", privacyLevel, payload);
+    insertData('privacyLevel', privacyLevel, payload);
 
     return payload;
   }
@@ -95,16 +95,16 @@ class GenerateUserReportDataFMem implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    includeCustomFields = readDataFromJson("includeCustomFields", json);
-    privacyLevel = readDataFromJson("privacyLevel", json);
+    includeCustomFields = readDataFromJson('includeCustomFields', json);
+    privacyLevel = readDataFromJson('privacyLevel', json);
   }
 
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
 
-    insertData("includeCustomFields", includeCustomFields, payload);
-    insertData("privacyLevel", privacyLevel, payload);
+    insertData('includeCustomFields', includeCustomFields, payload);
+    insertData('privacyLevel', privacyLevel, payload);
 
     return payload;
   }
@@ -117,11 +117,11 @@ class GeneratedUserReportData implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    url = readDataFromJson("url", json);
-    createdAt = readDataFromJson("createdAt", json);
+    url = readDataFromJson('url', json);
+    createdAt = readDataFromJson('createdAt', json);
 
-    if (json["usedSettings"] != null) {
-      usedSettings = GenerateUserReportData()..constructFromJson(json["usedSettings"] as Map<String, dynamic>);
+    if (json['usedSettings'] != null) {
+      usedSettings = GenerateUserReportData()..constructFromJson(json['usedSettings'] as Map<String, dynamic>);
     }
   }
 
@@ -129,9 +129,9 @@ class GeneratedUserReportData implements DocumentData {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
 
-    insertData("url", url, payload);
-    insertData("createdAt", createdAt, payload);
-    insertData("usedSettings", usedSettings, payload);
+    insertData('url', url, payload);
+    insertData('createdAt', createdAt, payload);
+    insertData('usedSettings', usedSettings, payload);
 
     return payload;
   }
@@ -146,16 +146,16 @@ class GenerateUserReportData implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    if (json["frontHistory"] != null) {
-      frontHistory = GenerateUserReportDataFh()..constructFromJson(json["frontHistory"] as Map<String, dynamic>);
+    if (json['frontHistory'] != null) {
+      frontHistory = GenerateUserReportDataFh()..constructFromJson(json['frontHistory'] as Map<String, dynamic>);
     }
 
-    if (json["customFronts"] != null) {
-      customFronts = GenerateUserReportDataCf()..constructFromJson(json["customFronts"] as Map<String, dynamic>);
+    if (json['customFronts'] != null) {
+      customFronts = GenerateUserReportDataCf()..constructFromJson(json['customFronts'] as Map<String, dynamic>);
     }
 
-    if (json["members"] != null) {
-      members = GenerateUserReportDataFMem()..constructFromJson(json["members"] as Map<String, dynamic>);
+    if (json['members'] != null) {
+      members = GenerateUserReportDataFMem()..constructFromJson(json['members'] as Map<String, dynamic>);
     }
   }
 
@@ -163,11 +163,11 @@ class GenerateUserReportData implements DocumentData {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
 
-    insertData("sendTo", sendTo, payload);
-    insertData("cc", cc, payload);
-    insertData("customFronts", customFronts, payload);
-    insertData("frontHistory", frontHistory, payload);
-    insertData("members", members, payload);
+    insertData('sendTo', sendTo, payload);
+    insertData('cc', cc, payload);
+    insertData('customFronts', customFronts, payload);
+    insertData('frontHistory', frontHistory, payload);
+    insertData('members', members, payload);
 
     return payload;
   }
@@ -189,36 +189,36 @@ class UserData implements DocumentData {
     Map<String, dynamic> payload = {};
 
     // No need to fill in username, but we only fill it for cache purposes
-    insertData("username", username, payload);
-    insertData("desc", desc, payload);
-    insertData("isAsystem", isAsystem, payload);
-    insertData("avatarUuid", avatarUuid, payload);
-    insertData("avatarUrl", avatarUrl, payload);
-    insertData("color", color, payload);
-    insertData("supportDescMarkdown", supportDescMarkdown, payload);
+    insertData('username', username, payload);
+    insertData('desc', desc, payload);
+    insertData('isAsystem', isAsystem, payload);
+    insertData('avatarUuid', avatarUuid, payload);
+    insertData('avatarUrl', avatarUrl, payload);
+    insertData('color', color, payload);
+    insertData('supportDescMarkdown', supportDescMarkdown, payload);
 
     // Only insert patron for cache reasons
-    insertData("patron", patron, payload);
+    insertData('patron', patron, payload);
 
-    insertDataMap("fields", fields, payload);
+    insertDataMap('fields', fields, payload);
 
     return payload;
   }
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    username = readDataFromJson("username", json);
-    desc = readDataFromJson("desc", json);
-    isAsystem = readDataFromJson("isAsystem", json);
-    avatarUuid = readDataFromJson("avatarUuid", json);
-    avatarUrl = readDataFromJson("avatarUrl", json);
-    color = readDataFromJson("color", json);
-    patron = readDataFromJson("patron", json);
-    supportDescMarkdown = readDataFromJson("supportDescMarkdown", json);
+    username = readDataFromJson('username', json);
+    desc = readDataFromJson('desc', json);
+    isAsystem = readDataFromJson('isAsystem', json);
+    avatarUuid = readDataFromJson('avatarUuid', json);
+    avatarUrl = readDataFromJson('avatarUrl', json);
+    color = readDataFromJson('color', json);
+    patron = readDataFromJson('patron', json);
+    supportDescMarkdown = readDataFromJson('supportDescMarkdown', json);
 
     fields = {};
 
-    Map<String, dynamic>? _fields = readDataFromJson("fields", json);
+    Map<String, dynamic>? _fields = readDataFromJson('fields', json);
     if (_fields != null) {
       _fields.forEach((key, value) {
         fields![key] = UserFieldData()..constructFromJson(value);
@@ -229,7 +229,7 @@ class UserData implements DocumentData {
 
 class Users extends Collection<UserData> {
   @override
-  String get type => "Users";
+  String get type => 'Users';
 
   @deprecated
   @override
@@ -245,7 +245,7 @@ class Users extends Collection<UserData> {
 
   @override
   Future<Document<UserData>> get(String id) async {
-    return getSimpleDocument(id, "v1/user", "users", (DocumentResponse data) => UserData()..constructFromJson(data.content), () => UserData());
+    return getSimpleDocument(id, 'v1/user', 'users', (DocumentResponse data) => UserData()..constructFromJson(data.content), () => UserData());
   }
 
   @deprecated
@@ -258,12 +258,12 @@ class Users extends Collection<UserData> {
   void update(String documentId, UserData values) {
     values.username = null;
     values.patron = null;
-    updateSimpleDocument(type, "v1/user", documentId, values);
+    updateSimpleDocument(type, 'v1/user', documentId, values);
   }
 
   Future<RequestResponse> setUsername(String newUsername, String userId) async {
     try {
-      var response = await SimplyHttpClient().patch(Uri.parse(API().connection().getRequestUrl("v1/user/username/$userId", "")), body: jsonEncode({"username": newUsername})).catchError((e) => generateFailedResponse(e));
+      final response = await SimplyHttpClient().patch(Uri.parse(API().connection().getRequestUrl('v1/user/username/$userId', '')), body: jsonEncode({'username': newUsername})).catchError((e) => generateFailedResponse(e));
 
       return createResponseObject(response);
     } catch (e) {}
@@ -272,10 +272,10 @@ class Users extends Collection<UserData> {
 
   Future<RequestResponse> generateUserReport(GenerateUserReportData data) async {
     if (data.customFronts == null && data.frontHistory == null && data.members == null) {
-      return RequestResponse(false, "You must specify at least one generation type");
+      return RequestResponse(false, 'You must specify at least one generation type');
     }
     try {
-      var response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/user/generateReport", "")), body: jsonEncode(data.toJson())).catchError((e) => generateFailedResponse(e));
+      final response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl('v1/user/generateReport', '')), body: jsonEncode(data.toJson())).catchError((e) => generateFailedResponse(e));
       return createResponseObject(response);
     } catch (e) {}
     return createFailResponseObject();
@@ -283,7 +283,7 @@ class Users extends Collection<UserData> {
 
   Future<RequestResponse> deleteAccount() async {
     try {
-      var response = await SimplyHttpClient().delete(Uri.parse(API().connection().getRequestUrl("v1/user/${API().auth().getUid()}", "")), body: jsonEncode({"performDelete": true})).catchError((e) => createResponseObject(e));
+      final response = await SimplyHttpClient().delete(Uri.parse(API().connection().getRequestUrl('v1/user/${API().auth().getUid()}', '')), body: jsonEncode({'performDelete': true})).catchError((e) => createResponseObject(e));
       return createResponseObject(response);
     } catch (e) {}
     return createFailResponseObject();
@@ -291,7 +291,7 @@ class Users extends Collection<UserData> {
 
   Future<RequestResponse> deleteUserReport(String reportId) async {
     try {
-      var response = await SimplyHttpClient().delete(Uri.parse(API().connection().getRequestUrl("v1/user/${API().auth().getUid()}/report/$reportId", ""))).catchError((e) => createResponseObject(e));
+      final response = await SimplyHttpClient().delete(Uri.parse(API().connection().getRequestUrl('v1/user/${API().auth().getUid()}/report/$reportId', ''))).catchError((e) => createResponseObject(e));
       return createResponseObject(response);
     } catch (e) {}
     return createFailResponseObject();
@@ -299,7 +299,7 @@ class Users extends Collection<UserData> {
 
   Future<RequestResponse> exportData() async {
     try {
-      var response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl("v1/user/${API().auth().getUid()}/export", ""))).catchError((e) => createResponseObject(e));
+      final response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl('v1/user/${API().auth().getUid()}/export', ''))).catchError((e) => createResponseObject(e));
       return createResponseObject(response);
     } catch (e) {}
     return createFailResponseObject();

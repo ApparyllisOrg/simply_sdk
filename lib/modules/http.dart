@@ -4,13 +4,13 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../simply_sdk.dart';
 
-List<String> nonLoggableRequests = ["/v1/event", "/v1/event/open"];
+List<String> nonLoggableRequests = ['/v1/event', '/v1/event/open'];
 
 http.Response generateFailedResponse(Exception e) {
-  if (e is HttpException) API().debug().logFine("ERROR: " + e.uri.toString() + " => " + e.message);
-  if (e is SocketException) API().debug().logFine("ERROR: " + e.address.toString() + " => " + e.message);
-  if (e is TimeoutException) API().debug().logFine("ERROR: Timeout: " + e.duration.toString() + " => " + (e.message ?? ""));
-  return http.Response("", 503);
+  if (e is HttpException) API().debug().logFine('ERROR: ' + e.uri.toString() + ' => ' + e.message);
+  if (e is SocketException) API().debug().logFine('ERROR: ' + e.address.toString() + ' => ' + e.message);
+  if (e is TimeoutException) API().debug().logFine('ERROR: Timeout: ' + e.duration.toString() + ' => ' + (e.message ?? ''));
+  return http.Response('', 503);
 }
 
 class SimplyHttpClient extends http.BaseClient {
@@ -30,13 +30,13 @@ class SimplyHttpClient extends http.BaseClient {
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) {
     if (nonLoggableRequests.indexWhere((element) => request.url.path.endsWith(element)) < 0) {
-      API().debug().logFine("HTTP => ${request.method} => ${request.url}");
+      API().debug().logFine('HTTP => ${request.method} => ${request.url}');
     }
 
-    request.headers.addAll({"content-type": "application/json; charset=UTF-8"});
+    request.headers.addAll({'content-type': 'application/json; charset=UTF-8'});
 
-    if (!request.headers.containsKey("Authorization")) {
-      request.headers.addAll({"Authorization": API().auth().getToken() ?? ""});
+    if (!request.headers.containsKey('Authorization')) {
+      request.headers.addAll({'Authorization': API().auth().getToken() ?? ''});
     }
 
     return _httpClient.send(request);

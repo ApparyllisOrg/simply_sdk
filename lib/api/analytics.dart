@@ -12,8 +12,8 @@ class AnalyticsValueData implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    id = readDataFromJson("id", json);
-    value = readDataFromJson("value", json);
+    id = readDataFromJson('id', json);
+    value = readDataFromJson('value', json);
   }
 
   @override
@@ -31,17 +31,17 @@ class AnalyticsTimingsData implements DocumentData {
   @override
   constructFromJson(Map<String, dynamic> json) {
     morningFronters = readDataTypeArrayFromJson<AnalyticsValueData>(
-        "morningFronters",
+        'morningFronters',
         json,
         ((data) => AnalyticsValueData()..constructFromJson(data)));
-    dayFronters = readDataTypeArrayFromJson<AnalyticsValueData>("dayFronters",
+    dayFronters = readDataTypeArrayFromJson<AnalyticsValueData>('dayFronters',
         json, ((data) => AnalyticsValueData()..constructFromJson(data)));
     eveningFronters = readDataTypeArrayFromJson<AnalyticsValueData>(
-        "eveningFronters",
+        'eveningFronters',
         json,
         ((data) => AnalyticsValueData()..constructFromJson(data)));
     nightFronters = readDataTypeArrayFromJson<AnalyticsValueData>(
-        "nightFronters",
+        'nightFronters',
         json,
         ((data) => AnalyticsValueData()..constructFromJson(data)));
   }
@@ -61,15 +61,15 @@ class AnalyticsDurationsData implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    sums = readDataTypeArrayFromJson<AnalyticsValueData>("sums", json,
+    sums = readDataTypeArrayFromJson<AnalyticsValueData>('sums', json,
         ((data) => AnalyticsValueData()..constructFromJson(data)));
-    averages = readDataTypeArrayFromJson<AnalyticsValueData>("averages", json,
+    averages = readDataTypeArrayFromJson<AnalyticsValueData>('averages', json,
         ((data) => AnalyticsValueData()..constructFromJson(data)));
-    maxes = readDataTypeArrayFromJson<AnalyticsValueData>("maxes", json,
+    maxes = readDataTypeArrayFromJson<AnalyticsValueData>('maxes', json,
         ((data) => AnalyticsValueData()..constructFromJson(data)));
-    mins = readDataTypeArrayFromJson<AnalyticsValueData>("mins", json,
+    mins = readDataTypeArrayFromJson<AnalyticsValueData>('mins', json,
         ((data) => AnalyticsValueData()..constructFromJson(data)));
-    nums = readDataTypeArrayFromJson<AnalyticsValueData>("nums", json,
+    nums = readDataTypeArrayFromJson<AnalyticsValueData>('nums', json,
         ((data) => AnalyticsValueData()..constructFromJson(data)));
   }
 
@@ -85,14 +85,14 @@ class AnalyticsData implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    if (json["timings"] != null) {
+    if (json['timings'] != null) {
       timings = AnalyticsTimingsData()
-        ..constructFromJson(json["timings"] as Map<String, dynamic>);
+        ..constructFromJson(json['timings'] as Map<String, dynamic>);
     }
 
-    if (json["values"] != null) {
+    if (json['values'] != null) {
       values = AnalyticsDurationsData()
-        ..constructFromJson(json["values"] as Map<String, dynamic>);
+        ..constructFromJson(json['values'] as Map<String, dynamic>);
     }
   }
 
@@ -105,12 +105,12 @@ class AnalyticsData implements DocumentData {
 class Analytics {
   Future<AnalyticsData?> get(int start, int end) {
     return Future(() async {
-      var response = await SimplyHttpClient()
+      final response = await SimplyHttpClient()
           .get(Uri.parse(API().connection().getRequestUrl(
-              'v1/user/analytics', "startTime=$start&endTime=$end")))
+              'v1/user/analytics', 'startTime=$start&endTime=$end')))
           .catchError(((e) => generateFailedResponse(e)));
 
-      var jsonResponse = jsonDecode(response.body);
+      final jsonResponse = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
         return AnalyticsData()

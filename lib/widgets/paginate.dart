@@ -86,13 +86,13 @@ class PaginateState extends State<Paginate> {
       setState(() {});
     }
 
-    var response = await getNextPage(widget.url, widget.sortBy, widget.sortOrder, widget.stepSize, currentOffset);
+    final response = await getNextPage(widget.url, widget.sortBy, widget.sortOrder, widget.stepSize, currentOffset);
     if (response.statusCode == 200 && response.body.isNotEmpty) {
       List<Map<String, dynamic>> responseDocs = (jsonDecode(response.body) as List<dynamic>).cast<Map<String, dynamic>>();
 
       List<Document> newDocs = [];
       responseDocs.forEach((element) {
-        newDocs.add(widget.documentConstructor(element["id"], element["content"]));
+        newDocs.add(widget.documentConstructor(element['id'], element['content']));
       });
 
       docs.addAll(newDocs);
@@ -128,7 +128,7 @@ class PaginateState extends State<Paginate> {
     children.addAll(widget.prefixWidgets);
 
     for (int i = 0; i < docs.length; ++i) {
-      var doc = docs[i];
+      final doc = docs[i];
       children.add(widget.itemBuilder(context, i, doc));
       children.add(SizedBox(
         height: widget.spacingHeight,

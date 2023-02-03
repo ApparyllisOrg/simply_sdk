@@ -31,34 +31,34 @@ class PrivateData implements DocumentData {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
 
-    insertData("notificationToken", notificationToken, payload);
-    insertData("latestVersion", latestVersion, payload);
-    insertData("location", location, payload);
-    insertData("termsOfServiceAccepted", termsOfServiceAccepted, payload);
-    insertData("whatsNew", whatsNew, payload);
-    insertDataArray("categories", categories, payload);
+    insertData('notificationToken', notificationToken, payload);
+    insertData('latestVersion', latestVersion, payload);
+    insertData('location', location, payload);
+    insertData('termsOfServiceAccepted', termsOfServiceAccepted, payload);
+    insertData('whatsNew', whatsNew, payload);
+    insertDataArray('categories', categories, payload);
     return payload;
   }
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    notificationToken = readDataArrayFromJson<String>("notificationToken", json);
-    latestVersion = readDataFromJson("latestVersion", json);
-    location = readDataFromJson("location", json);
-    termsOfServiceAccepted = readDataFromJson("termsOfServiceAccepted", json);
-    whatsNew = readDataFromJson("whatsNew", json);
-    generationsLeft = readDataFromJson("generationsLeft", json);
+    notificationToken = readDataArrayFromJson<String>('notificationToken', json);
+    latestVersion = readDataFromJson('latestVersion', json);
+    location = readDataFromJson('location', json);
+    termsOfServiceAccepted = readDataFromJson('termsOfServiceAccepted', json);
+    whatsNew = readDataFromJson('whatsNew', json);
+    generationsLeft = readDataFromJson('generationsLeft', json);
 
-    var notifs = readDataArrayFromJson<dynamic>("notificationHistory", json);
-    notifications = (notifs ?? []).map((e) => Notification(timestamp: e["timestamp"], title: e["title"], message: e["message"])).toList();
+    final notifs = readDataArrayFromJson<dynamic>('notificationHistory', json);
+    notifications = (notifs ?? []).map((e) => Notification(timestamp: e['timestamp'], title: e['title'], message: e['message'])).toList();
 
-    categories = readDataArrayFromJson<String>("categories", json);
+    categories = readDataArrayFromJson<String>('categories', json);
   }
 }
 
 class Privates extends Collection<PrivateData> {
   @override
-  String get type => "Privates";
+  String get type => 'Privates';
 
   @deprecated
   @override
@@ -74,7 +74,7 @@ class Privates extends Collection<PrivateData> {
 
   @override
   Future<Document<PrivateData>> get(String id) async {
-    return getSimpleDocument(id, "v1/user/private", "private", (data) => PrivateData()..constructFromJson(data.content), () => PrivateData());
+    return getSimpleDocument(id, 'v1/user/private', 'private', (data) => PrivateData()..constructFromJson(data.content), () => PrivateData());
   }
 
   @deprecated
@@ -91,7 +91,7 @@ class Privates extends Collection<PrivateData> {
 
     propogateChanges(type, documentId, values, EChangeType.Update);
 
-    var response = await SimplyHttpClient().patch(Uri.parse(API().connection().getRequestUrl('v1/user/private/${API().auth().getUid()}', "")), body: jsonEncode(jsonPayload)).catchError(((e) => generateFailedResponse(e))).timeout(Duration(seconds: 10));
+    final response = await SimplyHttpClient().patch(Uri.parse(API().connection().getRequestUrl('v1/user/private/${API().auth().getUid()}', '')), body: jsonEncode(jsonPayload)).catchError(((e) => generateFailedResponse(e))).timeout(const Duration(seconds: 10));
     if (response.statusCode == 200) {
       return;
     }

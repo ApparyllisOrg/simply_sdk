@@ -17,52 +17,52 @@ class NoteData implements DocumentData {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
 
-    insertData("title", title, payload);
-    insertData("note", note, payload);
-    insertData("color", color, payload);
-    insertData("member", member, payload);
-    insertData("date", date, payload);
-    insertData("supportMarkdown", supportMarkdown, payload);
+    insertData('title', title, payload);
+    insertData('note', note, payload);
+    insertData('color', color, payload);
+    insertData('member', member, payload);
+    insertData('date', date, payload);
+    insertData('supportMarkdown', supportMarkdown, payload);
 
     return payload;
   }
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    title = readDataFromJson("title", json);
-    note = readDataFromJson("note", json);
-    color = readDataFromJson("color", json);
-    member = readDataFromJson("member", json);
-    date = readDataFromJson("date", json);
-    supportMarkdown = readDataFromJson("supportMarkdown", json);
+    title = readDataFromJson('title', json);
+    note = readDataFromJson('note', json);
+    color = readDataFromJson('color', json);
+    member = readDataFromJson('member', json);
+    date = readDataFromJson('date', json);
+    supportMarkdown = readDataFromJson('supportMarkdown', json);
   }
 }
 
 class Notes extends Collection<NoteData> {
   @override
-  String get type => "Notes";
+  String get type => 'Notes';
 
   @override
   Document<NoteData> add(DocumentData values) {
-    return addSimpleDocument(type, "v1/note", values);
+    return addSimpleDocument(type, 'v1/note', values);
   }
 
   @override
   void delete(String documentId, Document originalDocument) {
-    deleteSimpleDocument(type, "v1/note", documentId, originalDocument.dataObject);
+    deleteSimpleDocument(type, 'v1/note', documentId, originalDocument.dataObject);
   }
 
   @override
   Future<Document<NoteData>> get(String id) async {
-    return getSimpleDocument(id, "v1/note/${API().auth().getUid()}", type, (data) => NoteData()..constructFromJson(data.content), () => NoteData());
+    return getSimpleDocument(id, 'v1/note/${API().auth().getUid()}', type, (data) => NoteData()..constructFromJson(data.content), () => NoteData());
   }
 
   @override
   Future<List<Document<NoteData>>> getAll() async {
-    var collection = await getCollection<NoteData>("v1/notes/${API().auth().getUid()}", "", type);
+    final collection = await getCollection<NoteData>('v1/notes/${API().auth().getUid()}', '', type);
 
     List<Document<NoteData>> notes =
-        collection.data.map<Document<NoteData>>((e) => Document(e["exists"], e["id"], NoteData()..constructFromJson(e["content"]), type)).toList();
+        collection.data.map<Document<NoteData>>((e) => Document(e['exists'], e['id'], NoteData()..constructFromJson(e['content']), type)).toList();
     if (!collection.useOffline) {
       API().cache().clearTypeCache(type);
       API().cache().cacheListOfDocuments(notes);
@@ -75,13 +75,13 @@ class Notes extends Collection<NoteData> {
       await API().auth().waitForAbilityToSendRequests();
     }
 
-    var response = await SimplyHttpClient()
-        .get(Uri.parse(API().connection().getRequestUrl('v1/notes/$systemId/$member', "")))
+    final response = await SimplyHttpClient()
+        .get(Uri.parse(API().connection().getRequestUrl('v1/notes/$systemId/$member', '')))
         .catchError((e) => generateFailedResponse(e));
     if (response.statusCode == 200) {
       List<Map<String, dynamic>> convertedResponse = convertServerResponseToList(response);
       List<Document<NoteData>> notes = convertedResponse
-          .map<Document<NoteData>>((e) => Document(e["exists"], e["id"], NoteData()..constructFromJson(e["content"]), type))
+          .map<Document<NoteData>>((e) => Document(e['exists'], e['id'], NoteData()..constructFromJson(e['content']), type))
           .toList();
       API().cache().cacheListOfDocuments(notes);
       return notes;
@@ -94,6 +94,6 @@ class Notes extends Collection<NoteData> {
 
   @override
   void update(String documentId, DocumentData values) {
-    updateSimpleDocument(type, "v1/note", documentId, values);
+    updateSimpleDocument(type, 'v1/note', documentId, values);
   }
 }

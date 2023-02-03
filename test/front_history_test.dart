@@ -17,7 +17,7 @@ void runTests(userId) {
             ..live = false
             ..endTime = end);
     }
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
   });
 
   test('Add to front', () async {
@@ -25,7 +25,7 @@ void runTests(userId) {
       ..live = true
       ..custom = false
       ..startTime = now
-      ..member = "testMember");
+      ..member = 'testMember');
   });
 
   test('Update front', () async {
@@ -51,8 +51,8 @@ void runTests(userId) {
       ..live = true
       ..custom = false
       ..startTime = now
-      ..member = "testMember2");
-    await Future.delayed(Duration(seconds: 1));
+      ..member = 'testMember2');
+    await Future.delayed(const Duration(seconds: 1));
   });
 
   test('Check amount of people in front', () async {
@@ -65,7 +65,7 @@ void runTests(userId) {
         FrontHistoryData()
           ..live = false
           ..endTime = end);
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 3));
   });
 
   test('Check again amount of people in front', () async {

@@ -57,7 +57,7 @@ class API {
     };
 
     await _debug.init();
-    await _cache.initialize("");
+    await _cache.initialize('');
     _network.initialize();
     _socket.bindAuthChanged();
 

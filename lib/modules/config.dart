@@ -4,8 +4,8 @@ import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 
-String _configSync = "lastConfigSync";
-String _remoteConfig = "remoteConfig";
+String _configSync = 'lastConfigSync';
+String _remoteConfig = 'remoteConfig';
 
 class RemoteConfig {
   Map<String, dynamic> _currentConfig = Map<String, dynamic>();
@@ -45,9 +45,9 @@ class RemoteConfig {
       response = await get(url);
       _sharedPrefs.setInt(_configSync, now);
       _sharedPrefs.setString(_remoteConfig, response.body);
-      API().debug().logInfo("Loaded remote config");
+      API().debug().logInfo('Loaded remote config');
     } catch (e) {
-      API().debug().logError("Failed to load remote config: ${e.toString()}");
+      API().debug().logError('Failed to load remote config: ${e.toString()}');
       print(e);
     }
 

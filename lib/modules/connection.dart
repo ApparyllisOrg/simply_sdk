@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 
 class Connection {
-  static const String localHost = "http://localhost:8443";
-  static const String prodHost = "https://v2.apparyllis.com";
+  static const String localHost = 'http://localhost:8443';
+  static const String prodHost = 'https://v2.apparyllis.com';
 
-  String _currentHost = "";
+  String _currentHost = '';
 
   String getCurrentHost() {
-    String overrideIp = const String.fromEnvironment("IP");
+    String overrideIp = const String.fromEnvironment('IP');
     return overrideIp.isNotEmpty ? overrideIp : _currentHost;
   }
 
@@ -20,9 +20,9 @@ class Connection {
   }
 
   String getRequestUrl(String path, String query) {
-    String overrideIp = const String.fromEnvironment("IP");
+    String overrideIp = const String.fromEnvironment('IP');
     String useIp = overrideIp.isNotEmpty ? overrideIp : _currentHost;
-    return "$useIp/$path?$query";
+    return '$useIp/$path?$query';
   }
 
   void setDebugMode(bool debug) {
@@ -37,5 +37,5 @@ class Connection {
     _currentHost = host;
   }
 
-  String configGet() => "https://dist.apparyllis.com/config/conf.json";
+  String configGet() => 'https://dist.apparyllis.com/config/conf.json';
 }

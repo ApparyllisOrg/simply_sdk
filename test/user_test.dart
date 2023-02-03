@@ -27,7 +27,7 @@ void runTests(userId) {
           ..desc = randomDesc
           ..isAsystem = true);
 
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
 
     Document<UserData> user = await API().users().get(userId);
     expect(randomDesc, user.dataObject.desc);
@@ -48,7 +48,7 @@ void runTests(userId) {
           ..notificationToken = [randomToken]
           ..termsOfServiceAccepted = true);
 
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
 
     Document<PrivateData> user = await API().privates().get(userId);
     expect(randomToken, user.dataObject.notificationToken?[0]);

@@ -15,17 +15,17 @@ import 'paginate_test.dart' as pagination;
 import 'notes_test.dart' as notes;
 import 'timers_test.dart' as timers;
 
-const String userId = "zdhE8LSYheP9dGzdwKzy8eoJrTu1";
+const String userId = 'zdhE8LSYheP9dGzdwKzy8eoJrTu1';
 
 String getRandString(int len) {
-  var random = Random.secure();
-  var values = List<int>.generate(len, (i) => random.nextInt(255));
+  final random = Random.secure();
+  final values = List<int>.generate(len, (i) => random.nextInt(255));
   return base64UrlEncode(values);
 }
 
 void main() {
   Logger.root.level = Level.ALL;
-  API().connection().setCurrentHost("http://localhost:3000");
+  API().connection().setCurrentHost('http://localhost:3000');
   //API().auth().setLastAuthToken("HvmRXTOBjp0nFbTxDx/t8ztim14BttGx2GQlS18cOAqLcf0569iDPEuEi16QxIjM", userId);
   socket.runTests(userId);
   user.runTests(userId);

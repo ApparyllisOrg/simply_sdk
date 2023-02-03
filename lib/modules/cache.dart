@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/types/document.dart';
-import "package:universal_html/html.dart" as html;
+import 'package:universal_html/html.dart' as html;
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
@@ -43,7 +43,7 @@ class Cache {
     if (data != null) {
       Map<String, dynamic>? docData = data[id] as Map<String, dynamic>?;
       if (docData != null) {
-        docData.remove("id");
+        docData.remove('id');
         return docData;
       }
     }
@@ -89,7 +89,7 @@ class Cache {
   void markDirty() {
     dirty = true;
     if (saveTimer?.isActive == true) saveTimer?.cancel();
-    saveTimer = Timer(Duration(milliseconds: 10), save);
+    saveTimer = Timer(const Duration(milliseconds: 10), save);
   }
 
   bool dirty = false;
@@ -104,9 +104,9 @@ class Cache {
       try {
         dirty = false;
         // Save cache
-        html.window.localStorage["db"] = jsonEncode(_cache, toEncodable: customEncode);
+        html.window.localStorage['db'] = jsonEncode(_cache, toEncodable: customEncode);
 
-        API().debug().logFine("Saved cache");
+        API().debug().logFine('Saved cache');
       } catch (e) {
         dirty = true;
         API().reportError(e, StackTrace.current);
@@ -116,15 +116,15 @@ class Cache {
       try {
         dirty = false;
 
-        var dir = await getApplicationDocumentsDirectory();
+        final dir = await getApplicationDocumentsDirectory();
         await dir.create(recursive: true);
-        var dbPath = dir.path + "/simply.db";
+        final dbPath = dir.path + '/simply.db';
 
         // Save cache
         File file = File(dbPath);
         file.writeAsStringSync(jsonEncode(_cache, toEncodable: customEncode));
 
-        print("Saved cache");
+        print('Saved cache');
       } catch (e) {
         dirty = true;
         API().reportError(e, StackTrace.current);
@@ -133,7 +133,7 @@ class Cache {
     }
   }
 
-  String lastInitializeFor = "";
+  String lastInitializeFor = '';
   bool isInitialzed = false;
   Future<void> initialize(String initializeFor) async {
     if (lastInitializeFor != initializeFor) {
@@ -144,13 +144,13 @@ class Cache {
 
     await Future(() async {
       if (kIsWeb) {
-        bool dbExists = html.window.localStorage.containsKey("db");
-        _cache = dbExists ? jsonDecode(html.window.localStorage["db"] ?? "", reviver: customDecode) as Map<String, dynamic> : Map<String, dynamic>();
+        bool dbExists = html.window.localStorage.containsKey('db');
+        _cache = dbExists ? jsonDecode(html.window.localStorage['db'] ?? '', reviver: customDecode) as Map<String, dynamic> : Map<String, dynamic>();
       } else {
         try {
-          var dir = await getApplicationDocumentsDirectory();
+          final dir = await getApplicationDocumentsDirectory();
           await dir.create(recursive: true);
-          var dbPath = dir.path + "/simply.db";
+          final dbPath = dir.path + '/simply.db';
 
           File file = File(dbPath);
           bool exists = await file.exists();
@@ -170,7 +170,7 @@ class Cache {
         }
       }
 
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       isInitialzed = true;
       save();
     });
@@ -178,8 +178,8 @@ class Cache {
 
   String insertDocument(String type, String id, Map<String, dynamic> data) {
     Map<String, dynamic> dataCopy = Map.from(data);
-    dataCopy["type"] = type;
-    dataCopy["id"] = id;
+    dataCopy['type'] = type;
+    dataCopy['id'] = id;
     updateToCache(type, id, dataCopy);
     return id;
   }
@@ -203,7 +203,7 @@ class Cache {
 
       Map<String, dynamic> sendData = Map<String, dynamic>();
       docData.forEach((key, value) {
-        if (key != "id" && key != "type") {
+        if (key != 'id' && key != 'type') {
           sendData[key] = value;
         }
       });

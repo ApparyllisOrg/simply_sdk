@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import "package:universal_html/html.dart" as html;
+import 'package:universal_html/html.dart' as html;
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'dart:async';
@@ -15,7 +15,7 @@ class Debug {
   List<String> getLogs() => _logs;
 
   void enable() {
-    _saveTimer = Timer.periodic(Duration(seconds: 2), timerSave);
+    _saveTimer = Timer.periodic(const Duration(seconds: 2), timerSave);
   }
 
   void timerSave(timer) {
@@ -38,25 +38,25 @@ class Debug {
   void logFine(String msg, {bool bSave = true}) {
     Logger.root.fine(msg);
     _bDirty = true;
-    if (bSave) _logs.add("[${getLogTime()}] FINE: $msg");
+    if (bSave) _logs.add('[${getLogTime()}] FINE: $msg');
   }
 
   void logInfo(String msg) {
     Logger.root.info(msg);
     _bDirty = true;
-    _logs.add("[${getLogTime()}] INFO: $msg");
+    _logs.add('[${getLogTime()}] INFO: $msg');
   }
 
   void logWarning(String msg) {
     Logger.root.warning(msg);
     _bDirty = true;
-    _logs.add("[${getLogTime()}] WARN: $msg");
+    _logs.add('[${getLogTime()}] WARN: $msg');
   }
 
   void logError(String msg) {
     Logger.root.severe(msg);
     _bDirty = true;
-    _logs.add("[${getLogTime()}] ERR: $msg");
+    _logs.add('[${getLogTime()}] ERR: $msg');
   }
 
   String getLogTime() => DateTime.now().toIso8601String();
@@ -64,18 +64,18 @@ class Debug {
   Future<void> load() async {
     await Future(() async {
       if (kIsWeb) {
-        bool dbExists = html.window.localStorage.containsKey("logs");
+        bool dbExists = html.window.localStorage.containsKey('logs');
         _logs = dbExists
             ? (jsonDecode(
-                html.window.localStorage["logs"] ?? "",
+                html.window.localStorage['logs'] ?? '',
               ) as List<dynamic>)
                 .cast<String>()
             : [];
       } else {
         try {
-          var dir = await getApplicationDocumentsDirectory();
+          final dir = await getApplicationDocumentsDirectory();
           await dir.create(recursive: true);
-          var dbPath = dir.path + "/logs.db";
+          final dbPath = dir.path + '/logs.db';
 
           File file = File(dbPath);
           bool exists = await file.exists();
@@ -95,7 +95,7 @@ class Debug {
         }
       }
 
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       _isInitialized = true;
       save();
     });
@@ -109,22 +109,22 @@ class Debug {
 
     if (kIsWeb) {
       try {
-        html.window.localStorage["logs"] = jsonEncode(_logs);
+        html.window.localStorage['logs'] = jsonEncode(_logs);
 
-        Logger.root.fine("Saved cache");
+        Logger.root.fine('Saved cache');
       } catch (e) {
         print(e);
       }
     } else {
       try {
-        var dir = await getApplicationDocumentsDirectory();
+        final dir = await getApplicationDocumentsDirectory();
         await dir.create(recursive: true);
-        var dbPath = dir.path + "/logs.db";
+        final dbPath = dir.path + '/logs.db';
 
         File file = File(dbPath);
         file.writeAsStringSync(jsonEncode(_logs));
 
-        print("Saved cache");
+        print('Saved cache');
       } catch (e) {
         print(e);
       }

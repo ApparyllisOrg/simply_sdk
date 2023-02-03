@@ -15,10 +15,10 @@ class MessageData implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    title = readDataFromJson("title", json);
-    message = readDataFromJson("message", json);
-    answer = readDataFromJson("answer", json);
-    time = readDataFromJson("time", json);
+    title = readDataFromJson('title', json);
+    message = readDataFromJson('message', json);
+    answer = readDataFromJson('answer', json);
+    time = readDataFromJson('time', json);
   }
 
   @override
@@ -33,10 +33,10 @@ class Messages {
       await API().auth().waitForAbilityToSendRequests();
     }
 
-    var response =
-        await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/messages', ""))).catchError(((e) => generateFailedResponse(e)));
+    final response =
+        await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/messages', ''))).catchError(((e) => generateFailedResponse(e)));
 
-    var jsonResponse = jsonDecode(response.body);
+    final jsonResponse = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
       List<dynamic> messages = jsonResponse as List<dynamic>;
@@ -51,6 +51,6 @@ class Messages {
   void markRead(int time) {
     API()
         .network()
-        .request(new NetworkRequest(HttpRequestMethod.Post, 'v1/messages/read', DateTime.now().millisecondsSinceEpoch, payload: {"time": time}));
+        .request(new NetworkRequest(HttpRequestMethod.Post, 'v1/messages/read', DateTime.now().millisecondsSinceEpoch, payload: {'time': time}));
   }
 }

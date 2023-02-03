@@ -28,52 +28,52 @@ class FrontHistoryData implements DocumentData {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
 
-    insertData("custom", custom, payload);
-    insertData("startTime", startTime, payload);
-    insertData("endTime", endTime, payload);
-    insertData("member", member, payload);
-    insertData("live", live, payload);
-    insertData("customStatus", customStatus, payload);
+    insertData('custom', custom, payload);
+    insertData('startTime', startTime, payload);
+    insertData('endTime', endTime, payload);
+    insertData('member', member, payload);
+    insertData('live', live, payload);
+    insertData('customStatus', customStatus, payload);
 
     // Only store comment count for cache reasons
-    insertData("commentCount", commentCount, payload);
+    insertData('commentCount', commentCount, payload);
 
     return payload;
   }
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    custom = readDataFromJson("custom", json);
-    startTime = readDataFromJson("startTime", json);
-    endTime = readDataFromJson("endTime", json);
-    member = readDataFromJson("member", json);
-    live = readDataFromJson("live", json);
-    commentCount = readDataFromJson("commentCount", json);
-    customStatus = readDataFromJson("customStatus", json);
+    custom = readDataFromJson('custom', json);
+    startTime = readDataFromJson('startTime', json);
+    endTime = readDataFromJson('endTime', json);
+    member = readDataFromJson('member', json);
+    live = readDataFromJson('live', json);
+    commentCount = readDataFromJson('commentCount', json);
+    customStatus = readDataFromJson('customStatus', json);
   }
 }
 
 class FrontHistory extends Collection<FrontHistoryData> {
   @override
-  String get type => "FrontHistory";
+  String get type => 'FrontHistory';
 
   @override
   Document<FrontHistoryData> add(FrontHistoryData values) {
     values.commentCount = null;
-    return addSimpleDocument(type, "v1/frontHistory", values);
+    return addSimpleDocument(type, 'v1/frontHistory', values);
   }
 
   @override
   void delete(String documentId, Document originalDocument) {
     deleteSimpleDocument(
-        type, "v1/frontHistory", documentId, originalDocument.dataObject);
+        type, 'v1/frontHistory', documentId, originalDocument.dataObject);
   }
 
   @override
   Future<Document<FrontHistoryData>> get(String id) async {
     return getSimpleDocument(
         id,
-        "v1/frontHistory/${API().auth().getUid()}",
+        'v1/frontHistory/${API().auth().getUid()}',
         type,
         (data) => FrontHistoryData()..constructFromJson(data.content),
         () => FrontHistoryData());
@@ -87,13 +87,13 @@ class FrontHistory extends Collection<FrontHistoryData> {
 
   Future<List<Document<FrontHistoryData>>> getFrontHistoryInRange(
       int start, int end) async {
-    var collection = await getCollection<FrontHistoryData>(
-        "v1/frontHistory/${API().auth().getUid()}", "", type,
-        query: "startTime=$start&endTime=$end", skipCache: true);
+    final collection = await getCollection<FrontHistoryData>(
+        'v1/frontHistory/${API().auth().getUid()}', '', type,
+        query: 'startTime=$start&endTime=$end', skipCache: true);
 
     List<Document<FrontHistoryData>> fronts = collection.data
-        .map<Document<FrontHistoryData>>((e) => Document(e["exists"], e["id"],
-            FrontHistoryData()..constructFromJson(e["content"]), type))
+        .map<Document<FrontHistoryData>>((e) => Document(e['exists'], e['id'],
+            FrontHistoryData()..constructFromJson(e['content']), type))
         .toList();
     if (!collection.useOffline) {
       List<Document<FrontHistoryData>> fhNotLive = API()
@@ -134,13 +134,13 @@ class FrontHistory extends Collection<FrontHistoryData> {
 
   Future<List<Document<FrontHistoryData>>> getCurrentFronters(
       {int? since, bool bForceOffline = false}) async {
-    var collection = await getCollection<FrontHistoryData>(
-        "v1/fronters", "", type,
+    final collection = await getCollection<FrontHistoryData>(
+        'v1/fronters', '', type,
         since: since, bForceOffline: bForceOffline);
 
     List<Document<FrontHistoryData>> fronts = collection.data
-        .map<Document<FrontHistoryData>>((e) => Document(e["exists"], e["id"],
-            FrontHistoryData()..constructFromJson(e["content"]), type))
+        .map<Document<FrontHistoryData>>((e) => Document(e['exists'], e['id'],
+            FrontHistoryData()..constructFromJson(e['content']), type))
         .toList();
     if (!collection.useOffline) {
       List<Document<FrontHistoryData>> fhLive = API()
@@ -160,6 +160,6 @@ class FrontHistory extends Collection<FrontHistoryData> {
   @override
   void update(String documentId, FrontHistoryData values) {
     values.commentCount = null;
-    updateSimpleDocument(type, "v1/frontHistory", documentId, values);
+    updateSimpleDocument(type, 'v1/frontHistory', documentId, values);
   }
 }

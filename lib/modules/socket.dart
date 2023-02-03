@@ -37,7 +37,7 @@ class Socket {
 
   void sendAuthentication() {
     try {
-      sendSocketData(jsonEncode({"op": "authenticate", "token": API().auth().getToken()}));
+      sendSocketData(jsonEncode({'op': 'authenticate', 'token': API().auth().getToken()}));
     } catch (e) {}
   }
 
@@ -50,7 +50,7 @@ class Socket {
   }
 
   void initialize() {
-    uniqueConnectionId = Uuid().v4();
+    uniqueConnectionId = const Uuid().v4();
     createConnection();
     reconnect();
   }
@@ -66,7 +66,7 @@ class Socket {
   }
 
   void reconnect() async {
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     reconnect();
   }
 
@@ -97,23 +97,23 @@ class Socket {
 
     closeSocket();
 
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
     createConnection();
   }
 
   void createConnection() async {
-    print("Create socket connection");
+    print('Create socket connection');
     gotHello = false;
     isDisconnected = false;
     try {
-      String overrideIp = const String.fromEnvironment("WSSIP");
+      String overrideIp = const String.fromEnvironment('WSSIP');
       String socketUrl = overrideIp.isNotEmpty ? overrideIp : 'wss://v2.apparyllis.com';
 
       if (kIsWeb) {
         _WebSocket = WebSocketChannel.connect(Uri.parse(socketUrl));
       } else {
-        _IOSocket = await io.WebSocket.connect(socketUrl, compression: io.CompressionOptions(enabled: true, serverNoContextTakeover: true, clientNoContextTakeover: true, serverMaxWindowBits: 15, clientMaxWindowBits: 15));
-        _IOSocket!.pingInterval = Duration(seconds: 3);
+        _IOSocket = await io.WebSocket.connect(socketUrl, compression: const io.CompressionOptions(enabled: true, serverNoContextTakeover: true, clientNoContextTakeover: true, serverMaxWindowBits: 15, clientMaxWindowBits: 15));
+        _IOSocket!.pingInterval = const Duration(seconds: 3);
       }
 
       if (kIsWeb) {
@@ -136,7 +136,7 @@ class Socket {
         pingTimer!.cancel();
       }
 
-      pingTimer = Timer.periodic(Duration(seconds: 10), ping);
+      pingTimer = Timer.periodic(const Duration(seconds: 10), ping);
     } catch (e) {
       disconnected();
     }
@@ -147,7 +147,7 @@ class Socket {
       disconnected();
     }
     try {
-      sendSocketData("ping");
+      sendSocketData('ping');
     } catch (e) {
       disconnected();
     }
@@ -155,11 +155,11 @@ class Socket {
 
   EChangeType operationToChangeType(String operation) {
     switch (operation) {
-      case "update":
+      case 'update':
         return EChangeType.Update;
-      case "insert":
+      case 'insert':
         return EChangeType.Add;
-      case "delete":
+      case 'delete':
         return EChangeType.Delete;
     }
 
@@ -168,7 +168,7 @@ class Socket {
 
   void onData(event) {
     gotHello = true;
-    API().debug().logFine("[SOCKET DATA RECEIVED] " + event.toString(), bSave: false);
+    API().debug().logFine('[SOCKET DATA RECEIVED] ' + event.toString(), bSave: false);
     if (event is String && event.isNotEmpty) {
       onReceivedData(event);
     }
@@ -181,24 +181,24 @@ class Socket {
 
     Map<String, dynamic> data = jsonDecode(event, reviver: customDecode);
 
-    String? msg = data["msg"];
+    String? msg = data['msg'];
 
     if (msg == null) return;
 
-    if (msg == "update") {
-      bool initial = data["initial"] == true;
+    if (msg == 'update') {
+      bool initial = data['initial'] == true;
 
       if (initial) {
         // Clear the cache, we may have deleted things while on another phone
-        API().cache().clearTypeCache(data["target"]);
+        API().cache().clearTypeCache(data['target']);
       }
-      for (Map<String, dynamic> result in data["results"]) {
-        propogateChanges(data["target"], result["id"], jsonDataToDocumentData(data["target"], result["content"] as Map<String, dynamic>), operationToChangeType(result["operationType"]));
+      for (Map<String, dynamic> result in data['results']) {
+        propogateChanges(data['target'], result['id'], jsonDataToDocumentData(data['target'], result['content'] as Map<String, dynamic>), operationToChangeType(result['operationType']));
       }
     } else {
       _OnMsgReceived.forEach((element) {
         if (element != null) {
-          element(msg, data["data"] ?? "");
+          element(msg, data['data'] ?? '');
         }
       });
     }

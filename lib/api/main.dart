@@ -27,16 +27,16 @@ class DocumentResponse {
   DocumentResponse();
 
   DocumentResponse.fromJson(Map<String, dynamic> json) {
-    exists = json["exists"]!;
-    id = json["id"]!;
-    content = json["content"]!;
+    exists = json['exists']!;
+    id = json['id']!;
+    content = json['content']!;
   }
 
   DocumentResponse.fromString(String jsonBody) {
     Map<String, dynamic> json = jsonDecode(jsonBody) as Map<String, dynamic>;
-    exists = json["exists"]!;
-    id = json["id"]!;
-    content = json["content"]!;
+    exists = json['exists']!;
+    id = json['id']!;
+    content = json['content']!;
   }
 }
 
@@ -49,44 +49,44 @@ class CollectionResponse<Type> {
 
 DocumentData jsonDataToDocumentData(String type, Map<String, dynamic> data) {
   switch (type) {
-    case "Members":
-    case "members":
+    case 'Members':
+    case 'members':
       return MemberData()..constructFromJson(data);
-    case "CustomFronts":
-    case "frontStatuses":
+    case 'CustomFronts':
+    case 'frontStatuses':
       return CustomFrontData()..constructFromJson(data);
-    case "Groups":
-    case "groups":
+    case 'Groups':
+    case 'groups':
       return GroupData()..constructFromJson(data);
-    case "Notes":
-    case "notes":
+    case 'Notes':
+    case 'notes':
       return NoteData()..constructFromJson(data);
-    case "Polls":
-    case "polls":
+    case 'Polls':
+    case 'polls':
       return PollData()..constructFromJson(data);
-    case "RepeatedReminders":
-    case "repeatedReminders":
+    case 'RepeatedReminders':
+    case 'repeatedReminders':
       return RepeatedTimerData()..constructFromJson(data);
-    case "AutomatedReminders":
-    case "automatedReminders":
+    case 'AutomatedReminders':
+    case 'automatedReminders':
       return AutomatedTimerData()..constructFromJson(data);
-    case "FrontHistory":
-    case "frontHistory":
+    case 'FrontHistory':
+    case 'frontHistory':
       return FrontHistoryData()..constructFromJson(data);
-    case "Comments":
-    case "comments":
+    case 'Comments':
+    case 'comments':
       return CommentData()..constructFromJson(data);
-    case "ChatMessages":
-    case "chatMessages":
+    case 'ChatMessages':
+    case 'chatMessages':
       return ChatMessageData()..constructFromJson(data);
-    case "ChannelCategories":
-    case "channelCategories":
+    case 'ChannelCategories':
+    case 'channelCategories':
       return ChannelCategoryData()..constructFromJson(data);
-    case "Channels":
-    case "channels":
+    case 'Channels':
+    case 'channels':
       return ChannelData()..constructFromJson(data);
-    case "ChatMessages":
-    case "chatMessages":
+    case 'ChatMessages':
+    case 'chatMessages':
       return ChatMessageData()..constructFromJson(data);
   }
 
@@ -95,53 +95,53 @@ DocumentData jsonDataToDocumentData(String type, Map<String, dynamic> data) {
 
 void propogateChanges(String type, String id, dynamic data, EChangeType changeType) {
   switch (type) {
-    case "Members":
-    case "members":
-      API().members().propogateChanges(Document(true, id, data, "Members"), changeType);
+    case 'Members':
+    case 'members':
+      API().members().propogateChanges(Document(true, id, data, 'Members'), changeType);
       break;
-    case "CustomFronts":
-    case "frontStatuses":
-      API().customFronts().propogateChanges(Document(true, id, data, "CustomFronts"), changeType);
+    case 'CustomFronts':
+    case 'frontStatuses':
+      API().customFronts().propogateChanges(Document(true, id, data, 'CustomFronts'), changeType);
       break;
-    case "Groups":
-    case "groups":
-      API().groups().propogateChanges(Document(true, id, data, "Groups"), changeType);
+    case 'Groups':
+    case 'groups':
+      API().groups().propogateChanges(Document(true, id, data, 'Groups'), changeType);
       break;
-    case "Notes":
-    case "notes":
-      API().notes().propogateChanges(Document(true, id, data, "Notes"), changeType);
+    case 'Notes':
+    case 'notes':
+      API().notes().propogateChanges(Document(true, id, data, 'Notes'), changeType);
       break;
-    case "Polls":
-    case "polls":
-      API().polls().propogateChanges(Document(true, id, data, "Polls"), changeType);
+    case 'Polls':
+    case 'polls':
+      API().polls().propogateChanges(Document(true, id, data, 'Polls'), changeType);
       break;
-    case "RepeatedReminders":
-    case "repeatedReminders":
-      API().repeatedTimers().propogateChanges(Document(true, id, data, "RepeatedReminders"), changeType);
+    case 'RepeatedReminders':
+    case 'repeatedReminders':
+      API().repeatedTimers().propogateChanges(Document(true, id, data, 'RepeatedReminders'), changeType);
       break;
-    case "AutomatedReminders":
-    case "automatedReminders":
-      API().automatedTimers().propogateChanges(Document(true, id, data, "AutomatedReminders"), changeType);
+    case 'AutomatedReminders':
+    case 'automatedReminders':
+      API().automatedTimers().propogateChanges(Document(true, id, data, 'AutomatedReminders'), changeType);
       break;
-    case "FrontHistory":
-    case "frontHistory":
-      API().frontHistory().propogateChanges(Document(true, id, data, "FrontHistory"), changeType);
+    case 'FrontHistory':
+    case 'frontHistory':
+      API().frontHistory().propogateChanges(Document(true, id, data, 'FrontHistory'), changeType);
       break;
-    case "Comments":
-    case "comments":
-      API().comments().propogateChanges(Document(true, id, data, "Comments"), changeType);
+    case 'Comments':
+    case 'comments':
+      API().comments().propogateChanges(Document(true, id, data, 'Comments'), changeType);
       break;
-    case "ChannelCategories":
-    case "channelCategories":
-      API().channelCategories().propogateChanges(Document(true, id, data, "Comments"), changeType);
+    case 'ChannelCategories':
+    case 'channelCategories':
+      API().channelCategories().propogateChanges(Document(true, id, data, 'Comments'), changeType);
       break;
-    case "Channels":
-    case "channels":
-      API().channels().propogateChanges(Document(true, id, data, "Comments"), changeType);
+    case 'Channels':
+    case 'channels':
+      API().channels().propogateChanges(Document(true, id, data, 'Comments'), changeType);
       break;
-    case "ChatMessages":
-    case "chatMessages":
-      API().eventListener().onEvent("chatMessages", Document<ChatMessageData>(true, id, data, "ChatMessages"), changeType);
+    case 'ChatMessages':
+    case 'chatMessages':
+      API().eventListener().onEvent('chatMessages', Document<ChatMessageData>(true, id, data, 'ChatMessages'), changeType);
       break;
   }
 }
@@ -151,7 +151,7 @@ Document<T> addSimpleDocument<T>(String type, String path, DocumentData data, {S
 
   Map<String, dynamic> jsonPayload = data.toJson();
 
-  API().network().request(new NetworkRequest(HttpRequestMethod.Post, "$path/$usedId", DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
+  API().network().request(new NetworkRequest(HttpRequestMethod.Post, '$path/$usedId', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
 
   API().cache().insertDocument(type, usedId, jsonPayload);
 
@@ -165,7 +165,7 @@ void updateSimpleDocument(String type, String path, String documentId, DocumentD
 
   API()
       .network()
-      .request(new NetworkRequest(HttpRequestMethod.Patch, "$path/$documentId", DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
+      .request(new NetworkRequest(HttpRequestMethod.Patch, '$path/$documentId', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
 
   API().cache().updateDocument(type, documentId, jsonPayload);
 
@@ -175,7 +175,7 @@ void updateSimpleDocument(String type, String path, String documentId, DocumentD
 void deleteSimpleDocument(String type, String path, String id, DocumentData data) {
   API().network().request(new NetworkRequest(
         HttpRequestMethod.Delete,
-        "$path/$id",
+        '$path/$id',
         DateTime.now().millisecondsSinceEpoch,
       ));
 
@@ -190,12 +190,12 @@ Future<CollectionResponse<ObjectType>> getCollection<ObjectType>(String path, St
     await API().auth().waitForAbilityToSendRequests();
   }
 
-  var useQuery = (query ?? "") + (since != null ? "&since=${since.toString()}" : "");
-  var response = bForceOffline
-      ? Response("", 503)
+  final useQuery = (query ?? '') + (since != null ? '&since=${since.toString()}' : '');
+  final response = bForceOffline
+      ? Response('', 503)
       : await SimplyHttpClient()
-          .get(Uri.parse(API().connection().getRequestUrl("$path/$id", useQuery)))
-          .timeout(Duration(seconds: 10))
+          .get(Uri.parse(API().connection().getRequestUrl('$path/$id', useQuery)))
+          .timeout(const Duration(seconds: 10))
           .catchError(((e) => generateFailedResponse(e)));
   if (response.statusCode == 200) {
     CollectionResponse<ObjectType> res = CollectionResponse<ObjectType>();
@@ -204,8 +204,8 @@ Future<CollectionResponse<ObjectType>> getCollection<ObjectType>(String path, St
     return res;
   } else {
     if (!bForceOffline) {
-      API().debug().logFine("Failed get Collection result => ");
-      API().debug().logFine(API().connection().getRequestUrl("$path/$id", useQuery));
+      API().debug().logFine('Failed get Collection result => ');
+      API().debug().logFine(API().connection().getRequestUrl('$path/$id', useQuery));
       API().debug().logFine(response.body);
     }
   }
@@ -217,7 +217,7 @@ Future<CollectionResponse<ObjectType>> getCollection<ObjectType>(String path, St
     Map<String, dynamic> cachedData = API().cache().getTypeCache(type);
     cachedData.forEach((key, value) {
       if (value is Map<String, dynamic>) {
-        data.add({"exists": true, "id": key, "content": value});
+        data.add({'exists': true, 'id': key, 'content': value});
       }
     });
     res.data = data;
@@ -251,9 +251,9 @@ Future<Document<DataType>> getSimpleDocument<DataType>(
     await API().auth().waitForAbilityToSendRequests();
   }
 
-  var response = bForceOffline
-      ? Response("", 503)
-      : await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("$url/$id", ""))).catchError(((e) => generateFailedResponse(e)));
+  final response = bForceOffline
+      ? Response('', 503)
+      : await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('$url/$id', ''))).catchError(((e) => generateFailedResponse(e)));
   if (response.statusCode == 200) {
     DataType data = createDoc(DocumentResponse.fromString(response.body));
 

@@ -7,8 +7,8 @@ import 'package:simply_sdk/types/document.dart';
 void runTests(userId) {
   test('add repeated timer', () async {
     API().repeatedTimers().add(RepeatedTimerData()
-      ..name = "Hello"
-      ..message = "testMemberId"
+      ..name = 'Hello'
+      ..message = 'testMemberId'
       ..startTime = (RepeatedTimerStartTimeData()
         ..day = 0
         ..month = 0
@@ -17,17 +17,17 @@ void runTests(userId) {
         ..hour = 0
         ..minute = 0)
       ..dayInterval = 1);
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
   });
 
   test('add automated timer', () async {
     API().automatedTimers().add(AutomatedTimerData()
-      ..name = "Hello"
-      ..message = "testMemberId"
+      ..name = 'Hello'
+      ..message = 'testMemberId'
       ..type = 0
       ..action = 0
       ..delayInHours = 5);
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
   });
 
   test('updated repeated timer', () async {
@@ -35,9 +35,9 @@ void runTests(userId) {
     API().repeatedTimers().update(
         timers[0].id,
         RepeatedTimerData()
-          ..name = "Hello"
-          ..message = "testMemberId");
-    await Future.delayed(Duration(seconds: 1));
+          ..name = 'Hello'
+          ..message = 'testMemberId');
+    await Future.delayed(const Duration(seconds: 1));
   });
 
   test('updated automated timer', () async {
@@ -45,9 +45,9 @@ void runTests(userId) {
     API().automatedTimers().update(
         timers[0].id,
         AutomatedTimerData()
-          ..name = "Hello"
-          ..message = "testMemberId");
-    await Future.delayed(Duration(seconds: 1));
+          ..name = 'Hello'
+          ..message = 'testMemberId');
+    await Future.delayed(const Duration(seconds: 1));
   });
 
   test('verify timer count', () async {
@@ -62,7 +62,7 @@ void runTests(userId) {
     List<Document<RepeatedTimerData>> repeatedTimers = await API().repeatedTimers().getAll();
     API().automatedTimers().delete(automatedTimers[0].id, automatedTimers[0]);
     API().repeatedTimers().delete(repeatedTimers[0].id, repeatedTimers[0]);
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
   });
 
   test('verify timer count', () async {

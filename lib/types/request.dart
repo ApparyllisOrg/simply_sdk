@@ -11,11 +11,11 @@ class RequestResponse {
 
 RequestResponse createResponseObject(Response response) {
   try {
-    var jsonResponse = jsonDecode(response.body);
-    if (response.statusCode == 200 && jsonResponse["success"] == true) {
-      return RequestResponse(true, jsonResponse["msg"] ?? "");
+    final jsonResponse = jsonDecode(response.body);
+    if (response.statusCode == 200 && jsonResponse['success'] == true) {
+      return RequestResponse(true, jsonResponse['msg'] ?? '');
     } else {
-      return RequestResponse(false, jsonResponse["msg"] ?? "");
+      return RequestResponse(false, jsonResponse['msg'] ?? '');
     }
   } catch (e) {
     if (response.statusCode == 200) {
@@ -26,4 +26,4 @@ RequestResponse createResponseObject(Response response) {
   }
 }
 
-RequestResponse createFailResponseObject() => RequestResponse(false, "Something went wrong. Try again later.");
+RequestResponse createFailResponseObject() => RequestResponse(false, 'Something went wrong. Try again later.');

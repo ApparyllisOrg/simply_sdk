@@ -14,16 +14,16 @@ class EventData extends DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    event = readDataFromJson("event", json);
-    time = readDataFromJson("time", json);
+    event = readDataFromJson('event', json);
+    time = readDataFromJson('time', json);
   }
 
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
 
-    insertData("event", event, payload);
-    insertData("time", time, payload);
+    insertData('event', event, payload);
+    insertData('time', time, payload);
 
     return payload;
   }
@@ -44,10 +44,10 @@ class Event extends AbstractModel {
 
   void sendPendingEvents() {
     if (pendingEvents.length > 0) {
-      List<Map<String, dynamic>> toSendEvents = pendingEvents.map((e) => {"event": e.event, "time": e.time}).toList();
+      List<Map<String, dynamic>> toSendEvents = pendingEvents.map((e) => {'event': e.event, 'time': e.time}).toList();
       API()
           .network()
-          .request(NetworkRequest(HttpRequestMethod.Post, "v1/event", DateTime.now().millisecondsSinceEpoch, payload: {"events": toSendEvents}));
+          .request(NetworkRequest(HttpRequestMethod.Post, 'v1/event', DateTime.now().millisecondsSinceEpoch, payload: {'events': toSendEvents}));
       pendingEvents.clear();
       save();
     }
@@ -60,22 +60,22 @@ class Event extends AbstractModel {
   }
 
   void reportOpen() {
-    API().network().request(NetworkRequest(HttpRequestMethod.Post, "v1/event/open", DateTime.now().millisecondsSinceEpoch));
+    API().network().request(NetworkRequest(HttpRequestMethod.Post, 'v1/event/open', DateTime.now().millisecondsSinceEpoch));
   }
 
   @override
   Map<String, dynamic> toJson() {
-    return {"events": pendingEvents};
+    return {'events': pendingEvents};
   }
 
   @override
   copyFromJson(Map<String, dynamic> json) {
-    if (json.containsKey("events")) {
-      pendingEvents = (json["events"] as List<dynamic>).map((e) {
+    if (json.containsKey('events')) {
+      pendingEvents = (json['events'] as List<dynamic>).map((e) {
         if (e is String) {
-          return EventData("", 0)..constructFromJson(jsonDecode(e) as Map<String, dynamic>);
+          return EventData('', 0)..constructFromJson(jsonDecode(e) as Map<String, dynamic>);
         }
-        return EventData("", 0)..constructFromJson(e as Map<String, dynamic>);
+        return EventData('', 0)..constructFromJson(e as Map<String, dynamic>);
       }).toList();
     } else {
       pendingEvents = [];
@@ -84,6 +84,6 @@ class Event extends AbstractModel {
 
   @override
   String getFileName() {
-    return "events";
+    return 'events';
   }
 }

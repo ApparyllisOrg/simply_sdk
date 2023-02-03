@@ -17,18 +17,18 @@ class ChannelData implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    name = readDataFromJson("name", json);
-    color = readDataFromJson("color", json);
-    desc = readDataFromJson("desc", json);
+    name = readDataFromJson('name', json);
+    color = readDataFromJson('color', json);
+    desc = readDataFromJson('desc', json);
   }
 
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
 
-    insertData("name", name, payload);
-    insertData("color", color, payload);
-    insertData("desc", desc, payload);
+    insertData('name', name, payload);
+    insertData('color', color, payload);
+    insertData('desc', desc, payload);
 
     return payload;
   }
@@ -44,24 +44,24 @@ class ChatMessageData implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    message = readDataFromJson("message", json);
-    channel = readDataFromJson("channel", json);
-    writer = readDataFromJson("writer", json);
-    writtenAt = readDataFromJson("writtenAt", json);
-    replyTo = readDataFromJson("replyTo", json);
-    updatedAt = readDataFromJson("updatedAt", json);
+    message = readDataFromJson('message', json);
+    channel = readDataFromJson('channel', json);
+    writer = readDataFromJson('writer', json);
+    writtenAt = readDataFromJson('writtenAt', json);
+    replyTo = readDataFromJson('replyTo', json);
+    updatedAt = readDataFromJson('updatedAt', json);
   }
 
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
 
-    insertData("message", message, payload);
-    insertData("channel", channel, payload);
-    insertData("writer", writer, payload);
-    insertData("writtenAt", writtenAt, payload);
-    insertData("replyTo", replyTo, payload);
-    insertData("updatedAt", updatedAt, payload);
+    insertData('message', message, payload);
+    insertData('channel', channel, payload);
+    insertData('writer', writer, payload);
+    insertData('writtenAt', writtenAt, payload);
+    insertData('replyTo', replyTo, payload);
+    insertData('updatedAt', updatedAt, payload);
 
     return payload;
   }
@@ -82,26 +82,26 @@ class ChatMessageDataId extends ChatMessageData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    message = readDataFromJson("message", json);
-    channel = readDataFromJson("channel", json);
-    writer = readDataFromJson("writer", json);
-    writtenAt = readDataFromJson("writtenAt", json);
-    replyTo = readDataFromJson("replyTo", json);
-    updatedAt = readDataFromJson("updatedAt", json);
-    id = readDataFromJson("id", json);
+    message = readDataFromJson('message', json);
+    channel = readDataFromJson('channel', json);
+    writer = readDataFromJson('writer', json);
+    writtenAt = readDataFromJson('writtenAt', json);
+    replyTo = readDataFromJson('replyTo', json);
+    updatedAt = readDataFromJson('updatedAt', json);
+    id = readDataFromJson('id', json);
   }
 
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
 
-    insertData("message", message, payload);
-    insertData("channel", channel, payload);
-    insertData("writer", writer, payload);
-    insertData("writtenAt", writtenAt, payload);
-    insertData("replyTo", replyTo, payload);
-    insertData("updatedAt", updatedAt, payload);
-    insertData("id", id, payload);
+    insertData('message', message, payload);
+    insertData('channel', channel, payload);
+    insertData('writer', writer, payload);
+    insertData('writtenAt', writtenAt, payload);
+    insertData('replyTo', replyTo, payload);
+    insertData('updatedAt', updatedAt, payload);
+    insertData('id', id, payload);
 
     return payload;
   }
@@ -114,18 +114,18 @@ class ChannelCategoryData implements DocumentData {
 
   @override
   constructFromJson(Map<String, dynamic> json) {
-    name = readDataFromJson("name", json);
-    desc = readDataFromJson("desc", json);
-    channels = readDataArrayFromJson<String>("channels", json);
+    name = readDataFromJson('name', json);
+    desc = readDataFromJson('desc', json);
+    channels = readDataArrayFromJson<String>('channels', json);
   }
 
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
 
-    insertData("name", name, payload);
-    insertData("desc", desc, payload);
-    insertDataArray("channels", channels, payload);
+    insertData('name', name, payload);
+    insertData('desc', desc, payload);
+    insertDataArray('channels', channels, payload);
 
     return payload;
   }
@@ -133,7 +133,7 @@ class ChannelCategoryData implements DocumentData {
 
 class Channels extends Collection<ChannelData> {
   @override
-  String get type => "Channels";
+  String get type => 'Channels';
 
   @override
   Document<ChannelData> add(DocumentData values) {
@@ -141,24 +141,24 @@ class Channels extends Collection<ChannelData> {
   }
 
   Document<ChannelData> addId(DocumentData values, String clientId) {
-    return addSimpleDocument(type, "v1/chat/channel", values, overrideId: clientId);
+    return addSimpleDocument(type, 'v1/chat/channel', values, overrideId: clientId);
   }
 
   @override
   void delete(String documentId, Document originalDocument) {
-    deleteSimpleDocument(type, "v1/chat/channel", documentId, originalDocument.dataObject);
+    deleteSimpleDocument(type, 'v1/chat/channel', documentId, originalDocument.dataObject);
   }
 
   @override
   Future<Document<ChannelData>> get(String id) async {
-    return getSimpleDocument(id, "v1/chat/channel", type, (data) => ChannelData()..constructFromJson(data.content), () => ChannelData());
+    return getSimpleDocument(id, 'v1/chat/channel', type, (data) => ChannelData()..constructFromJson(data.content), () => ChannelData());
   }
 
   @override
   Future<List<Document<ChannelData>>> getAll() async {
-    var collection = await getCollection<ChannelData>("v1/chat/channels", "", type);
+    final collection = await getCollection<ChannelData>('v1/chat/channels', '', type);
 
-    List<Document<ChannelData>> channels = collection.data.map<Document<ChannelData>>((e) => Document(e["exists"], e["id"], ChannelData()..constructFromJson(e["content"]), type)).toList();
+    List<Document<ChannelData>> channels = collection.data.map<Document<ChannelData>>((e) => Document(e['exists'], e['id'], ChannelData()..constructFromJson(e['content']), type)).toList();
     if (!collection.useOffline) {
       API().cache().clearTypeCache(type);
       API().cache().cacheListOfDocuments(channels);
@@ -168,13 +168,13 @@ class Channels extends Collection<ChannelData> {
 
   @override
   void update(String documentId, DocumentData values) {
-    updateSimpleDocument(type, "v1/chat/channel", documentId, values);
+    updateSimpleDocument(type, 'v1/chat/channel', documentId, values);
   }
 }
 
 class ChannelCategories extends Collection<ChannelCategoryData> {
   @override
-  String get type => "ChatCategories";
+  String get type => 'ChatCategories';
 
   @override
   Document<ChannelCategoryData> add(DocumentData values) {
@@ -182,24 +182,24 @@ class ChannelCategories extends Collection<ChannelCategoryData> {
   }
 
   Document<ChannelCategoryData> addId(DocumentData values, String clientId) {
-    return addSimpleDocument(type, "v1/chat/category", values, overrideId: clientId);
+    return addSimpleDocument(type, 'v1/chat/category', values, overrideId: clientId);
   }
 
   @override
   void delete(String documentId, Document originalDocument) {
-    deleteSimpleDocument(type, "v1/chat/category", documentId, originalDocument.dataObject);
+    deleteSimpleDocument(type, 'v1/chat/category', documentId, originalDocument.dataObject);
   }
 
   @override
   Future<Document<ChannelCategoryData>> get(String id) async {
-    return getSimpleDocument(id, "v1/chat/category", type, (data) => ChannelCategoryData()..constructFromJson(data.content), () => ChannelCategoryData());
+    return getSimpleDocument(id, 'v1/chat/category', type, (data) => ChannelCategoryData()..constructFromJson(data.content), () => ChannelCategoryData());
   }
 
   @override
   Future<List<Document<ChannelCategoryData>>> getAll() async {
-    var collection = await getCollection<ChannelCategoryData>("v1/chat/categories", "", type);
+    final collection = await getCollection<ChannelCategoryData>('v1/chat/categories', '', type);
 
-    List<Document<ChannelCategoryData>> channels = collection.data.map<Document<ChannelCategoryData>>((e) => Document(e["exists"], e["id"], ChannelCategoryData()..constructFromJson(e["content"]), type)).toList();
+    List<Document<ChannelCategoryData>> channels = collection.data.map<Document<ChannelCategoryData>>((e) => Document(e['exists'], e['id'], ChannelCategoryData()..constructFromJson(e['content']), type)).toList();
     if (!collection.useOffline) {
       API().cache().clearTypeCache(type);
       API().cache().cacheListOfDocuments(channels);
@@ -209,19 +209,19 @@ class ChannelCategories extends Collection<ChannelCategoryData> {
 
   @override
   void update(String documentId, DocumentData values) {
-    updateSimpleDocument(type, "v1/chat/category", documentId, values);
+    updateSimpleDocument(type, 'v1/chat/category', documentId, values);
   }
 }
 
 class ChatMessages extends AbstractModel {
-  String channelId = "";
+  String channelId = '';
 
   ChatMessages() {
     API().eventListener().registerCallback(onMessageChange);
   }
 
   void onMessageChange(String type, Document<dynamic> doc, EChangeType changeType) {
-    if (type == "chatMessages" || type == "ChatMessages") {
+    if (type == 'chatMessages' || type == 'ChatMessages') {
       Document<ChatMessageData> msg = doc as Document<ChatMessageData>;
       if (msg.dataObject.channel == channelId) {
         if (changeType == EChangeType.Add) {
@@ -262,12 +262,12 @@ class ChatMessages extends AbstractModel {
   List<ChatMessageDataId> getRecentMessages() => _recentMessages;
 
   Future<Document<ChatMessageData>?> getMessage(String msgId) async {
-    var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/chat/message/$msgId", ""))).catchError(((e) => generateFailedResponse(e)));
+    final response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/chat/message/$msgId', ''))).catchError(((e) => generateFailedResponse(e)));
     if (response.statusCode == 200) {
-      var decoded = jsonDecode(response.body) as Map<String, dynamic>;
-      ChatMessageData data = ChatMessageData()..constructFromJson(decoded["content"]);
+      final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+      ChatMessageData data = ChatMessageData()..constructFromJson(decoded['content']);
 
-      Document<ChatMessageData> doc = Document<ChatMessageData>(true, msgId, data, "chatMessages");
+      Document<ChatMessageData> doc = Document<ChatMessageData>(true, msgId, data, 'chatMessages');
       return doc;
     }
 
@@ -275,24 +275,24 @@ class ChatMessages extends AbstractModel {
   }
 
   Future<List<Document<ChatMessageData>>> getMessages(int start, int amount, String? skipTo, bool bOlder, bool bFallbackToCache) async {
-    String order = bOlder ? "-1" : "1";
+    String order = bOlder ? '-1' : '1';
 
-    String query = "limit=$amount&sortBy=writtenAt&sortOrder=$order";
+    String query = 'limit=$amount&sortBy=writtenAt&sortOrder=$order';
 
     if (skipTo != null) {
-      query += "&skipTo=$skipTo";
+      query += '&skipTo=$skipTo';
     } else {
-      query += "&skip=$start";
+      query += '&skip=$start';
     }
 
-    var response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl("v1/chat/messages/$channelId", query))).catchError(((e) => generateFailedResponse(e)));
+    final response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/chat/messages/$channelId', query))).catchError(((e) => generateFailedResponse(e)));
     if (response.statusCode == 200) {
       CollectionResponse<ChatMessageData> collection = CollectionResponse<ChatMessageData>();
       collection.useOffline = false;
       collection.data = convertServerResponseToList(response);
-      return collection.data.map<Document<ChatMessageData>>((e) => Document(e["exists"], e["id"], ChatMessageData()..constructFromJson(e["content"]), "chatMessages")).toList();
+      return collection.data.map<Document<ChatMessageData>>((e) => Document(e['exists'], e['id'], ChatMessageData()..constructFromJson(e['content']), 'chatMessages')).toList();
     } else if (bFallbackToCache) {
-      return getRecentMessages().map((e) => Document<ChatMessageData>(true, e.id!, e, "chatMessages")).toList();
+      return getRecentMessages().map((e) => Document<ChatMessageData>(true, e.id!, e, 'chatMessages')).toList();
     }
 
     return [];
@@ -302,18 +302,18 @@ class ChatMessages extends AbstractModel {
     String generatedId = ObjectId(clientMode: true).toHexString();
 
     Map<String, dynamic> jsonPayload = data.toJson();
-    API().network().request(new NetworkRequest(HttpRequestMethod.Post, "v1/chat/message/$generatedId", DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
+    API().network().request(new NetworkRequest(HttpRequestMethod.Post, 'v1/chat/message/$generatedId', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
 
     _insertMessageToCache(data, generatedId, false);
 
     notifyListeners();
 
-    return Document(true, generatedId, data, "chatMessages");
+    return Document(true, generatedId, data, 'chatMessages');
   }
 
   Document<ChatMessageData> updateMessage(Document<ChatMessageData> message) {
     Map<String, dynamic> jsonPayload = message.dataObject.toJson();
-    API().network().request(new NetworkRequest(HttpRequestMethod.Patch, "v1/chat/message/${message.id}", DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
+    API().network().request(new NetworkRequest(HttpRequestMethod.Patch, 'v1/chat/message/${message.id}', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
 
     notifyListeners();
 
@@ -324,11 +324,11 @@ class ChatMessages extends AbstractModel {
       _recentMessages.removeAt(0);
     }
 
-    return Document(true, message.id, message.dataObject, "chatMessages");
+    return Document(true, message.id, message.dataObject, 'chatMessages');
   }
 
   void deleteMessage(Document<ChatMessageData> message) {
-    API().network().request(new NetworkRequest(HttpRequestMethod.Delete, "v1/chat/message/${message.id}", DateTime.now().millisecondsSinceEpoch));
+    API().network().request(new NetworkRequest(HttpRequestMethod.Delete, 'v1/chat/message/${message.id}', DateTime.now().millisecondsSinceEpoch));
 
     _recentMessages.removeWhere((element) => element.id == message.id);
     notifyListeners();
@@ -375,8 +375,8 @@ class ChatMessages extends AbstractModel {
 
   @override
   copyFromJson(Map<String, dynamic> json) {
-    if (json.containsKey("messages")) {
-      _recentMessages = (json['messages'] as List<dynamic>).map((json) => ChatMessageDataId(ChatMessageData()..constructFromJson(json), json["id"])).toList();
+    if (json.containsKey('messages')) {
+      _recentMessages = (json['messages'] as List<dynamic>).map((json) => ChatMessageDataId(ChatMessageData()..constructFromJson(json), json['id'])).toList();
     } else {
       _recentMessages = [];
     }
@@ -386,7 +386,7 @@ class ChatMessages extends AbstractModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return {"messages": _recentMessages};
+    return {'messages': _recentMessages};
   }
 
   @override

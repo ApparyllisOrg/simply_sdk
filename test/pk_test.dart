@@ -6,7 +6,7 @@ import 'package:simply_sdk/types/document.dart';
 
 import 'simply_sdk_test.dart';
 
-String pkUnitTestToken = "zsVjrLAbMii9qksAY5pxw11FO609XaCnp2LjF56p5zVRjrYCgycfHZudA3VerDnd";
+String pkUnitTestToken = 'zsVjrLAbMii9qksAY5pxw11FO609XaCnp2LjF56p5zVRjrYCgycfHZudA3VerDnd';
 
 void runTests(userId) {
   test('sync all members from pk', () async {
@@ -20,7 +20,7 @@ void runTests(userId) {
     String randomDesc = getRandString(20);
 
     API().members().update(member.id, MemberData()..desc = randomDesc);
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
 
     Document<MemberData> updatedMember = await API().members().get(member.id);
     expect(randomDesc, updatedMember.dataObject.desc);

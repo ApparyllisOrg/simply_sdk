@@ -12,7 +12,7 @@ void runTests(userId) {
   });
 
   test('add to cache', () async {
-    API().cache().insertDocument("test", "0", {"field": "value"});
+    API().cache().insertDocument('test', '0', {'field': 'value'});
   });
 
   test('save cache', () async {
@@ -20,7 +20,7 @@ void runTests(userId) {
   });
 
   test('reload cache', () async {
-    API().cache().lastInitializeFor = "";
+    API().cache().lastInitializeFor = '';
     await API().cache().initialize(userId);
   });
 }

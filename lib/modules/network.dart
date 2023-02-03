@@ -7,7 +7,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:simply_sdk/helpers.dart';
-import "package:universal_html/html.dart" as html;
+import 'package:universal_html/html.dart' as html;
 import 'package:path_provider/path_provider.dart';
 import 'package:simply_sdk/modules/http.dart';
 
@@ -28,17 +28,17 @@ class NetworkRequest {
 
   String toJson() {
     Map<String, dynamic> data = {};
-    data["method"] = method.index;
-    data["path"] = path;
-    data["query"] = query ?? "";
-    data["payload"] = payload ?? {};
-    data["timestamp"] = timestamp;
+    data['method'] = method.index;
+    data['path'] = path;
+    data['query'] = query ?? '';
+    data['payload'] = payload ?? {};
+    data['timestamp'] = timestamp;
 
     return jsonEncode(data);
   }
 
   static NetworkRequest fromJson(Map<String, dynamic> data) {
-    return NetworkRequest(HttpRequestMethod.values[data["method"]], data["path"], data["timestamp"], payload: data["payload"], query: data["query"]);
+    return NetworkRequest(HttpRequestMethod.values[data['method']], data['path'], data['timestamp'], payload: data['payload'], query: data['query']);
   }
 
   NetworkRequest(this.method, this.path, this.timestamp, {this.query, this.payload, this.onDone});
@@ -78,7 +78,7 @@ class Network {
   void markDirty() {
     dirty = true;
     if (saveTimer?.isActive == true) saveTimer?.cancel();
-    saveTimer = Timer(Duration(milliseconds: 10), saveFromTimer);
+    saveTimer = Timer(const Duration(milliseconds: 10), saveFromTimer);
   }
 
   void saveFromTimer() {
@@ -109,11 +109,11 @@ class Network {
       });
 
       if (kIsWeb) {
-        html.window.localStorage["pendingRequests"] = jsonEncode(convertedData);
+        html.window.localStorage['pendingRequests'] = jsonEncode(convertedData);
       } else {
-        var dir = await getApplicationDocumentsDirectory();
+        final dir = await getApplicationDocumentsDirectory();
         await dir.create(recursive: true);
-        var dbPath = dir.path + "/pendingRequests.db";
+        final dbPath = dir.path + '/pendingRequests.db';
         File file = File(dbPath);
         file.writeAsStringSync(jsonEncode(convertedData));
       }
@@ -124,15 +124,15 @@ class Network {
 
   Future<void> loadPendingNetworkRequests() async {
     if (kIsWeb) {
-      bool syncExists = html.window.localStorage.containsKey("pendingRequests");
-      List<String> savedRequestsCasted = syncExists ? getJsonPendingRequestsFromString(html.window.localStorage["pendingRequests"] ?? "") : [];
+      bool syncExists = html.window.localStorage.containsKey('pendingRequests');
+      List<String> savedRequestsCasted = syncExists ? getJsonPendingRequestsFromString(html.window.localStorage['pendingRequests'] ?? '') : [];
       loadPendingRequestsFromJson(savedRequestsCasted);
-      print("Loaded pending requests");
+      print('Loaded pending requests');
     } else {
       try {
-        var dir = await getApplicationDocumentsDirectory();
+        final dir = await getApplicationDocumentsDirectory();
         await dir.create(recursive: true);
-        var dbPath = dir.path + "/pendingRequests.db";
+        final dbPath = dir.path + '/pendingRequests.db';
 
         File file = File(dbPath);
         bool exists = await file.exists();
@@ -149,7 +149,7 @@ class Network {
         }
 
         initialized = true;
-        print("Loaded pending requests");
+        print('Loaded pending requests');
       } catch (e) {
         API().reportError(e, StackTrace.current);
         print(e);
@@ -171,7 +171,7 @@ class Network {
       await Future.delayed(Duration(milliseconds: 1000 * numFailedTicks));
     } else {
       numFailedTicks = 0;
-      await Future.delayed(Duration(milliseconds: 300));
+      await Future.delayed(const Duration(milliseconds: 300));
     }
 
     tick();
@@ -185,7 +185,7 @@ class Network {
         NetworkRequest request = _pendingRequests[i];
 
         requestsToSend.add(Future(() async {
-          String url = API().connection().getRequestUrl(request.path, request.query ?? "");
+          String url = API().connection().getRequestUrl(request.path, request.query ?? '');
 
           Uri uri = Uri.parse(url);
 
@@ -196,26 +196,26 @@ class Network {
               case HttpRequestMethod.Delete:
                 {
                   response = await SimplyHttpClient()
-                      .delete(uri, headers: {"Operation-Time": request.timestamp.toString()}).catchError(((e) => generateFailedResponse(e)));
+                      .delete(uri, headers: {'Operation-Time': request.timestamp.toString()}).catchError(((e) => generateFailedResponse(e)));
                   break;
                 }
               case HttpRequestMethod.Patch:
                 {
                   response = await SimplyHttpClient()
-                      .patch(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload ?? "{}"))
+                      .patch(uri, headers: {'Operation-Time': request.timestamp.toString()}, body: jsonEncode(request.payload ?? '{}'))
                       .catchError(((e) => generateFailedResponse(e)));
                   break;
                 }
               case HttpRequestMethod.Post:
                 {
                   response = await SimplyHttpClient()
-                      .post(uri, headers: {"Operation-Time": request.timestamp.toString()}, body: jsonEncode(request.payload ?? "{}"))
+                      .post(uri, headers: {'Operation-Time': request.timestamp.toString()}, body: jsonEncode(request.payload ?? '{}'))
                       .catchError(((e) => generateFailedResponse(e)));
                   break;
                 }
               default:
                 {
-                  API().reportError("Attempting to send an unsupported method", StackTrace.current);
+                  API().reportError('Attempting to send an unsupported method', StackTrace.current);
                   _pendingRequests.remove(request);
                   break;
                 }
