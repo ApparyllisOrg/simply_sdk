@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:http/http.dart' as http;
 import '../simply_sdk.dart';
 
@@ -14,7 +13,6 @@ http.Response generateFailedResponse(Exception e) {
 }
 
 class SimplyHttpClient extends http.BaseClient {
-
   factory SimplyHttpClient() {
     if (_instance == null) {
       _instance = new SimplyHttpClient._();
