@@ -64,7 +64,7 @@ class Cache {
   }
 
   bool hasDataInCacheForType(String type) {
-    return _cache.containsKey(type) && (_cache[type] as Map<String, dynamic>).length > 0;
+    return _cache.containsKey(type) && (_cache[type] as Map<String, dynamic>).isNotEmpty;
   }
 
   void cacheListOfDocuments(List<Document<dynamic>> docs) {

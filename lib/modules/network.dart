@@ -252,7 +252,7 @@ class Network {
         }));
       }
       await Future.wait(requestsToSend);
-      rescheduleNextTick(numPendingRequests != _pendingRequests.length || _pendingRequests.length == 0);
+      rescheduleNextTick(numPendingRequests != _pendingRequests.length || _pendingRequests.isEmpty);
     } catch (e) {
       API().reportError(e, StackTrace.current);
       rescheduleNextTick(false);

@@ -101,7 +101,7 @@ class PaginateState extends State<Paginate> {
         widget.onBatchReceived!(newDocs);
       }
 
-      if (newDocs.length <= 0) {
+      if (newDocs.isEmpty) {
         reachedEnd = true;
       }
 
@@ -115,7 +115,7 @@ class PaginateState extends State<Paginate> {
   }
 
   Widget build(BuildContext context) {
-    if (!isLoading && docs.length == 0) {
+    if (!isLoading && docs.isEmpty) {
       return widget.emptyView();
     }
 

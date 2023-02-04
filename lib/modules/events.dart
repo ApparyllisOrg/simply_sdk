@@ -43,7 +43,7 @@ class Event extends AbstractModel {
   }
 
   void sendPendingEvents() {
-    if (pendingEvents.length > 0) {
+    if (pendingEvents.isNotEmpty) {
       List<Map<String, dynamic>> toSendEvents = pendingEvents.map((e) => {'event': e.event, 'time': e.time}).toList();
       API()
           .network()
