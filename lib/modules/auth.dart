@@ -250,6 +250,21 @@ class Auth {
     }
   }
 
+  Future<String?> changePassword(String oldPassword, String newPassword) async {
+    Response response = await SimplyHttpClient()
+        .post(Uri.parse(API().connection().getRequestUrl('v1/auth/password/change', '')),
+            body: jsonEncode({'oldPassword': oldPassword, 'newPassword': newPassword, 'uid': credentials._lastUid }))
+        .catchError(((e) => generateFailedResponse(e)))
+        .timeout(const Duration(seconds: 10));
+
+    if (response.statusCode == 200) {
+      _getAuthDetailsFromResponse(response.body);
+      return null;
+    }
+
+    return response.body;
+  }
+
   Future<String?> requestResetPassword(String email) async {
     Response response = await SimplyHttpClient()
         .get(Uri.parse(API().connection().getRequestUrl('v1/auth/password/reset', 'email=$email')))
