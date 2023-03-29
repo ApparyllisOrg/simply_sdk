@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
+import 'package:simply_sdk/modules/network.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
 
@@ -90,5 +93,15 @@ class Groups extends Collection<GroupData> {
     groups.forEach((element) {
       delete(element.id, element);
     });
+  }
+
+  Future<void> setGroupsForMember(String member, List<String> groups) async
+  {
+    final data = {"member": member, "groups":  groups};
+    final Map<String, dynamic> jsonPayload = jsonEncode(data) as Map<String, dynamic>;
+    
+    API()
+      .network()
+      .request(NetworkRequest(HttpRequestMethod.Patch, 'v1/group/members', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
   }
 }
