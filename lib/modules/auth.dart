@@ -6,11 +6,32 @@ import 'package:http/http.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/http.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 
-class AuthCredentials {
+import 'collection.dart';
 
+class AuthLog implements DocumentData {
+  int? at;
+  String? ip;
+  String? action;
+
+  @override
+  void constructFromJson(Map<String, dynamic> json) {
+    at = readDataFromJson('at', json);
+    ip = readDataFromJson('ip', json);
+    action = readDataFromJson('action', json);
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> payload = {};
+    return payload;
+  }
+}
+
+class AuthCredentials {
   AuthCredentials(this._lastToken, this._lastRefreshToken, this._lastUid);
   final String? _lastToken;
   final String? _lastRefreshToken;
@@ -253,7 +274,7 @@ class Auth {
   Future<String?> changePassword(String oldPassword, String newPassword) async {
     Response response = await SimplyHttpClient()
         .post(Uri.parse(API().connection().getRequestUrl('v1/auth/password/change', '')),
-            body: jsonEncode({'oldPassword': oldPassword, 'newPassword': newPassword, 'uid': credentials._lastUid }))
+            body: jsonEncode({'oldPassword': oldPassword, 'newPassword': newPassword, 'uid': credentials._lastUid}))
         .catchError(((e) => generateFailedResponse(e)))
         .timeout(const Duration(seconds: 10));
 

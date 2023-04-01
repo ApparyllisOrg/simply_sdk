@@ -1,13 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:simply_sdk/modules/http.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import '../types/document.dart';
 
 class Paginate extends StatefulWidget {
-
   const Paginate(
       {Key? key,
       required this.itemBuilder,
@@ -20,6 +20,7 @@ class Paginate extends StatefulWidget {
       required this.url,
       required this.documentConstructor,
       required this.prefixWidgets,
+      required this.loadMoreText,
       this.spacingHeight = 10})
       : super(key: key);
   final Function itemBuilder;
@@ -33,6 +34,7 @@ class Paginate extends StatefulWidget {
   final String url;
   final List<Widget> prefixWidgets;
   final DocumentConstructor documentConstructor;
+  final String loadMoreText;
   final ValueChanged<List<Document>>? onBatchReceived;
 
   @override
@@ -141,6 +143,10 @@ class PaginateState extends State<Paginate> {
         children: children,
         controller: _scrollController,
       );
+    }
+
+    if (_scrollController.position.maxScrollExtent == 0.0 && !reachedEnd) {
+      children.add(ElevatedButton.icon(onPressed: getNextBatch, icon: const Icon(Icons.arrow_downward), label: Text(widget.loadMoreText)));
     }
 
     return ListView(
