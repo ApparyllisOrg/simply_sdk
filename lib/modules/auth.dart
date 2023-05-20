@@ -48,6 +48,7 @@ class Auth {
 
   List<Function(AuthCredentials)?> onAuthChange = [];
   bool bIsRefreshingToken = false;
+  bool bInitialized = false;
 
   Future<bool> initializeOffline() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -88,6 +89,8 @@ class Auth {
 
       String? result = await refreshToken(null, bNotify: false);
 
+      bInitialized = true;
+
       if (result == null) {
         return true;
       }
@@ -99,6 +102,8 @@ class Auth {
     if (fallbackToken != null) {
       String? result = await refreshToken(fallbackToken, bNotify: false);
 
+      bInitialized = true;
+
       if (result == null) {
         return true;
       }
@@ -106,6 +111,8 @@ class Auth {
       // Unable to refresh your session, refresh token is no longer valid
       return false;
     }
+
+    bInitialized = true;
 
     return false;
   }

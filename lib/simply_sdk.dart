@@ -10,6 +10,7 @@ import 'package:simply_sdk/api/customFronts.dart';
 import 'package:simply_sdk/api/friends.dart';
 import 'package:simply_sdk/api/frontHistory.dart';
 import 'package:simply_sdk/api/groups.dart';
+import 'package:simply_sdk/api/invoices.dart';
 import 'package:simply_sdk/api/members.dart';
 import 'package:simply_sdk/api/messages.dart';
 import 'package:simply_sdk/api/notes.dart';
@@ -18,6 +19,7 @@ import 'package:simply_sdk/api/polls.dart';
 import 'package:simply_sdk/api/privates.dart';
 import 'package:simply_sdk/api/repeatedTimers.dart';
 import 'package:simply_sdk/api/storage.dart';
+import 'package:simply_sdk/api/subscriptions.dart';
 import 'package:simply_sdk/api/users.dart';
 import 'package:simply_sdk/modules/auth.dart';
 import 'package:simply_sdk/modules/cache.dart';
@@ -36,7 +38,6 @@ import 'modules/network.dart';
 class APISettings {}
 
 class API {
-
   factory API() {
     if (_instance == null) {
       _instance = new API._();
@@ -97,6 +98,8 @@ class API {
   final Messages _messages = Messages();
   final ChannelCategories _channelCategories = ChannelCategories();
   final Channels _channels = Channels();
+  final Subscriptions _subscriptions = Subscriptions();
+  final Invoices _invoices = Invoices();
 
   // Declare global getters
   Auth auth() => _auth;
@@ -131,6 +134,8 @@ class API {
   Messages messages() => _messages;
   ChannelCategories channelCategories() => _channelCategories;
   Channels channels() => _channels;
+  Invoices invoices() => _invoices;
+  Subscriptions subscriptions() => _subscriptions;
 
   void reportError(e, StackTrace? trace) {
     try {
