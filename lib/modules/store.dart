@@ -1,3 +1,4 @@
+import 'package:simply_sdk/api/chats.dart';
 import 'package:simply_sdk/api/customFronts.dart';
 import 'package:simply_sdk/api/frontHistory.dart';
 import 'package:simply_sdk/api/groups.dart';
@@ -14,11 +15,13 @@ class Store {
   List<Document<CustomFrontData>> _customFronts = [];
   List<Document<GroupData>> _groups = [];
   List<Document<FrontHistoryData>> _fronters = [];
+  List<Document<ChannelData>> _channels = [];
 
   List<Document<MemberData>> getAllMembers() => _members;
   List<Document<CustomFrontData>> getAllCustomFronts() => _customFronts;
   List<Document<GroupData>> getAllGroups() => _groups;
   List<Document<FrontHistoryData>> getFronters() => _fronters;
+  List<Document<ChannelData>> getChannels() => _channels;
 
   List<void Function(Document<FrontHistoryData>)> _frontChanges = [];
   final List<Function?> _onInitialized = [];
@@ -26,31 +29,23 @@ class Store {
   Future<void> initializeStore({bool bForceOffline = false}) async {
     clearStore();
     _members = await API().members().getAll(bForceOffline: bForceOffline);
-    _customFronts =
-        await API().customFronts().getAll(bForceOffline: bForceOffline);
+    _customFronts = await API().customFronts().getAll(bForceOffline: bForceOffline);
     _groups = await API().groups().getAll(bForceOffline: bForceOffline);
-    _fronters = await API()
-        .frontHistory()
-        .getCurrentFronters(bForceOffline: bForceOffline);
+    _fronters = await API().frontHistory().getCurrentFronters(bForceOffline: bForceOffline);
+    _channels = await API().channels().getAll();
 
     // Emit initial changes
-    if (_members.isNotEmpty)
-      API().members().propogateChanges(_members.first, EChangeType.Update);
-    if (_customFronts.isNotEmpty)
-      API()
-          .customFronts()
-          .propogateChanges(_customFronts.first, EChangeType.Update);
-    if (_groups.isNotEmpty)
-      API().groups().propogateChanges(_groups.first, EChangeType.Update);
-    if (_fronters.isNotEmpty)
-      API()
-          .frontHistory()
-          .propogateChanges(_fronters.first, EChangeType.Update);
+    if (_members.isNotEmpty) API().members().propogateChanges(_members.first, EChangeType.Update);
+    if (_customFronts.isNotEmpty) API().customFronts().propogateChanges(_customFronts.first, EChangeType.Update);
+    if (_groups.isNotEmpty) API().groups().propogateChanges(_groups.first, EChangeType.Update);
+    if (_fronters.isNotEmpty) API().frontHistory().propogateChanges(_fronters.first, EChangeType.Update);
+    if (_channels.isNotEmpty) API().channels().propogateChanges(_channels.first, EChangeType.Update);
 
     API().members().listenForChanges(memberChanged);
     API().customFronts().listenForChanges(customFrontChanged);
     API().groups().listenForChanges(groupChanged);
     API().frontHistory().listenForChanges(frontHistoryChanged);
+    API().channels().listenForChanges(channelChanged);
 
     storeInitialized = true;
 
@@ -61,10 +56,21 @@ class Store {
 
   // Edit this so that in the future we can use "since", in a way that takes in account deletions since
   Future<void> updateStore(int since) async {
-    _members = await API().members().getAll();
-    _customFronts = await API().customFronts().getAll();
-    _groups = await API().groups().getAll();
-    _fronters = await API().frontHistory().getCurrentFronters();
+    final Iterable<Future<dynamic>> getCollectionList = [
+      API().members().getAll(),
+      API().customFronts().getAll(),
+      API().groups().getAll(),
+      API().frontHistory().getCurrentFronters(),
+      API().channels().getAll()
+    ];
+
+    List<dynamic> results = await Future.wait<dynamic>(getCollectionList);
+
+    _members = results[0];
+    _customFronts = results[1];
+    _groups = results[2];
+    _fronters = results[3];
+    _channels = results[4];
 
     _fronters.forEach((element) {
       _notifyFrontChange(element);
@@ -78,50 +84,42 @@ class Store {
     _customFronts = [];
     _groups = [];
     _frontChanges = [];
+    _channels = [];
 
     API().members().cancelListenForChanges(memberChanged);
     API().customFronts().cancelListenForChanges(customFrontChanged);
     API().groups().cancelListenForChanges(groupChanged);
     API().frontHistory().cancelListenForChanges(frontHistoryChanged);
+    API().channels().cancelListenForChanges(channelChanged);
   }
 
   void memberChanged(Document<dynamic> data, EChangeType changeType) {
-    updateDocumentInList<MemberData>(
-        _members, data as Document<MemberData>, changeType);
+    updateDocumentInList<MemberData>(_members, data as Document<MemberData>, changeType);
   }
 
   void customFrontChanged(Document<dynamic> data, EChangeType changeType) {
-    updateDocumentInList<CustomFrontData>(
-        _customFronts, data as Document<CustomFrontData>, changeType);
+    updateDocumentInList<CustomFrontData>(_customFronts, data as Document<CustomFrontData>, changeType);
   }
 
   void groupChanged(Document<dynamic> data, EChangeType changeType) {
-    updateDocumentInList<GroupData>(
-        _groups, data as Document<GroupData>, changeType);
+    updateDocumentInList<GroupData>(_groups, data as Document<GroupData>, changeType);
   }
 
-  void frontHistoryChanged(
-      Document<FrontHistoryData> data, EChangeType changeType) {
+  void frontHistoryChanged(Document<FrontHistoryData> data, EChangeType changeType) {
     int index = _fronters.indexWhere((element) => element.id == data.id);
 
-    Document<FrontHistoryData>? previousFhDoc =
-        index >= 0 ? _fronters[index] : null;
+    Document<FrontHistoryData>? previousFhDoc = index >= 0 ? _fronters[index] : null;
 
     // Create a new instance so that when "updateDocumentInList", we still have the original values
     // Also copy the data, because we need a deep copy but dart doesn't have deep copy so we need to manually do it
     if (previousFhDoc != null) {
-      previousFhDoc = Document<FrontHistoryData>(
-          true,
-          previousFhDoc.id,
-          FrontHistoryData.copyFrom(previousFhDoc.dataObject),
-          previousFhDoc.type);
+      previousFhDoc = Document<FrontHistoryData>(true, previousFhDoc.id, FrontHistoryData.copyFrom(previousFhDoc.dataObject), previousFhDoc.type);
     }
 
     Document<FrontHistoryData> fhDoc = data;
 
     updateDocumentInList<FrontHistoryData>(_fronters, data, changeType);
-    _fronters
-        .removeWhere((element) => (element.dataObject.live ?? true) == false);
+    _fronters.removeWhere((element) => (element.dataObject.live ?? true) == false);
 
     if (previousFhDoc != null) {
       // If we're no longer a live fronter, notify of front change
@@ -140,12 +138,15 @@ class Store {
           _notifyFrontChange(fhDoc);
         }
       }
-    } else if (previousFhDoc != null &&
-        (previousFhDoc.dataObject.live ?? false) == true) {
+    } else if (previousFhDoc != null && (previousFhDoc.dataObject.live ?? false) == true) {
       _notifyFrontChange(fhDoc);
     } else if (previousFhDoc == null && data.dataObject.live == true) {
       _notifyFrontChange(fhDoc);
     }
+  }
+
+  void channelChanged(Document<dynamic> data, EChangeType changeType) {
+    updateDocumentInList<ChannelData>(_channels, data as Document<ChannelData>, changeType);
   }
 
   bool isDocumentAMemberDocument(String id) {
@@ -173,6 +174,12 @@ class Store {
     return null;
   }
 
+  Document<ChannelData>? getChannelById(String id) {
+    int index = _channels.indexWhere((element) => element.id == id);
+    if (index >= 0) return _channels[index];
+    return null;
+  }
+
   bool isDocumentFronting(String id) {
     int index = _fronters.indexWhere((element) => element.id == id);
     if (index >= 0) return true;
@@ -180,8 +187,7 @@ class Store {
   }
 
   Document<FrontHistoryData>? getFronterById(String id) {
-    int index =
-        _fronters.indexWhere((element) => element.dataObject.member == id);
+    int index = _fronters.indexWhere((element) => element.dataObject.member == id);
     if (index >= 0) return _fronters[index];
     return null;
   }
@@ -190,8 +196,7 @@ class Store {
     _frontChanges.add(func);
   }
 
-  void cancelListenForFrontChanges(
-      void Function(Document<FrontHistoryData>) func) {
+  void cancelListenForFrontChanges(void Function(Document<FrontHistoryData>) func) {
     _frontChanges.remove(func);
   }
 

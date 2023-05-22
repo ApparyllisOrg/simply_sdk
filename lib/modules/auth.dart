@@ -26,7 +26,7 @@ class AuthLog implements DocumentData {
 
   @override
   Map<String, dynamic> toJson() {
-    Map<String, dynamic> payload = {};
+    final Map<String, dynamic> payload = {};
     return payload;
   }
 }

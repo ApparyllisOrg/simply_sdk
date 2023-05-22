@@ -68,7 +68,6 @@ class ChatMessageData implements DocumentData {
 }
 
 class ChatMessageDataId extends ChatMessageData {
-
   ChatMessageDataId(ChatMessageData data, String inId) {
     message = data.message;
     channel = data.channel;
@@ -155,10 +154,12 @@ class Channels extends Collection<ChannelData> {
   }
 
   @override
-  Future<List<Document<ChannelData>>> getAll() async {
-    final collection = await getCollection<ChannelData>('v1/chat/channels', '', type);
+  Future<List<Document<ChannelData>>> getAll({bool bForceOffline = false}) async {
+    final collection = await getCollection<ChannelData>('v1/chat/channels', '', type, bForceOffline: bForceOffline);
 
-    List<Document<ChannelData>> channels = collection.data.map<Document<ChannelData>>((e) => Document(e['exists'], e['id'], ChannelData()..constructFromJson(e['content']), type)).toList();
+    List<Document<ChannelData>> channels = collection.data
+        .map<Document<ChannelData>>((e) => Document(e['exists'], e['id'], ChannelData()..constructFromJson(e['content']), type))
+        .toList();
     if (!collection.useOffline) {
       API().cache().clearTypeCache(type);
       API().cache().cacheListOfDocuments(channels);
@@ -192,14 +193,17 @@ class ChannelCategories extends Collection<ChannelCategoryData> {
 
   @override
   Future<Document<ChannelCategoryData>> get(String id) async {
-    return getSimpleDocument(id, 'v1/chat/category', type, (data) => ChannelCategoryData()..constructFromJson(data.content), () => ChannelCategoryData());
+    return getSimpleDocument(
+        id, 'v1/chat/category', type, (data) => ChannelCategoryData()..constructFromJson(data.content), () => ChannelCategoryData());
   }
 
   @override
   Future<List<Document<ChannelCategoryData>>> getAll() async {
     final collection = await getCollection<ChannelCategoryData>('v1/chat/categories', '', type);
 
-    List<Document<ChannelCategoryData>> channels = collection.data.map<Document<ChannelCategoryData>>((e) => Document(e['exists'], e['id'], ChannelCategoryData()..constructFromJson(e['content']), type)).toList();
+    List<Document<ChannelCategoryData>> channels = collection.data
+        .map<Document<ChannelCategoryData>>((e) => Document(e['exists'], e['id'], ChannelCategoryData()..constructFromJson(e['content']), type))
+        .toList();
     if (!collection.useOffline) {
       API().cache().clearTypeCache(type);
       API().cache().cacheListOfDocuments(channels);
@@ -214,7 +218,6 @@ class ChannelCategories extends Collection<ChannelCategoryData> {
 }
 
 class ChatMessages extends AbstractModel {
-
   ChatMessages() {
     API().eventListener().registerCallback(onMessageChange);
   }
@@ -262,7 +265,9 @@ class ChatMessages extends AbstractModel {
   List<ChatMessageDataId> getRecentMessages() => _recentMessages;
 
   Future<Document<ChatMessageData>?> getMessage(String msgId) async {
-    final response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/chat/message/$msgId', ''))).catchError(((e) => generateFailedResponse(e)));
+    final response = await SimplyHttpClient()
+        .get(Uri.parse(API().connection().getRequestUrl('v1/chat/message/$msgId', '')))
+        .catchError(((e) => generateFailedResponse(e)));
     if (response.statusCode == 200) {
       final decoded = jsonDecode(response.body) as Map<String, dynamic>;
       ChatMessageData data = ChatMessageData()..constructFromJson(decoded['content']);
@@ -285,12 +290,16 @@ class ChatMessages extends AbstractModel {
       query += '&skip=$start';
     }
 
-    final response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/chat/messages/$channelId', query))).catchError(((e) => generateFailedResponse(e)));
+    final response = await SimplyHttpClient()
+        .get(Uri.parse(API().connection().getRequestUrl('v1/chat/messages/$channelId', query)))
+        .catchError(((e) => generateFailedResponse(e)));
     if (response.statusCode == 200) {
       CollectionResponse<ChatMessageData> collection = CollectionResponse<ChatMessageData>();
       collection.useOffline = false;
       collection.data = convertServerResponseToList(response);
-      return collection.data.map<Document<ChatMessageData>>((e) => Document(e['exists'], e['id'], ChatMessageData()..constructFromJson(e['content']), 'chatMessages')).toList();
+      return collection.data
+          .map<Document<ChatMessageData>>((e) => Document(e['exists'], e['id'], ChatMessageData()..constructFromJson(e['content']), 'chatMessages'))
+          .toList();
     } else if (bFallbackToCache) {
       return getRecentMessages().map((e) => Document<ChatMessageData>(true, e.id!, e, 'chatMessages')).toList();
     }
@@ -302,7 +311,8 @@ class ChatMessages extends AbstractModel {
     String generatedId = ObjectId(clientMode: true).toHexString();
 
     Map<String, dynamic> jsonPayload = data.toJson();
-    API().network().request(new NetworkRequest(HttpRequestMethod.Post, 'v1/chat/message/$generatedId', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
+    API().network().request(
+        new NetworkRequest(HttpRequestMethod.Post, 'v1/chat/message/$generatedId', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
 
     _insertMessageToCache(data, generatedId, false);
 
@@ -313,7 +323,8 @@ class ChatMessages extends AbstractModel {
 
   Document<ChatMessageData> updateMessage(Document<ChatMessageData> message) {
     Map<String, dynamic> jsonPayload = message.dataObject.toJson();
-    API().network().request(new NetworkRequest(HttpRequestMethod.Patch, 'v1/chat/message/${message.id}', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
+    API().network().request(
+        new NetworkRequest(HttpRequestMethod.Patch, 'v1/chat/message/${message.id}', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
 
     notifyListeners();
 
@@ -376,7 +387,8 @@ class ChatMessages extends AbstractModel {
   @override
   copyFromJson(Map<String, dynamic> json) {
     if (json.containsKey('messages')) {
-      _recentMessages = (json['messages'] as List<dynamic>).map((json) => ChatMessageDataId(ChatMessageData()..constructFromJson(json), json['id'])).toList();
+      _recentMessages =
+          (json['messages'] as List<dynamic>).map((json) => ChatMessageDataId(ChatMessageData()..constructFromJson(json), json['id'])).toList();
     } else {
       _recentMessages = [];
     }
@@ -398,5 +410,19 @@ class ChatMessages extends AbstractModel {
   @override
   String getFileName() {
     return 'messages_$channelId';
+  }
+
+  List<void Function(String)?> newChannelRequestBindings = [];
+
+  void listenForNewChannels(void Function(String) binding) {
+    newChannelRequestBindings.add(binding);
+  }
+
+  void requestNewChannel(String channelId) {
+    newChannelRequestBindings.forEach((element) {
+      if (element != null) {
+        element(channelId);
+      }
+    });
   }
 }
