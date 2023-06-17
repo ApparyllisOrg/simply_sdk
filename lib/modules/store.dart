@@ -28,11 +28,22 @@ class Store {
 
   Future<void> initializeStore({bool bForceOffline = false}) async {
     clearStore();
-    _members = await API().members().getAll(bForceOffline: bForceOffline);
-    _customFronts = await API().customFronts().getAll(bForceOffline: bForceOffline);
-    _groups = await API().groups().getAll(bForceOffline: bForceOffline);
-    _fronters = await API().frontHistory().getCurrentFronters(bForceOffline: bForceOffline);
-    _channels = await API().channels().getAll();
+
+    final List<Future<List<dynamic>>> getDataFutures = [
+      API().members().getAll(bForceOffline: bForceOffline),
+      API().customFronts().getAll(bForceOffline: bForceOffline),
+      API().groups().getAll(bForceOffline: bForceOffline),
+      API().frontHistory().getCurrentFronters(bForceOffline: bForceOffline),
+      API().channels().getAll()
+    ];
+
+    final List<List<dynamic>> responses = await Future.wait(getDataFutures);
+
+    _members = responses[0] as List<Document<MemberData>>;
+    _customFronts = responses[1] as List<Document<CustomFrontData>>;
+    _groups = responses[2] as List<Document<GroupData>>;
+    _fronters = responses[3] as List<Document<FrontHistoryData>>;
+    _channels = responses[4] as List<Document<ChannelData>>;
 
     // Emit initial changes
     if (_members.isNotEmpty) API().members().propogateChanges(_members.first, EChangeType.Update);
