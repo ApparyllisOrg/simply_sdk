@@ -21,6 +21,7 @@ class Paginate extends StatefulWidget {
       required this.documentConstructor,
       required this.prefixWidgets,
       required this.loadMoreText,
+      this.topDocuments,
       this.spacingHeight = 10})
       : super(key: key);
   final Function itemBuilder;
@@ -36,6 +37,7 @@ class Paginate extends StatefulWidget {
   final DocumentConstructor documentConstructor;
   final String loadMoreText;
   final ValueChanged<List<Document>>? onBatchReceived;
+  final List<Document>? topDocuments;
 
   @override
   State<StatefulWidget> createState() => PaginateState();
@@ -128,6 +130,16 @@ class PaginateState extends State<Paginate> {
     List<Widget> children = [];
 
     children.addAll(widget.prefixWidgets);
+
+    if (widget.topDocuments != null) {
+      for (int i = 0; i < widget.topDocuments!.length; ++i) {
+        final doc = widget.topDocuments![i];
+        children.add(widget.itemBuilder(context, i, doc));
+        children.add(SizedBox(
+          height: widget.spacingHeight,
+        ));
+      }
+    }
 
     for (int i = 0; i < docs.length; ++i) {
       final doc = docs[i];

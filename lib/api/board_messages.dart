@@ -9,8 +9,10 @@ class BoardMessageData implements DocumentData {
   String? title;
   String? message;
   String? writtenBy;
+  String? writtenFor;
   bool? read;
   int? writtenAt;
+  bool? supportMarkdown;
 
   @override
   Map<String, dynamic> toJson() {
@@ -19,8 +21,10 @@ class BoardMessageData implements DocumentData {
     insertData('title', title, payload);
     insertData('message', message, payload);
     insertData('writtenBy', writtenBy, payload);
+    insertData('writtenFor', writtenFor, payload);
     insertData('read', read, payload);
     insertData('writtenAt', writtenAt, payload);
+    insertData('supportMarkdown', supportMarkdown, payload);
 
     return payload;
   }
@@ -30,8 +34,10 @@ class BoardMessageData implements DocumentData {
     title = readDataFromJson('title', json);
     message = readDataFromJson('message', json);
     writtenBy = readDataFromJson('writtenBy', json);
+    writtenFor = readDataFromJson('writtenFor', json);
     read = readDataFromJson('read', json);
     writtenAt = readDataFromJson('writtenAt', json);
+    supportMarkdown = readDataFromJson('supportMarkdown', json);
   }
 }
 
