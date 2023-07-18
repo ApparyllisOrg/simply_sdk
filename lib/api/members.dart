@@ -16,6 +16,7 @@ class MemberData implements DocumentData {
   bool? private;
   bool? preventTrusted;
   bool? preventFrontNotifs;
+  bool? receiveMessageBoardNotifs;
   Map<String, String>? info;
   bool? supportDescMarkdown;
 
@@ -33,6 +34,7 @@ class MemberData implements DocumentData {
     insertData('private', private, payload);
     insertData('preventTrusted', preventTrusted, payload);
     insertData('preventsFrontNotifs', preventFrontNotifs, payload);
+    insertData('receiveMessageBoardNotifs', receiveMessageBoardNotifs, payload);
     insertData('info', info, payload);
     insertData('supportDescMarkdown', supportDescMarkdown, payload);
 
@@ -51,6 +53,7 @@ class MemberData implements DocumentData {
     private = readDataFromJson('private', json);
     preventTrusted = readDataFromJson('preventTrusted', json);
     preventFrontNotifs = readDataFromJson('preventsFrontNotifs', json);
+    receiveMessageBoardNotifs = readDataFromJson('receiveMessageBoardNotifs', json);
     supportDescMarkdown = readDataFromJson('supportDescMarkdown', json);
 
     if (json['info'] is Map<String, dynamic>) {
@@ -84,14 +87,18 @@ class Members extends Collection<MemberData> {
 
   @override
   Future<Document<MemberData>> get(String id) async {
-    return getSimpleDocument(id, 'v1/member/${API().auth().getUid()}', type, (data) => MemberData()..constructFromJson(data.content), () => MemberData());
+    return getSimpleDocument(
+        id, 'v1/member/${API().auth().getUid()}', type, (data) => MemberData()..constructFromJson(data.content), () => MemberData());
   }
 
   @override
   Future<List<Document<MemberData>>> getAll({String? uid, int? since, bool bForceOffline = false}) async {
-    final collection = await getCollection<MemberData>("v1/members/${(uid ?? API().auth().getUid()) ?? ""}", '', type, since: since, bForceOffline: bForceOffline);
+    final collection =
+        await getCollection<MemberData>("v1/members/${(uid ?? API().auth().getUid()) ?? ""}", '', type, since: since, bForceOffline: bForceOffline);
 
-    List<Document<MemberData>> members = collection.data.map<Document<MemberData>>((e) => Document(e['exists'], e['id'], MemberData()..constructFromJson(e['content']), type)).toList();
+    List<Document<MemberData>> members = collection.data
+        .map<Document<MemberData>>((e) => Document(e['exists'], e['id'], MemberData()..constructFromJson(e['content']), type))
+        .toList();
     if (!collection.useOffline) {
       if ((uid ?? API().auth().getUid()) == API().auth().getUid()) {
         API().cache().clearTypeCache(type);
