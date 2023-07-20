@@ -160,6 +160,8 @@ class Store {
     updateDocumentInList<ChannelData>(_channels, data as Document<ChannelData>, changeType);
   }
 
+  bool isFronting(String id) => _fronters.indexWhere((element) => element.dataObject.member == id) != -1;
+
   bool isDocumentAMemberDocument(String id) {
     if (_members.any((element) => element.id == id)) {
       return true;

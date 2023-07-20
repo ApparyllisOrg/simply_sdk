@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:simply_sdk/api/main.dart';
+import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/modules/http.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import '../types/document.dart';
 
-class Paginate extends StatefulWidget {
+class Paginate<T extends DocumentData> extends StatefulWidget {
   const Paginate(
       {Key? key,
       required this.itemBuilder,
@@ -21,10 +23,9 @@ class Paginate extends StatefulWidget {
       required this.documentConstructor,
       required this.prefixWidgets,
       required this.loadMoreText,
-      this.topDocuments,
       this.spacingHeight = 10})
       : super(key: key);
-  final Function itemBuilder;
+  final Widget Function(BuildContext, int, Document<T>) itemBuilder;
   final Function getLoader;
   final Function emptyView;
   final int stepSize;
@@ -34,23 +35,22 @@ class Paginate extends StatefulWidget {
   // Ex: v1/fronters
   final String url;
   final List<Widget> prefixWidgets;
-  final DocumentConstructor documentConstructor;
+  final DocumentConstructor<T> documentConstructor;
   final String loadMoreText;
-  final ValueChanged<List<Document>>? onBatchReceived;
-  final List<Document>? topDocuments;
+  final ValueChanged<List<Document<T>>>? onBatchReceived;
 
   @override
-  State<StatefulWidget> createState() => PaginateState();
+  State<StatefulWidget> createState() => PaginateState<T>();
 }
 
-class PaginateState extends State<Paginate> {
+class PaginateState<T extends DocumentData> extends State<Paginate<T>> {
   int currentOffset = 0;
   bool isLoading = false;
   bool reachedEnd = false;
 
   final ScrollController _scrollController = ScrollController();
 
-  List<Document> docs = [];
+  List<Document<T>> docs = [];
 
   @override
   void initState() {
@@ -80,6 +80,14 @@ class PaginateState extends State<Paginate> {
         .catchError((e) => generateFailedResponse(e));
   }
 
+  void insertDocument(Document<T> doc) {
+    docs.insert(0, doc);
+  }
+
+  void updateDocument(Document<T> doc) {
+    updateDocumentInList(docs, doc, EChangeType.Update);
+  }
+
   Future<void> getNextBatch() async {
     if (reachedEnd || isLoading) {
       return;
@@ -94,7 +102,7 @@ class PaginateState extends State<Paginate> {
     if (response.statusCode == 200 && response.body.isNotEmpty) {
       List<Map<String, dynamic>> responseDocs = (jsonDecode(response.body) as List<dynamic>).cast<Map<String, dynamic>>();
 
-      List<Document> newDocs = [];
+      List<Document<T>> newDocs = [];
       responseDocs.forEach((element) {
         newDocs.add(widget.documentConstructor(element['id'], element['content']));
       });
@@ -131,16 +139,6 @@ class PaginateState extends State<Paginate> {
 
     children.addAll(widget.prefixWidgets);
 
-    if (widget.topDocuments != null) {
-      for (int i = 0; i < widget.topDocuments!.length; ++i) {
-        final doc = widget.topDocuments![i];
-        children.add(widget.itemBuilder(context, i, doc));
-        children.add(SizedBox(
-          height: widget.spacingHeight,
-        ));
-      }
-    }
-
     for (int i = 0; i < docs.length; ++i) {
       final doc = docs[i];
       children.add(widget.itemBuilder(context, i, doc));
@@ -157,7 +155,7 @@ class PaginateState extends State<Paginate> {
       );
     }
 
-    if (_scrollController.position.maxScrollExtent == 0.0 && !reachedEnd) {
+    if (_scrollController.hasClients && _scrollController.position.maxScrollExtent == 0.0 && !reachedEnd) {
       children.add(ElevatedButton.icon(onPressed: getNextBatch, icon: const Icon(Icons.arrow_downward), label: Text(widget.loadMoreText)));
     }
 
