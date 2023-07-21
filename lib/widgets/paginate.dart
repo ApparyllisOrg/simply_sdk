@@ -88,6 +88,10 @@ class PaginateState<T extends DocumentData> extends State<Paginate<T>> {
     updateDocumentInList(docs, doc, EChangeType.Update);
   }
 
+  void deleteDocument(Document<T> doc) {
+    updateDocumentInList(docs, doc, EChangeType.Delete);
+  }
+
   Future<void> getNextBatch() async {
     if (reachedEnd || isLoading) {
       return;
