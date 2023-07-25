@@ -19,6 +19,8 @@ class MemberData implements DocumentData {
   bool? receiveMessageBoardNotifs;
   Map<String, String>? info;
   bool? supportDescMarkdown;
+  bool? archived;
+  String? archivedReason;
 
   @override
   Map<String, dynamic> toJson() {
@@ -37,6 +39,8 @@ class MemberData implements DocumentData {
     insertData('receiveMessageBoardNotifs', receiveMessageBoardNotifs, payload);
     insertData('info', info, payload);
     insertData('supportDescMarkdown', supportDescMarkdown, payload);
+    insertData('archived', archived, payload);
+    insertData('archivedReason', archivedReason, payload);
 
     return payload;
   }
@@ -55,6 +59,8 @@ class MemberData implements DocumentData {
     preventFrontNotifs = readDataFromJson('preventsFrontNotifs', json);
     receiveMessageBoardNotifs = readDataFromJson('receiveMessageBoardNotifs', json);
     supportDescMarkdown = readDataFromJson('supportDescMarkdown', json);
+    archived = readDataFromJson('archived', json);
+    archivedReason = readDataFromJson('archivedReason', json);
 
     if (json['info'] is Map<String, dynamic>) {
       Map<String, dynamic> map = json['info'] as Map<String, dynamic>;
