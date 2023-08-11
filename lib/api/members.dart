@@ -21,6 +21,10 @@ class MemberData implements DocumentData {
   bool? supportDescMarkdown;
   bool? archived;
   String? archivedReason;
+  String? bgFrame;
+  String? bgShape;
+  String? bgStartColor;
+  String? bgEndColor;
 
   @override
   Map<String, dynamic> toJson() {
@@ -41,6 +45,10 @@ class MemberData implements DocumentData {
     insertData('supportDescMarkdown', supportDescMarkdown, payload);
     insertData('archived', archived, payload);
     insertData('archivedReason', archivedReason, payload);
+    insertData('bgFrame', bgFrame, payload);
+    insertData('bgShape', bgShape, payload);
+    insertData('bgStartColor', bgStartColor, payload);
+    insertData('bgEndColor', bgEndColor, payload);
 
     return payload;
   }
@@ -61,6 +69,10 @@ class MemberData implements DocumentData {
     supportDescMarkdown = readDataFromJson('supportDescMarkdown', json);
     archived = readDataFromJson('archived', json);
     archivedReason = readDataFromJson('archivedReason', json);
+    bgFrame = readDataFromJson('bgFrame', json);
+    bgShape = readDataFromJson('bgShape', json);
+    bgStartColor = readDataFromJson('bgStartColor', json);
+    bgEndColor = readDataFromJson('bgEndColor', json);
 
     if (json['info'] is Map<String, dynamic>) {
       Map<String, dynamic> map = json['info'] as Map<String, dynamic>;
