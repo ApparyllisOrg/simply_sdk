@@ -3,6 +3,7 @@ import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
+import 'package:simply_sdk/types/frame.dart';
 
 class CustomFrontData implements DocumentData {
   String? name;
@@ -13,6 +14,7 @@ class CustomFrontData implements DocumentData {
   bool? private;
   bool? preventTrusted;
   bool? supportDescMarkdown;
+  FrameData? frame;
 
   @override
   Map<String, dynamic> toJson() {
@@ -26,6 +28,7 @@ class CustomFrontData implements DocumentData {
     insertData('private', private, payload);
     insertData('preventTrusted', preventTrusted, payload);
     insertData('supportDescMarkdown', supportDescMarkdown, payload);
+    insertData('frame', frame?.toJson(), payload);
     return payload;
   }
 
@@ -39,6 +42,7 @@ class CustomFrontData implements DocumentData {
     preventTrusted = readDataFromJson('preventTrusted', json);
     color = readDataFromJson('color', json);
     supportDescMarkdown = readDataFromJson('supportDescMarkdown', json);
+    frame = FrameData()..constructFromOptionalJson(readDataFromJson('frame', json));
   }
 }
 
@@ -59,14 +63,18 @@ class CustomFronts extends Collection<CustomFrontData> {
 
   @override
   Future<Document<CustomFrontData>> get(String id) async {
-    return getSimpleDocument(id, 'v1/customFront/${API().auth().getUid()}', type, (data) => CustomFrontData()..constructFromJson(data.content), () => CustomFrontData());
+    return getSimpleDocument(
+        id, 'v1/customFront/${API().auth().getUid()}', type, (data) => CustomFrontData()..constructFromJson(data.content), () => CustomFrontData());
   }
 
   @override
   Future<List<Document<CustomFrontData>>> getAll({String? uid, int? since, bool bForceOffline = false}) async {
-    final collection = await getCollection<CustomFrontData>('v1/customFronts/${uid ?? API().auth().getUid()}', '', type, since: since, bForceOffline: bForceOffline);
+    final collection =
+        await getCollection<CustomFrontData>('v1/customFronts/${uid ?? API().auth().getUid()}', '', type, since: since, bForceOffline: bForceOffline);
 
-    List<Document<CustomFrontData>> cfs = collection.data.map<Document<CustomFrontData>>((e) => Document(e['exists'], e['id'], CustomFrontData()..constructFromJson(e['content']), type)).toList();
+    List<Document<CustomFrontData>> cfs = collection.data
+        .map<Document<CustomFrontData>>((e) => Document(e['exists'], e['id'], CustomFrontData()..constructFromJson(e['content']), type))
+        .toList();
     if (!collection.useOffline) {
       if ((uid ?? API().auth().getUid()) == API().auth().getUid()) {
         API().cache().clearTypeCache(type);

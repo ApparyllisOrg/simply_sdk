@@ -5,6 +5,7 @@ import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/modules/http.dart';
 import 'package:simply_sdk/types/document.dart';
+import 'package:simply_sdk/types/frame.dart';
 import 'package:simply_sdk/types/request.dart';
 
 import '../simply_sdk.dart';
@@ -18,7 +19,7 @@ class UserFieldData implements DocumentData {
   bool? supportMarkdown;
 
   @override
-  constructFromJson(Map<String, dynamic> json) {
+  void constructFromJson(Map<String, dynamic> json) {
     name = readDataFromJson('name', json);
     order = readDataFromJson('order', json);
     private = readDataFromJson('private', json);
@@ -121,8 +122,7 @@ class GeneratedUserReportData implements DocumentData {
     createdAt = readDataFromJson('createdAt', json);
 
     if (json['usedSettings'] != null) {
-      usedSettings = GenerateUserReportData()
-        ..constructFromJson(json['usedSettings'] as Map<String, dynamic>);
+      usedSettings = GenerateUserReportData()..constructFromJson(json['usedSettings'] as Map<String, dynamic>);
     }
   }
 
@@ -148,18 +148,15 @@ class GenerateUserReportData implements DocumentData {
   @override
   constructFromJson(Map<String, dynamic> json) {
     if (json['frontHistory'] != null) {
-      frontHistory = GenerateUserReportDataFh()
-        ..constructFromJson(json['frontHistory'] as Map<String, dynamic>);
+      frontHistory = GenerateUserReportDataFh()..constructFromJson(json['frontHistory'] as Map<String, dynamic>);
     }
 
     if (json['customFronts'] != null) {
-      customFronts = GenerateUserReportDataCf()
-        ..constructFromJson(json['customFronts'] as Map<String, dynamic>);
+      customFronts = GenerateUserReportDataCf()..constructFromJson(json['customFronts'] as Map<String, dynamic>);
     }
 
     if (json['members'] != null) {
-      members = GenerateUserReportDataFMem()
-        ..constructFromJson(json['members'] as Map<String, dynamic>);
+      members = GenerateUserReportDataFMem()..constructFromJson(json['members'] as Map<String, dynamic>);
     }
   }
 
@@ -189,6 +186,8 @@ class UserData implements DocumentData {
   bool? plus;
   bool? supportDescMarkdown;
 
+  FrameData? frame;
+
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
@@ -208,6 +207,8 @@ class UserData implements DocumentData {
 
     insertDataMap('fields', fields, payload);
 
+    insertData('frame', frame?.toJson(), payload);
+
     return payload;
   }
 
@@ -222,6 +223,8 @@ class UserData implements DocumentData {
     patron = readDataFromJson('patron', json);
     plus = readDataFromJson('plus', json);
     supportDescMarkdown = readDataFromJson('supportDescMarkdown', json);
+
+    frame = FrameData()..constructFromOptionalJson(readDataFromJson('frame', json));
 
     fields = {};
 
@@ -252,12 +255,7 @@ class Users extends Collection<UserData> {
 
   @override
   Future<Document<UserData>> get(String id) async {
-    return getSimpleDocument(
-        id,
-        'v1/user',
-        'users',
-        (DocumentResponse data) => UserData()..constructFromJson(data.content),
-        () => UserData());
+    return getSimpleDocument(id, 'v1/user', 'users', (DocumentResponse data) => UserData()..constructFromJson(data.content), () => UserData());
   }
 
   @deprecated
@@ -277,11 +275,7 @@ class Users extends Collection<UserData> {
   Future<RequestResponse> setUsername(String newUsername, String userId) async {
     try {
       final response = await SimplyHttpClient()
-          .patch(
-              Uri.parse(API()
-                  .connection()
-                  .getRequestUrl('v1/user/username/$userId', '')),
-              body: jsonEncode({'username': newUsername}))
+          .patch(Uri.parse(API().connection().getRequestUrl('v1/user/username/$userId', '')), body: jsonEncode({'username': newUsername}))
           .catchError((e) => generateFailedResponse(e));
 
       return createResponseObject(response);
@@ -289,21 +283,13 @@ class Users extends Collection<UserData> {
     return createFailResponseObject();
   }
 
-  Future<RequestResponse> generateUserReport(
-      GenerateUserReportData data) async {
-    if (data.customFronts == null &&
-        data.frontHistory == null &&
-        data.members == null) {
-      return RequestResponse(
-          false, 'You must specify at least one generation type');
+  Future<RequestResponse> generateUserReport(GenerateUserReportData data) async {
+    if (data.customFronts == null && data.frontHistory == null && data.members == null) {
+      return RequestResponse(false, 'You must specify at least one generation type');
     }
     try {
       final response = await SimplyHttpClient()
-          .post(
-              Uri.parse(API()
-                  .connection()
-                  .getRequestUrl('v1/user/generateReport', '')),
-              body: jsonEncode(data.toJson()))
+          .post(Uri.parse(API().connection().getRequestUrl('v1/user/generateReport', '')), body: jsonEncode(data.toJson()))
           .catchError((e) => generateFailedResponse(e));
       return createResponseObject(response);
     } catch (e) {}
@@ -313,11 +299,7 @@ class Users extends Collection<UserData> {
   Future<RequestResponse> deleteAccount() async {
     try {
       final response = await SimplyHttpClient()
-          .delete(
-              Uri.parse(API()
-                  .connection()
-                  .getRequestUrl('v1/user/${API().auth().getUid()}', '')),
-              body: jsonEncode({'performDelete': true}))
+          .delete(Uri.parse(API().connection().getRequestUrl('v1/user/${API().auth().getUid()}', '')), body: jsonEncode({'performDelete': true}))
           .catchError((e) => createResponseObject(e));
       return createResponseObject(response);
     } catch (e) {}
@@ -327,8 +309,7 @@ class Users extends Collection<UserData> {
   Future<RequestResponse> deleteUserReport(String reportId) async {
     try {
       final response = await SimplyHttpClient()
-          .delete(Uri.parse(API().connection().getRequestUrl(
-              'v1/user/${API().auth().getUid()}/report/$reportId', '')))
+          .delete(Uri.parse(API().connection().getRequestUrl('v1/user/${API().auth().getUid()}/report/$reportId', '')))
           .catchError((e) => createResponseObject(e));
       return createResponseObject(response);
     } catch (e) {}
@@ -338,9 +319,7 @@ class Users extends Collection<UserData> {
   Future<RequestResponse> exportData() async {
     try {
       final response = await SimplyHttpClient()
-          .post(Uri.parse(API()
-              .connection()
-              .getRequestUrl('v1/user/${API().auth().getUid()}/export', '')))
+          .post(Uri.parse(API().connection().getRequestUrl('v1/user/${API().auth().getUid()}/export', '')))
           .catchError((e) => createResponseObject(e));
       return createResponseObject(response);
     } catch (e) {}
