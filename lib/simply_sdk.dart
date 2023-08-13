@@ -54,10 +54,6 @@ class API {
   static API? _instance;
 
   Future<void> initialize({APISettings? settings}) async {
-    FlutterError.onError = (FlutterErrorDetails details) {
-      reportError(details.exception, details.stack);
-    };
-
     await _debug.init();
     await _cache.initialize('');
     _network.initialize();
