@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:simply_sdk/api/automatedTimers.dart';
+import 'package:simply_sdk/api/board_messages.dart';
 import 'package:simply_sdk/api/chats.dart';
 import 'package:simply_sdk/api/comments.dart';
 import 'package:simply_sdk/api/customFronts.dart';
@@ -20,7 +21,6 @@ import 'package:simply_sdk/types/document.dart';
 import '../simply_sdk.dart';
 
 class DocumentResponse {
-
   DocumentResponse();
 
   DocumentResponse.fromJson(Map<String, dynamic> json) {
@@ -41,7 +41,6 @@ class DocumentResponse {
 }
 
 class CollectionResponse<Type> {
-
   CollectionResponse();
   bool useOffline = true;
   List<Map<String, dynamic>> data = [];
@@ -85,9 +84,9 @@ DocumentData jsonDataToDocumentData(String type, Map<String, dynamic> data) {
     case 'Channels':
     case 'channels':
       return ChannelData()..constructFromJson(data);
-    case 'ChatMessages':
-    case 'chatMessages':
-      return ChatMessageData()..constructFromJson(data);
+    case 'boardMessages':
+    case 'BoardMessages':
+      return BoardMessageData()..constructFromJson(data);
   }
 
   return EmptyDocumentData();
@@ -142,6 +141,10 @@ void propogateChanges(String type, String id, dynamic data, EChangeType changeTy
     case 'ChatMessages':
     case 'chatMessages':
       API().eventListener().onEvent('chatMessages', Document<ChatMessageData>(true, id, data, 'ChatMessages'), changeType);
+      break;
+    case 'BoardMessages':
+    case 'boardMessages':
+      API().eventListener().onEvent('boardMessages', Document<BoardMessageData>(true, id, data, 'BoardMessages'), changeType);
       break;
   }
 }
