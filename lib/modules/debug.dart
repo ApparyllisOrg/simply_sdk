@@ -83,8 +83,7 @@ class Debug {
           if (exists) {
             String jsonObjectString = await file.readAsString();
             if (jsonObjectString.isNotEmpty) {
-              _logs = (((jsonDecode(jsonObjectString)) ?? []) as List<dynamic>)
-                  .cast<String>();
+              _logs = (((jsonDecode(jsonObjectString)) ?? []) as List<dynamic>).cast<String>();
             }
           } else {
             _logs = [];
@@ -123,8 +122,6 @@ class Debug {
 
         File file = File(dbPath);
         file.writeAsStringSync(jsonEncode(_logs));
-
-        print('Saved cache');
       } catch (e) {
         print(e);
       }
