@@ -17,7 +17,7 @@ class ChatModel extends AbstractModel {
   }
   String channelId = '';
 
-  void onMessageChange(String type, Document<dynamic> doc, EChangeType changeType) {
+  void onMessageChange(String type, Document<dynamic> doc, EChangeType changeType, bool bLocalEvent) {
     if (type == 'chatMessages' || type == 'ChatMessages') {
       Document<ChatMessageData> msg = doc as Document<ChatMessageData>;
       if (msg.dataObject.channel == channelId) {

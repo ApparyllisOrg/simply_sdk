@@ -17,7 +17,7 @@ class EmptyDocumentData extends DocumentData {
 
 enum EChangeType { Add, Update, Delete }
 
-typedef DocumentChange<ObjectType extends DocumentData> = void Function(Document<ObjectType>, EChangeType);
+typedef DocumentChange<ObjectType extends DocumentData> = void Function(Document<ObjectType>, EChangeType, bool);
 
 abstract class Collection<ObjectType extends DocumentData> {
   String type = 'NONE';
@@ -38,9 +38,9 @@ abstract class Collection<ObjectType extends DocumentData> {
     boundChanges.remove(bindFunc);
   }
 
-  void propogateChanges(Document<ObjectType> change, EChangeType changeType) {
+  void propogateChanges(Document<ObjectType> change, EChangeType changeType, bool bLocalEvent) {
     boundChanges.forEach((element) {
-      if (element != null) element(change, changeType);
+      if (element != null) element(change, changeType, bLocalEvent);
     });
   }
 }
