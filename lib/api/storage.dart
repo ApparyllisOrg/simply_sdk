@@ -9,16 +9,24 @@ import '../simply_sdk.dart';
 class Storage {
   Future<RequestResponse> storeAvatar(String avatarUuid, Uint8List bytes) async {
     try {
-      final result = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl('v1/avatar/$avatarUuid', '')), body: jsonEncode({'buffer': bytes})).catchError(((e) => generateFailedResponse(e)));
+      final result = await SimplyHttpClient()
+          .post(Uri.parse(API().connection().getRequestUrl('v1/avatar/$avatarUuid', '')), body: jsonEncode({'buffer': bytes}))
+          .catchError(((e) => generateFailedResponse(e)));
 
-      return RequestResponse(result.statusCode == 200, result.body);
+      if (result.statusCode == 413) {
+        return RequestResponse(false, 'Image file is too large, please choose a smaller file');
+      } else {
+        return RequestResponse(result.statusCode == 200, result.body);
+      }
     } catch (e) {}
     return RequestResponse(false, 'Something went wrong');
   }
 
   Future<RequestResponse> deleteAvatar(String avatarUuid) async {
     try {
-      final result = await SimplyHttpClient().delete(Uri.parse(API().connection().getRequestUrl('v1/avatar/$avatarUuid', ''))).catchError(((e) => generateFailedResponse(e)));
+      final result = await SimplyHttpClient()
+          .delete(Uri.parse(API().connection().getRequestUrl('v1/avatar/$avatarUuid', '')))
+          .catchError(((e) => generateFailedResponse(e)));
       return RequestResponse(result.statusCode == 200, result.body);
     } catch (e) {}
     return RequestResponse(false, 'Something went wrong');
