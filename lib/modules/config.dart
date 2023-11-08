@@ -8,7 +8,6 @@ String _configSync = 'lastConfigSync';
 String _remoteConfig = 'remoteConfig';
 
 class RemoteConfig {
-
   RemoteConfig() {
     _initialize();
   }
@@ -43,8 +42,12 @@ class RemoteConfig {
     Response response;
     try {
       response = await get(url);
+
       _sharedPrefs.setInt(_configSync, now);
-      _sharedPrefs.setString(_remoteConfig, response.body);
+
+      if (response.statusCode == 200) {
+        _sharedPrefs.setString(_remoteConfig, response.body);
+      }
       API().debug().logInfo('Loaded remote config');
     } catch (e) {
       API().debug().logError('Failed to load remote config: ${e.toString()}');
@@ -56,7 +59,12 @@ class RemoteConfig {
 
   void _loadConfig() {
     if (_sharedPrefs.containsKey(_remoteConfig) && _sharedPrefs.getString(_remoteConfig)!.isNotEmpty) {
-      _currentConfig = jsonDecode(_sharedPrefs.getString(_remoteConfig)!) as Map<String, dynamic>;
+      try {
+        // If we previously got a non-200 status result it would corrupt the config cache, this will prevent that from persisting and prevents users having to wipe cache
+        _currentConfig = jsonDecode(_sharedPrefs.getString(_remoteConfig)!) as Map<String, dynamic>;
+      } catch (e) {
+        _currentConfig = Map<String, dynamic>();
+      }
     } else {
       _currentConfig = Map<String, dynamic>();
     }
