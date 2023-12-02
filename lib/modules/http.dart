@@ -25,6 +25,12 @@ class SimplyHttpClient extends http.BaseClient {
 
   final http.Client _httpClient = new http.Client();
 
+  double getSecondsSinceLastResponse() {
+    return (DateTime.now().millisecondsSinceEpoch * .001) - (_lastResponse * .001);
+  }
+
+  int _lastResponse = 0;
+
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) {
     if (nonLoggableRequests.indexWhere((element) => request.url.path.endsWith(element)) < 0) {
@@ -37,6 +43,9 @@ class SimplyHttpClient extends http.BaseClient {
       request.headers.addAll({'Authorization': API().auth().getToken() ?? ''});
     }
 
-    return _httpClient.send(request);
+    return _httpClient.send(request).then((http.StreamedResponse resoponse) {
+      _lastResponse = DateTime.now().millisecondsSinceEpoch;
+      return resoponse;
+    });
   }
 }
