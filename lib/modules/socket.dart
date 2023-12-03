@@ -112,7 +112,9 @@ class Socket {
       if (kIsWeb) {
         _WebSocket = WebSocketChannel.connect(Uri.parse(socketUrl));
       } else {
-        _IOSocket = await io.WebSocket.connect(socketUrl, compression: const io.CompressionOptions(enabled: true, serverNoContextTakeover: true, clientNoContextTakeover: true, serverMaxWindowBits: 15, clientMaxWindowBits: 15));
+        _IOSocket = await io.WebSocket.connect(socketUrl,
+            compression: const io.CompressionOptions(
+                enabled: true, serverNoContextTakeover: true, clientNoContextTakeover: true, serverMaxWindowBits: 15, clientMaxWindowBits: 15));
         _IOSocket!.pingInterval = const Duration(seconds: 3);
       }
 
@@ -193,7 +195,8 @@ class Socket {
         API().cache().clearTypeCache(data['target']);
       }
       for (Map<String, dynamic> result in data['results']) {
-        propogateChanges(data['target'], result['id'], jsonDataToDocumentData(data['target'], result['content'] as Map<String, dynamic>), operationToChangeType(result['operationType']));
+        propogateChanges(data['target'], result['id'], jsonDataToDocumentData(data['target'], result['content'] as Map<String, dynamic>),
+            operationToChangeType(result['operationType']), false);
       }
     } else {
       _OnMsgReceived.forEach((element) {

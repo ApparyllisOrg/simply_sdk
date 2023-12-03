@@ -23,7 +23,7 @@ class Store {
   List<Document<FrontHistoryData>> getFronters() => _fronters;
   List<Document<ChannelData>> getChannels() => _channels;
 
-  List<void Function(Document<FrontHistoryData>)> _frontChanges = [];
+  List<void Function(Document<FrontHistoryData>, bool)> _frontChanges = [];
   final List<Function?> _onInitialized = [];
 
   Future<void> initializeStore({bool bForceOffline = false}) async {
@@ -46,11 +46,11 @@ class Store {
     _channels = responses[4] as List<Document<ChannelData>>;
 
     // Emit initial changes
-    if (_members.isNotEmpty) API().members().propogateChanges(_members.first, EChangeType.Update);
-    if (_customFronts.isNotEmpty) API().customFronts().propogateChanges(_customFronts.first, EChangeType.Update);
-    if (_groups.isNotEmpty) API().groups().propogateChanges(_groups.first, EChangeType.Update);
-    if (_fronters.isNotEmpty) API().frontHistory().propogateChanges(_fronters.first, EChangeType.Update);
-    if (_channels.isNotEmpty) API().channels().propogateChanges(_channels.first, EChangeType.Update);
+    if (_members.isNotEmpty) API().members().propogateChanges(_members.first, EChangeType.Update, false);
+    if (_customFronts.isNotEmpty) API().customFronts().propogateChanges(_customFronts.first, EChangeType.Update, false);
+    if (_groups.isNotEmpty) API().groups().propogateChanges(_groups.first, EChangeType.Update, false);
+    if (_fronters.isNotEmpty) API().frontHistory().propogateChanges(_fronters.first, EChangeType.Update, false);
+    if (_channels.isNotEmpty) API().channels().propogateChanges(_channels.first, EChangeType.Update, false);
 
     API().members().listenForChanges(memberChanged);
     API().customFronts().listenForChanges(customFrontChanged);
@@ -84,7 +84,7 @@ class Store {
     _channels = results[4];
 
     _fronters.forEach((element) {
-      _notifyFrontChange(element);
+      _notifyFrontChange(element, false);
     });
   }
 
@@ -104,19 +104,19 @@ class Store {
     API().channels().cancelListenForChanges(channelChanged);
   }
 
-  void memberChanged(Document<dynamic> data, EChangeType changeType) {
+  void memberChanged(Document<dynamic> data, EChangeType changeType, bool bLocalEvent) {
     updateDocumentInList<MemberData>(_members, data as Document<MemberData>, changeType);
   }
 
-  void customFrontChanged(Document<dynamic> data, EChangeType changeType) {
+  void customFrontChanged(Document<dynamic> data, EChangeType changeType, bool bLocalEvent) {
     updateDocumentInList<CustomFrontData>(_customFronts, data as Document<CustomFrontData>, changeType);
   }
 
-  void groupChanged(Document<dynamic> data, EChangeType changeType) {
+  void groupChanged(Document<dynamic> data, EChangeType changeType, bool bLocalEvent) {
     updateDocumentInList<GroupData>(_groups, data as Document<GroupData>, changeType);
   }
 
-  void frontHistoryChanged(Document<FrontHistoryData> data, EChangeType changeType) {
+  void frontHistoryChanged(Document<FrontHistoryData> data, EChangeType changeType, bool bLocalEvent) {
     int index = _fronters.indexWhere((element) => element.id == data.id);
 
     Document<FrontHistoryData>? previousFhDoc = index >= 0 ? _fronters[index] : null;
@@ -138,25 +138,25 @@ class Store {
       bool isLive = (fhDoc.dataObject.live ?? false) == true;
 
       if (wasLive && !isLive) {
-        _notifyFrontChange(fhDoc);
+        _notifyFrontChange(fhDoc, bLocalEvent);
       }
 
       // If was live and is live but member or time change, also notify of front changes
       if (wasLive && isLive) {
         if (fhDoc.dataObject.startTime != previousFhDoc.dataObject.startTime) {
-          _notifyFrontChange(fhDoc);
+          _notifyFrontChange(fhDoc, bLocalEvent);
         } else if (fhDoc.dataObject.member != previousFhDoc.dataObject.member) {
-          _notifyFrontChange(fhDoc);
+          _notifyFrontChange(fhDoc, bLocalEvent);
         }
       }
     } else if (previousFhDoc != null && (previousFhDoc.dataObject.live ?? false) == true) {
-      _notifyFrontChange(fhDoc);
+      _notifyFrontChange(fhDoc, bLocalEvent);
     } else if (previousFhDoc == null && data.dataObject.live == true) {
-      _notifyFrontChange(fhDoc);
+      _notifyFrontChange(fhDoc, bLocalEvent);
     }
   }
 
-  void channelChanged(Document<dynamic> data, EChangeType changeType) {
+  void channelChanged(Document<dynamic> data, EChangeType changeType, bool bLocalEvent) {
     updateDocumentInList<ChannelData>(_channels, data as Document<ChannelData>, changeType);
   }
 
@@ -205,11 +205,13 @@ class Store {
     return null;
   }
 
-  void listenForFrontChanges(void Function(Document<FrontHistoryData>) func) {
+  void listenForFrontChanges(
+    void Function(Document<FrontHistoryData>, bool) func,
+  ) {
     _frontChanges.add(func);
   }
 
-  void cancelListenForFrontChanges(void Function(Document<FrontHistoryData>) func) {
+  void cancelListenForFrontChanges(void Function(Document<FrontHistoryData>, bool) func) {
     _frontChanges.remove(func);
   }
 
@@ -221,9 +223,9 @@ class Store {
     _onInitialized.remove(func);
   }
 
-  void _notifyFrontChange(Document<FrontHistoryData> doc) {
+  void _notifyFrontChange(Document<FrontHistoryData> doc, bool bLocalEvent) {
     _frontChanges.forEach((element) {
-      element(doc);
+      element(doc, bLocalEvent);
     });
   }
 }

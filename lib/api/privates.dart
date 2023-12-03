@@ -89,13 +89,18 @@ class Privates extends Collection<PrivateData> {
 
     API().cache().updateDocument(type, documentId, jsonPayload);
 
-    propogateChanges(type, documentId, values, EChangeType.Update);
+    propogateChanges(type, documentId, values, EChangeType.Update, true);
 
-    final response = await SimplyHttpClient().patch(Uri.parse(API().connection().getRequestUrl('v1/user/private/${API().auth().getUid()}', '')), body: jsonEncode(jsonPayload)).catchError(((e) => generateFailedResponse(e))).timeout(const Duration(seconds: 10));
+    final response = await SimplyHttpClient()
+        .patch(Uri.parse(API().connection().getRequestUrl('v1/user/private/${API().auth().getUid()}', '')), body: jsonEncode(jsonPayload))
+        .catchError(((e) => generateFailedResponse(e)))
+        .timeout(const Duration(seconds: 10));
     if (response.statusCode == 200) {
       return;
     }
 
-    API().network().request(new NetworkRequest(HttpRequestMethod.Patch, 'v1/user/private/${API().auth().getUid()}', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
+    API().network().request(new NetworkRequest(
+        HttpRequestMethod.Patch, 'v1/user/private/${API().auth().getUid()}', DateTime.now().millisecondsSinceEpoch,
+        payload: jsonPayload));
   }
 }

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:simply_sdk/api/automatedTimers.dart';
+import 'package:simply_sdk/api/board_messages.dart';
 import 'package:simply_sdk/api/chats.dart';
 import 'package:simply_sdk/api/comments.dart';
 import 'package:simply_sdk/api/customFronts.dart';
@@ -20,7 +21,6 @@ import 'package:simply_sdk/types/document.dart';
 import '../simply_sdk.dart';
 
 class DocumentResponse {
-
   DocumentResponse();
 
   DocumentResponse.fromJson(Map<String, dynamic> json) {
@@ -41,7 +41,6 @@ class DocumentResponse {
 }
 
 class CollectionResponse<Type> {
-
   CollectionResponse();
   bool useOffline = true;
   List<Map<String, dynamic>> data = [];
@@ -85,63 +84,67 @@ DocumentData jsonDataToDocumentData(String type, Map<String, dynamic> data) {
     case 'Channels':
     case 'channels':
       return ChannelData()..constructFromJson(data);
-    case 'ChatMessages':
-    case 'chatMessages':
-      return ChatMessageData()..constructFromJson(data);
+    case 'boardMessages':
+    case 'BoardMessages':
+      return BoardMessageData()..constructFromJson(data);
   }
 
   return EmptyDocumentData();
 }
 
-void propogateChanges(String type, String id, dynamic data, EChangeType changeType) {
+void propogateChanges(String type, String id, dynamic data, EChangeType changeType, bool bLocalEvent) {
   switch (type) {
     case 'Members':
     case 'members':
-      API().members().propogateChanges(Document(true, id, data, 'Members'), changeType);
+      API().members().propogateChanges(Document(true, id, data, 'Members'), changeType, bLocalEvent);
       break;
     case 'CustomFronts':
     case 'frontStatuses':
-      API().customFronts().propogateChanges(Document(true, id, data, 'CustomFronts'), changeType);
+      API().customFronts().propogateChanges(Document(true, id, data, 'CustomFronts'), changeType, bLocalEvent);
       break;
     case 'Groups':
     case 'groups':
-      API().groups().propogateChanges(Document(true, id, data, 'Groups'), changeType);
+      API().groups().propogateChanges(Document(true, id, data, 'Groups'), changeType, bLocalEvent);
       break;
     case 'Notes':
     case 'notes':
-      API().notes().propogateChanges(Document(true, id, data, 'Notes'), changeType);
+      API().notes().propogateChanges(Document(true, id, data, 'Notes'), changeType, bLocalEvent);
       break;
     case 'Polls':
     case 'polls':
-      API().polls().propogateChanges(Document(true, id, data, 'Polls'), changeType);
+      API().polls().propogateChanges(Document(true, id, data, 'Polls'), changeType, bLocalEvent);
       break;
     case 'RepeatedReminders':
     case 'repeatedReminders':
-      API().repeatedTimers().propogateChanges(Document(true, id, data, 'RepeatedReminders'), changeType);
+      API().repeatedTimers().propogateChanges(Document(true, id, data, 'RepeatedReminders'), changeType, bLocalEvent);
       break;
     case 'AutomatedReminders':
     case 'automatedReminders':
-      API().automatedTimers().propogateChanges(Document(true, id, data, 'AutomatedReminders'), changeType);
+      API().automatedTimers().propogateChanges(Document(true, id, data, 'AutomatedReminders'), changeType, bLocalEvent);
       break;
     case 'FrontHistory':
     case 'frontHistory':
-      API().frontHistory().propogateChanges(Document(true, id, data, 'FrontHistory'), changeType);
+      API().frontHistory().propogateChanges(Document(true, id, data, 'FrontHistory'), changeType, bLocalEvent);
       break;
     case 'Comments':
     case 'comments':
-      API().comments().propogateChanges(Document(true, id, data, 'Comments'), changeType);
+      API().comments().propogateChanges(Document(true, id, data, 'Comments'), changeType, bLocalEvent);
       break;
     case 'ChannelCategories':
     case 'channelCategories':
-      API().channelCategories().propogateChanges(Document(true, id, data, 'Comments'), changeType);
+      API().channelCategories().propogateChanges(Document(true, id, data, 'Comments'), changeType, bLocalEvent);
       break;
     case 'Channels':
     case 'channels':
-      API().channels().propogateChanges(Document(true, id, data, 'Comments'), changeType);
+      API().channels().propogateChanges(Document(true, id, data, 'Comments'), changeType, bLocalEvent);
       break;
     case 'ChatMessages':
     case 'chatMessages':
-      API().eventListener().onEvent('chatMessages', Document<ChatMessageData>(true, id, data, 'ChatMessages'), changeType);
+      API().eventListener().onEvent('chatMessages', Document<ChatMessageData>(true, id, data, 'ChatMessages'), changeType, bLocalEvent);
+      break;
+    case 'BoardMessages':
+    case 'boardMessages':
+      API().eventListener().onEvent('boardMessages', Document<BoardMessageData>(true, id, data, 'BoardMessages'), changeType, bLocalEvent);
       break;
   }
 }
@@ -155,7 +158,7 @@ Document<T> addSimpleDocument<T>(String type, String path, DocumentData data, {S
 
   API().cache().insertDocument(type, usedId, jsonPayload);
 
-  propogateChanges(type, usedId, data, EChangeType.Add);
+  propogateChanges(type, usedId, data, EChangeType.Add, true);
 
   return Document(true, usedId, data as T, type);
 }
@@ -169,7 +172,7 @@ void updateSimpleDocument(String type, String path, String documentId, DocumentD
 
   API().cache().updateDocument(type, documentId, jsonPayload);
 
-  propogateChanges(type, documentId, data, EChangeType.Update);
+  propogateChanges(type, documentId, data, EChangeType.Update, true);
 }
 
 void deleteSimpleDocument(String type, String path, String id, DocumentData data) {
@@ -181,7 +184,7 @@ void deleteSimpleDocument(String type, String path, String id, DocumentData data
 
   API().cache().removeDocument(type, id);
 
-  propogateChanges(type, id, data, EChangeType.Delete);
+  propogateChanges(type, id, data, EChangeType.Delete, true);
 }
 
 Future<CollectionResponse<ObjectType>> getCollection<ObjectType>(String path, String id, String type,
