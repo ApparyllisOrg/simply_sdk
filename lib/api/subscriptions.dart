@@ -12,15 +12,21 @@ import 'package:simply_sdk/types/request.dart';
 class SubscriptionData implements DocumentData {
   String? currency;
   int? periodEnd;
+  int? periodStart;
+  int? subscriptionStart;
   int? price;
   bool? cancelled;
+  String? priceId;
 
   @override
   constructFromJson(Map<String, dynamic> json) {
     currency = readDataFromJson('currency', json);
     periodEnd = readDataFromJson('periodEnd', json);
+    periodStart = readDataFromJson('periodStart', json);
+    subscriptionStart = readDataFromJson('subscriptionStart', json);
     price = readDataFromJson('price', json);
     cancelled = readDataFromJson('cancelled', json);
+    priceId = readDataFromJson('priceId', json);
   }
 
   @override
@@ -29,8 +35,11 @@ class SubscriptionData implements DocumentData {
 
     insertData('currency', currency, payload);
     insertData('periodEnd', periodEnd, payload);
+    insertData('periodStart', periodStart, payload);
+    insertData('subscriptionStart', subscriptionStart, payload);
     insertData('price', price, payload);
     insertData('cancelled', cancelled, payload);
+    insertData('priceId', priceId, payload);
 
     return payload;
   }
@@ -73,18 +82,55 @@ class Subscriptions {
     return result;
   }
 
-  Future<RequestResponse> cancelSubscription() async {
+  Future<RequestResponse> changeSubscription(String price) async {
     Response response = await SimplyHttpClient()
-        .post(Uri.parse(
-            API().connection().getRequestUrl('v1/subscription/cancel', '')))
+        .post(
+            Uri.parse(
+                API().connection().getRequestUrl('v1/subscription/change', '')),
+            body: jsonEncode({'price': price}))
         .catchError(((e) => generateFailedResponse(e)))
         .timeout(const Duration(seconds: 10));
 
-    if (response.statusCode == 200) {
-      return RequestResponse(true, response.body);
+    return RequestResponse(response.statusCode == 200, response.body);
+  }
+
+  Future<RequestResponse> refundSubscription(
+      String feedback, String? comment) async {
+    Map<String, String> body = {};
+    body["feedback"] = feedback;
+    if (comment != null) {
+      body["comment"] = comment;
     }
 
-    return RequestResponse(false, response.body);
+    Response response = await SimplyHttpClient()
+        .post(
+            Uri.parse(
+                API().connection().getRequestUrl('v1/subscription/refund', '')),
+            body: jsonEncode(body))
+        .catchError(((e) => generateFailedResponse(e)))
+        .timeout(const Duration(seconds: 10));
+
+    return RequestResponse(response.statusCode == 200, response.body);
+  }
+
+  Future<RequestResponse> cancelSubscription(
+      String feedback, String? comment) async {
+    Map<String, String> body = {};
+    body["feedback"] = feedback;
+    if (comment != null) {
+      body["comment"] = comment;
+    }
+
+    Response response = await SimplyHttpClient()
+        .post(
+            Uri.parse(
+              API().connection().getRequestUrl('v1/subscription/cancel', ''),
+            ),
+            body: jsonEncode(body))
+        .catchError(((e) => generateFailedResponse(e)))
+        .timeout(const Duration(seconds: 10));
+
+    return RequestResponse(response.statusCode == 200, response.body);
   }
 
   Future<RequestResponse> reactivateSubscription() async {
@@ -94,11 +140,7 @@ class Subscriptions {
         .catchError(((e) => generateFailedResponse(e)))
         .timeout(const Duration(seconds: 10));
 
-    if (response.statusCode == 200) {
-      return RequestResponse(true, response.body);
-    }
-
-    return RequestResponse(false, response.body);
+    return RequestResponse(response.statusCode == 200, response.body);
   }
 
   Future<Document<SubscriptionData>?> getActiveSubscription() async {
