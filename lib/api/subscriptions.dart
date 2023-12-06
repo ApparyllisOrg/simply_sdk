@@ -156,4 +156,17 @@ class Subscriptions {
     }
     return null;
   }
+
+  Future<RequestResponse> getManagementPage() async {
+    Response response = await SimplyHttpClient()
+        .get(
+          Uri.parse(API()
+              .connection()
+              .getRequestUrl('v1/subscription/management', '')),
+        )
+        .catchError(((e) => generateFailedResponse(e)))
+        .timeout(const Duration(seconds: 10));
+
+    return RequestResponse(response.statusCode == 200, response.body);
+  }
 }
