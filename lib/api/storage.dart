@@ -9,6 +9,8 @@ import '../simply_sdk.dart';
 class Storage {
   Future<RequestResponse> storeAvatar(String avatarUuid, Uint8List bytes) async {
     try {
+      await API().auth().checkJwtValidity(null);
+
       final result = await SimplyHttpClient()
           .post(Uri.parse(API().connection().getRequestUrl('v1/avatar/$avatarUuid', '')), body: jsonEncode({'buffer': bytes}))
           .catchError(((e) => generateFailedResponse(e)));
