@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/http.dart';
 import 'package:simply_sdk/simply_sdk.dart';
+import 'package:simply_sdk/types/request.dart';
 
 import 'collection.dart';
 
@@ -214,6 +215,8 @@ class Auth {
 
     if (response.statusCode == 400) {
       return 'Unknown user or password';
+    } else if (response.statusCode >= 500 && response.statusCode <= 599) {
+      return "Unable to reach the servers, please try again later.";
     } else {
       return response.body;
     }
@@ -290,7 +293,7 @@ class Auth {
       return null;
     }
 
-    return response.body;
+    return getResponseText(response);
   }
 
   Future<String?> requestResetPassword(String email) async {
@@ -303,7 +306,7 @@ class Auth {
       return null;
     }
 
-    return response.body;
+    return getResponseText(response);
   }
 
   Future<String?> requestVerify() async {
@@ -315,20 +318,20 @@ class Auth {
       return null;
     }
 
-    return response.body;
+    return getResponseText(response);
   }
 
-  Future<String?> forgotEmail(String username) async {
+  Future<RequestResponse> forgotEmail(String username) async {
     Response response = await SimplyHttpClient()
         .post(Uri.parse(API().connection().getRequestUrl('v1/auth/forgotemail', '')), body: jsonEncode({'username': username}))
         .catchError(((e) => generateFailedResponse(e)))
         .timeout(const Duration(seconds: 10));
 
     if (response.statusCode == 200) {
-      return response.body;
+      return RequestResponse(true, response.body);
     }
 
-    return response.body;
+    return RequestResponse(false, getResponseText(response));
   }
 
   Future<String?> refreshToken(String? forceRefreshToken, {bool bNotify = true}) async {
