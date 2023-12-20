@@ -127,7 +127,7 @@ class Auth {
   }
 
   Future<void> checkJwtValidity(Timer? timer) async {
-    if (credentials.isAuthed()) {
+    if (credentials.isAuthed() && !bIsRefreshingToken) {
       try {
         Map<String, dynamic> jwtPayload = Jwt.parseJwt(credentials._lastToken ?? '');
         DateTime expiry = DateTime.fromMillisecondsSinceEpoch(jwtPayload['exp'] * 1000);
@@ -346,8 +346,8 @@ class Auth {
     Response response = await SimplyHttpClient()
         .get(Uri.parse(API().connection().getRequestUrl('v1/auth/refresh', '')),
             headers: {'Authorization': forceRefreshToken ?? (credentials._lastRefreshToken ?? '')})
-        .catchError(((e) => generateFailedResponse(e)))
-        .timeout(const Duration(seconds: 10));
+        .timeout(const Duration(seconds: 10))
+        .catchError(((e) => generateFailedResponse(e)));
 
     if (response.statusCode == 200) {
       _getAuthDetailsFromResponse(response.body);

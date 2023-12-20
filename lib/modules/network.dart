@@ -138,7 +138,7 @@ class Network {
         bool exists = await file.exists();
 
         if (exists) {
-          String jsonObjectString = await file.readAsString();
+          String jsonObjectString = (await file.readAsString()).trim();
           if (jsonObjectString.isNotEmpty) {
             loadPendingRequestsFromJson(getJsonPendingRequestsFromString(jsonObjectString));
           } else {
@@ -154,6 +154,7 @@ class Network {
         API().reportError(e, StackTrace.current);
         print(e);
         _pendingRequests = [];
+         initialized = true;
       }
     }
   }
