@@ -37,6 +37,8 @@ class SimplyHttpClient extends http.BaseClient {
       API().debug().logFine('HTTP => ${request.method} => ${request.url}');
     }
 
+    request.headers.addAll({'accept-encoding': 'gzip'});
+    request.headers.addAll({'connection': 'keep-alive'});
     request.headers.addAll({'content-type': 'application/json; charset=UTF-8'});
 
     if (!request.headers.containsKey('Authorization')) {
