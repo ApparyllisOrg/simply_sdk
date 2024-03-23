@@ -17,6 +17,7 @@ import 'package:simply_sdk/api/messages.dart';
 import 'package:simply_sdk/api/notes.dart';
 import 'package:simply_sdk/api/pk.dart';
 import 'package:simply_sdk/api/polls.dart';
+import 'package:simply_sdk/api/privacyBuckets.dart';
 import 'package:simply_sdk/api/privates.dart';
 import 'package:simply_sdk/api/repeatedTimers.dart';
 import 'package:simply_sdk/api/storage.dart';
@@ -98,6 +99,7 @@ class API {
   final Subscriptions _subscriptions = Subscriptions();
   final Invoices _invoices = Invoices();
   final BoardMessages _boardMessages = BoardMessages();
+  final PrivacyBuckets _privacyBuckets = PrivacyBuckets();
 
   // Declare global getters
   Auth auth() => _auth;
@@ -135,6 +137,7 @@ class API {
   Invoices invoices() => _invoices;
   Subscriptions subscriptions() => _subscriptions;
   BoardMessages boardMessages() => _boardMessages;
+  PrivacyBuckets privacyBuckets() => _privacyBuckets;
 
   void reportError(e, StackTrace? trace) {
     try {

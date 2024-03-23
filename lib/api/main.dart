@@ -12,6 +12,7 @@ import 'package:simply_sdk/api/groups.dart';
 import 'package:simply_sdk/api/members.dart';
 import 'package:simply_sdk/api/notes.dart';
 import 'package:simply_sdk/api/polls.dart';
+import 'package:simply_sdk/api/privacyBuckets.dart';
 import 'package:simply_sdk/api/repeatedTimers.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
@@ -145,6 +146,13 @@ void propogateChanges(String type, String id, dynamic data, EChangeType changeTy
     case 'BoardMessages':
     case 'boardMessages':
       API().eventListener().onEvent('boardMessages', Document<BoardMessageData>(true, id, data, 'BoardMessages'), changeType, bLocalEvent);
+      break;
+    case 'privacyBuckets':
+    case 'PrivacyBuckets':
+      {
+        API().privacyBuckets().propogateChanges(Document(true, id, data, 'PrivacyBuckets'), changeType, bLocalEvent);
+        API().eventListener().onEvent('privacyBuckets', Document<PrivacyBucketData>(true, id, data, 'PrivacyBuckets'), changeType, bLocalEvent);
+      }
       break;
   }
 }
