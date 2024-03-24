@@ -1,13 +1,14 @@
 import 'dart:convert';
 
 import 'package:simply_sdk/api/main.dart';
+import 'package:simply_sdk/api/privacyBuckets.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/modules/network.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
 
-class GroupData implements DocumentData {
+class GroupData implements DocumentData, PrivacyBucketInterface {
   String? parent;
   String? name;
   String? color;
@@ -17,6 +18,7 @@ class GroupData implements DocumentData {
   String? emoji;
   List<String>? members;
   bool? supportDescMarkdown;
+  List<String>? buckets;
 
   @override
   Map<String, dynamic> toJson() {
@@ -30,6 +32,7 @@ class GroupData implements DocumentData {
     insertData('preventTrusted', preventTrusted, payload);
     insertData('emoji', emoji, payload);
     insertData('supportDescMarkdown', supportDescMarkdown, payload);
+    insertData('buckets', buckets, payload);
     insertDataArray('members', members, payload);
 
     return payload;
@@ -46,6 +49,17 @@ class GroupData implements DocumentData {
     emoji = readDataFromJson('emoji', json);
     supportDescMarkdown = readDataFromJson('supportDescMarkdown', json);
     members = readDataArrayFromJson<String>('members', json);
+    buckets = readDataArrayFromJson('buckets', json);
+  }
+
+  @override
+  List<String> getBuckets() {
+    return buckets ?? [];
+  }
+  
+  @override
+  void setBuckets(List<String> inBuckets) {
+    buckets = inBuckets;
   }
 }
 
@@ -55,7 +69,7 @@ class Groups extends Collection<GroupData> {
 
   @override
   Document<GroupData> add(DocumentData values) {
-    return addSimpleDocument(type, 'v1/group', values);
+    return addSimpleDocument(type, 'v1/group', values, propertiesToDelete: ['buckets']);
   }
 
   @override

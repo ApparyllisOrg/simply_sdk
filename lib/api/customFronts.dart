@@ -1,11 +1,12 @@
 import 'package:simply_sdk/api/main.dart';
+import 'package:simply_sdk/api/privacyBuckets.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
 import 'package:simply_sdk/types/frame.dart';
 
-class CustomFrontData implements DocumentData {
+class CustomFrontData implements DocumentData, PrivacyBucketInterface {
   String? name;
   String? avatarUrl;
   String? avatarUuid;
@@ -15,6 +16,7 @@ class CustomFrontData implements DocumentData {
   bool? preventTrusted;
   bool? supportDescMarkdown;
   FrameData? frame;
+  List<String>? buckets;
 
   @override
   Map<String, dynamic> toJson() {
@@ -29,11 +31,12 @@ class CustomFrontData implements DocumentData {
     insertData('preventTrusted', preventTrusted, payload);
     insertData('supportDescMarkdown', supportDescMarkdown, payload);
     insertData('frame', frame?.toJson(), payload);
+    insertData('buckets', buckets, payload);
     return payload;
   }
 
   @override
-  constructFromJson(Map<String, dynamic> json) {
+  void constructFromJson(Map<String, dynamic> json) {
     name = readDataFromJson('name', json);
     desc = readDataFromJson('desc', json);
     avatarUuid = readDataFromJson('avatarUuid', json);
@@ -43,6 +46,17 @@ class CustomFrontData implements DocumentData {
     color = readDataFromJson('color', json);
     supportDescMarkdown = readDataFromJson('supportDescMarkdown', json);
     frame = FrameData()..constructFromOptionalJson(readDataFromJson('frame', json));
+    buckets = readDataArrayFromJson('buckets', json);
+  }
+  
+  @override
+  List<String> getBuckets() {
+    return buckets ?? [];
+  }
+  
+  @override
+  void setBuckets(List<String> inBuckets) {
+    buckets = inBuckets;
   }
 }
 
@@ -52,7 +66,7 @@ class CustomFronts extends Collection<CustomFrontData> {
 
   @override
   Document<CustomFrontData> add(DocumentData values) {
-    return addSimpleDocument(type, 'v1/customFront', values);
+    return addSimpleDocument(type, 'v1/customFront', values, propertiesToDelete: ['buckets']);
   }
 
   @override
@@ -86,6 +100,6 @@ class CustomFronts extends Collection<CustomFrontData> {
 
   @override
   void update(String documentId, DocumentData values) {
-    updateSimpleDocument(type, 'v1/customFront', documentId, values);
+    updateSimpleDocument(type, 'v1/customFront', documentId, values, propertiesToDelete: ['buckets']);
   }
 }

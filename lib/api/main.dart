@@ -157,10 +157,14 @@ void propogateChanges(String type, String id, dynamic data, EChangeType changeTy
   }
 }
 
-Document<T> addSimpleDocument<T>(String type, String path, DocumentData data, {String? overrideId}) {
-  String usedId = overrideId ?? ObjectId(clientMode: true).toHexString();
+Document<T> addSimpleDocument<T>(String type, String path, DocumentData data, {String? overrideId, List<String> propertiesToDelete = const []}) {
+  final String usedId = overrideId ?? ObjectId(clientMode: true).toHexString();
 
-  Map<String, dynamic> jsonPayload = data.toJson();
+  final Map<String, dynamic> jsonPayload = data.toJson();
+
+  propertiesToDelete.forEach((element) => 
+    jsonPayload.remove(element)
+  ,);
 
   API().network().request(new NetworkRequest(HttpRequestMethod.Post, '$path/$usedId', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
 
@@ -171,8 +175,12 @@ Document<T> addSimpleDocument<T>(String type, String path, DocumentData data, {S
   return Document(true, usedId, data as T, type);
 }
 
-void updateSimpleDocument(String type, String path, String documentId, DocumentData data) {
-  Map<String, dynamic> jsonPayload = data.toJson();
+void updateSimpleDocument(String type, String path, String documentId, DocumentData data, {List<String> propertiesToDelete = const []}) {
+  final Map<String, dynamic> jsonPayload = data.toJson();
+
+  propertiesToDelete.forEach((element) => 
+    jsonPayload.remove(element)
+  ,);
 
   API()
       .network()

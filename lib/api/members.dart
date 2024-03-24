@@ -1,4 +1,5 @@
 import 'package:simply_sdk/api/main.dart';
+import 'package:simply_sdk/api/privacyBuckets.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
 import 'package:simply_sdk/types/document.dart';
@@ -6,7 +7,7 @@ import 'package:simply_sdk/types/frame.dart';
 
 import '../simply_sdk.dart';
 
-class MemberData implements DocumentData {
+class MemberData implements DocumentData, PrivacyBucketInterface {
   String? name;
   String? pronouns;
   String? avatarUrl;
@@ -23,6 +24,7 @@ class MemberData implements DocumentData {
   bool? archived;
   String? archivedReason;
   FrameData? frame;
+  List<String>? buckets;
 
   @override
   Map<String, dynamic> toJson() {
@@ -43,6 +45,8 @@ class MemberData implements DocumentData {
     insertData('supportDescMarkdown', supportDescMarkdown, payload);
     insertData('archived', archived, payload);
     insertData('archivedReason', archivedReason, payload);
+
+    insertData('buckets', buckets, payload);
 
     insertData('frame', frame?.toJson(), payload);
 
@@ -66,6 +70,8 @@ class MemberData implements DocumentData {
     archived = readDataFromJson('archived', json);
     archivedReason = readDataFromJson('archivedReason', json);
 
+    buckets = readDataArrayFromJson('buckets', json);
+
     frame = FrameData()..constructFromOptionalJson(readDataFromJson('frame', json));
 
     if (json['info'] is Map<String, dynamic>) {
@@ -80,6 +86,16 @@ class MemberData implements DocumentData {
       info = infoFields;
     }
   }
+
+  @override
+  List<String> getBuckets() {
+    return buckets ?? [];
+  }
+  
+  @override
+  void setBuckets(List<String> inBuckets) {
+    buckets = inBuckets;
+  }
 }
 
 class Members extends Collection<MemberData> {
@@ -88,7 +104,7 @@ class Members extends Collection<MemberData> {
 
   @override
   Document<MemberData> add(DocumentData values) {
-    return addSimpleDocument(type, 'v1/member', values);
+    return addSimpleDocument(type, 'v1/member', values, propertiesToDelete: ['buckets']);
   }
 
   @override
@@ -108,7 +124,7 @@ class Members extends Collection<MemberData> {
     final collection =
         await getCollection<MemberData>("v1/members/${(uid ?? API().auth().getUid()) ?? ""}", '', type, since: since, bForceOffline: bForceOffline);
 
-    List<Document<MemberData>> members = collection.data
+    final List<Document<MemberData>> members = collection.data
         .map<Document<MemberData>>((e) => Document(e['exists'], e['id'], MemberData()..constructFromJson(e['content']), type))
         .toList();
     if (!collection.useOffline) {
@@ -122,6 +138,6 @@ class Members extends Collection<MemberData> {
 
   @override
   void update(String documentId, DocumentData values) {
-    updateSimpleDocument(type, 'v1/member', documentId, values);
+    updateSimpleDocument(type, 'v1/member', documentId, values, propertiesToDelete: ['buckets']);
   }
 }

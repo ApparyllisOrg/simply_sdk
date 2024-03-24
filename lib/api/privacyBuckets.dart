@@ -6,6 +6,12 @@ import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
 import 'package:simply_sdk/types/frame.dart';
 
+abstract class PrivacyBucketInterface 
+{
+  List<String> getBuckets();
+  void setBuckets(List<String> inBuckets);
+}
+
 class PrivacyBucketData implements DocumentData {
   String? name;
   String? desc;
@@ -109,5 +115,16 @@ class PrivacyBuckets extends Collection<PrivacyBucketData> {
     jsonPayload['friends'] = friends;
 
     API().network().request(NetworkRequest(HttpRequestMethod.Patch, 'v1/privacyBucket/assignFriends', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
+  }
+
+  void setBuckets(String id, String type, List<String> buckets)
+  {
+    final Map<String, dynamic> jsonPayload = {};
+
+    jsonPayload['id'] = id;
+    jsonPayload['type'] = type;
+    jsonPayload['buckets'] = buckets;
+
+    API().network().request(NetworkRequest(HttpRequestMethod.Patch, 'v1/privacyBucket/setbuckets', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
   }
 }
