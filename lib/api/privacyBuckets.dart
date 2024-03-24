@@ -48,7 +48,6 @@ class PrivacyBuckets extends Collection<PrivacyBucketData> {
   @override
   void delete(String documentId, Document originalDocument) {
     deleteSimpleDocument(type, 'v1/privacyBucket', documentId, originalDocument.dataObject);
-    API().store().getFronters().removeWhere((element) => element.dataObject.member == documentId);
   }
 
   @override
@@ -90,5 +89,25 @@ class PrivacyBuckets extends Collection<PrivacyBucketData> {
     jsonPayload['buckets'] = orders;
 
     API().network().request(NetworkRequest(HttpRequestMethod.Patch, 'v1/privacyBucket/order', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
+  }
+
+  void assignBucketsToFriend(String friendUuid, List<String> buckets)
+  {
+    final Map<String, dynamic> jsonPayload = {};
+
+    jsonPayload['friendUid'] = friendUuid;
+    jsonPayload['buckets'] = buckets;
+
+    API().network().request(NetworkRequest(HttpRequestMethod.Patch, 'v1/privacyBucket/assignBuckets', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
+  }
+
+  void assignFriendsToBucket(String bucket, List<String> friends)
+  {
+    final Map<String, dynamic> jsonPayload = {};
+
+    jsonPayload['bucket'] = bucket;
+    jsonPayload['friends'] = friends;
+
+    API().network().request(NetworkRequest(HttpRequestMethod.Patch, 'v1/privacyBucket/assignFriends', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
   }
 }

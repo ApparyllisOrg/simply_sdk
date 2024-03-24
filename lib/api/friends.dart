@@ -28,21 +28,25 @@ class FriendFronters {
 }
 
 class FriendSettingsData implements DocumentData {
+  String? frienduid;
   bool? seeFront;
   bool? seeMembers;
   bool? getFrontNotif;
   bool? trusted;
   bool? getTheirFrontNotif;
   String? message;
+  List<String>? buckets;
 
   @override
-  constructFromJson(Map<String, dynamic> json) {
+  void constructFromJson(Map<String, dynamic> json) {
+    frienduid = readDataFromJson('frienduid', json);
     seeFront = readDataFromJson('seeFront', json);
     seeMembers = readDataFromJson('seeMembers', json);
     getFrontNotif = readDataFromJson('getFrontNotif', json);
     trusted = readDataFromJson('trusted', json);
     getTheirFrontNotif = readDataFromJson('getTheirFrontNotif', json);
     message = readDataFromJson('message', json);
+    buckets = readDataArrayFromJson('privacyBuckets', json);
   }
 
   @override
@@ -245,6 +249,19 @@ class Friends {
     API()
         .network()
         .request(new NetworkRequest(HttpRequestMethod.Patch, 'v1/friend/$uid', DateTime.now().millisecondsSinceEpoch, payload: settings.toJson()));
+  }
+
+  // Return a list of all friends and their user data
+  Future<List<Document<FriendSettingsData>>> getFriendsSettings() {
+    return Future(() async {
+      final collection = await getCollection<UserData>('v1/friends/settings', '', 'Users', skipCache: true);
+
+      final List<Document<FriendSettingsData>> friends = collection.data
+          .map<Document<FriendSettingsData>>((e) => Document(e['exists'], e['id'], FriendSettingsData()..constructFromJson(e['content']), 'friends'))
+          .toList();
+
+      return friends;
+    });
   }
 
   // Return a list of all friends and their user data
