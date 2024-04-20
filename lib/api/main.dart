@@ -6,6 +6,7 @@ import 'package:simply_sdk/api/automatedTimers.dart';
 import 'package:simply_sdk/api/board_messages.dart';
 import 'package:simply_sdk/api/chats.dart';
 import 'package:simply_sdk/api/comments.dart';
+import 'package:simply_sdk/api/customFields.dart';
 import 'package:simply_sdk/api/customFronts.dart';
 import 'package:simply_sdk/api/frontHistory.dart';
 import 'package:simply_sdk/api/groups.dart';
@@ -152,6 +153,13 @@ void propogateChanges(String type, String id, dynamic data, EChangeType changeTy
       {
         API().privacyBuckets().propogateChanges(Document(true, id, data, 'PrivacyBuckets'), changeType, bLocalEvent);
         API().eventListener().onEvent('privacyBuckets', Document<PrivacyBucketData>(true, id, data, 'PrivacyBuckets'), changeType, bLocalEvent);
+      }
+      break;
+    case 'customFields':
+    case 'CustomFields':
+      {
+        API().customFields().propogateChanges(Document(true, id, data, 'CustomFields'), changeType, bLocalEvent);
+        API().eventListener().onEvent('customFields', Document<CustomFieldData>(true, id, data, 'CustomFields'), changeType, bLocalEvent);
       }
       break;
   }

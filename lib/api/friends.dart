@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:simply_sdk/api/main.dart';
+import 'package:simply_sdk/api/privacyBuckets.dart';
 import 'package:simply_sdk/api/users.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
@@ -27,12 +28,11 @@ class FriendFronters {
   final Map<String, String> frontStatuses;
 }
 
-class FriendSettingsData implements DocumentData {
+class FriendSettingsData implements DocumentData, PrivacyBucketInterface {
   String? frienduid;
   bool? seeFront;
   bool? seeMembers;
   bool? getFrontNotif;
-  bool? trusted;
   bool? getTheirFrontNotif;
   String? message;
   List<String>? buckets;
@@ -43,10 +43,9 @@ class FriendSettingsData implements DocumentData {
     seeFront = readDataFromJson('seeFront', json);
     seeMembers = readDataFromJson('seeMembers', json);
     getFrontNotif = readDataFromJson('getFrontNotif', json);
-    trusted = readDataFromJson('trusted', json);
     getTheirFrontNotif = readDataFromJson('getTheirFrontNotif', json);
     message = readDataFromJson('message', json);
-    buckets = readDataArrayFromJson('privacyBuckets', json);
+    buckets = readDataArrayFromJson('buckets', json);
   }
 
   @override
@@ -56,11 +55,20 @@ class FriendSettingsData implements DocumentData {
     insertData('seeFront', seeFront, payload);
     insertData('seeMembers', seeMembers, payload);
     insertData('getFrontNotif', getFrontNotif, payload);
-    insertData('trusted', trusted, payload);
     insertData('getTheirFrontNotif', getTheirFrontNotif, payload);
     insertData('message', message, payload);
 
     return payload;
+  }
+
+   @override
+  List<String> getBuckets() {
+    return buckets ?? [];
+  }
+  
+  @override
+  void setBuckets(List<String> inBuckets) {
+    buckets = inBuckets;
   }
 }
 

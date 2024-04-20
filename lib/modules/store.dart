@@ -1,4 +1,5 @@
 import 'package:simply_sdk/api/chats.dart';
+import 'package:simply_sdk/api/customFields.dart';
 import 'package:simply_sdk/api/customFronts.dart';
 import 'package:simply_sdk/api/frontHistory.dart';
 import 'package:simply_sdk/api/groups.dart';
@@ -34,7 +35,7 @@ class Store {
       API().customFronts().getAll(bForceOffline: bForceOffline),
       API().groups().getAll(bForceOffline: bForceOffline),
       API().frontHistory().getCurrentFronters(bForceOffline: bForceOffline),
-      API().channels().getAll()
+      API().channels().getAll(),
     ];
 
     final List<List<dynamic>> responses = await Future.wait(getDataFutures);

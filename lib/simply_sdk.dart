@@ -7,6 +7,7 @@ import 'package:simply_sdk/api/automatedTimers.dart';
 import 'package:simply_sdk/api/board_messages.dart';
 import 'package:simply_sdk/api/chats.dart';
 import 'package:simply_sdk/api/comments.dart';
+import 'package:simply_sdk/api/customFields.dart';
 import 'package:simply_sdk/api/customFronts.dart';
 import 'package:simply_sdk/api/friends.dart';
 import 'package:simply_sdk/api/frontHistory.dart';
@@ -100,6 +101,7 @@ class API {
   final Invoices _invoices = Invoices();
   final BoardMessages _boardMessages = BoardMessages();
   final PrivacyBuckets _privacyBuckets = PrivacyBuckets();
+  final CustomFields _customFields = CustomFields();
 
   // Declare global getters
   Auth auth() => _auth;
@@ -138,6 +140,7 @@ class API {
   Subscriptions subscriptions() => _subscriptions;
   BoardMessages boardMessages() => _boardMessages;
   PrivacyBuckets privacyBuckets() => _privacyBuckets;
+  CustomFields customFields() => _customFields;
 
   void reportError(e, StackTrace? trace) {
     try {

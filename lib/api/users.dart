@@ -10,39 +10,6 @@ import 'package:simply_sdk/types/request.dart';
 
 import '../simply_sdk.dart';
 
-class UserFieldData implements DocumentData {
-  String? name;
-  int? order;
-  bool? private;
-  bool? preventTrusted;
-  int? type;
-  bool? supportMarkdown;
-
-  @override
-  void constructFromJson(Map<String, dynamic> json) {
-    name = readDataFromJson('name', json);
-    order = readDataFromJson('order', json);
-    private = readDataFromJson('private', json);
-    preventTrusted = readDataFromJson('preventTrusted', json);
-    type = readDataFromJson('type', json);
-    supportMarkdown = readDataFromJson('supportMarkdown', json);
-  }
-
-  @override
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> payload = {};
-
-    insertData('name', name, payload);
-    insertData('order', order, payload);
-    insertData('private', private, payload);
-    insertData('preventTrusted', preventTrusted, payload);
-    insertData('type', type, payload);
-    insertData('supportMarkdown', supportMarkdown, payload);
-
-    return payload;
-  }
-}
-
 class GenerateUserReportDataFh implements DocumentData {
   int? start;
   int? end;
@@ -181,7 +148,6 @@ class UserData implements DocumentData {
   String? avatarUuid;
   String? avatarUrl;
   String? color;
-  Map<String, UserFieldData>? fields;
   bool? patron;
   bool? plus;
   bool? supportDescMarkdown;
@@ -205,8 +171,6 @@ class UserData implements DocumentData {
     insertData('patron', patron, payload);
     insertData('plus', plus, payload);
 
-    insertDataMap('fields', fields, payload);
-
     insertData('frame', frame?.toJson(), payload);
 
     return payload;
@@ -225,15 +189,6 @@ class UserData implements DocumentData {
     supportDescMarkdown = readDataFromJson('supportDescMarkdown', json);
 
     frame = FrameData()..constructFromOptionalJson(readDataFromJson('frame', json));
-
-    fields = {};
-
-    Map<String, dynamic>? _fields = readDataFromJson('fields', json);
-    if (_fields != null) {
-      _fields.forEach((key, value) {
-        fields![key] = UserFieldData()..constructFromJson(value);
-      });
-    }
   }
 }
 

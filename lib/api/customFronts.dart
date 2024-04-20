@@ -12,8 +12,6 @@ class CustomFrontData implements DocumentData, PrivacyBucketInterface {
   String? avatarUuid;
   String? desc;
   String? color;
-  bool? private;
-  bool? preventTrusted;
   bool? supportDescMarkdown;
   FrameData? frame;
   List<String>? buckets;
@@ -27,8 +25,6 @@ class CustomFrontData implements DocumentData, PrivacyBucketInterface {
     insertData('color', color, payload);
     insertData('avatarUuid', avatarUuid, payload);
     insertData('avatarUrl', avatarUrl, payload);
-    insertData('private', private, payload);
-    insertData('preventTrusted', preventTrusted, payload);
     insertData('supportDescMarkdown', supportDescMarkdown, payload);
     insertData('frame', frame?.toJson(), payload);
     insertData('buckets', buckets, payload);
@@ -41,8 +37,6 @@ class CustomFrontData implements DocumentData, PrivacyBucketInterface {
     desc = readDataFromJson('desc', json);
     avatarUuid = readDataFromJson('avatarUuid', json);
     avatarUrl = readDataFromJson('avatarUrl', json);
-    private = readDataFromJson('private', json);
-    preventTrusted = readDataFromJson('preventTrusted', json);
     color = readDataFromJson('color', json);
     supportDescMarkdown = readDataFromJson('supportDescMarkdown', json);
     frame = FrameData()..constructFromOptionalJson(readDataFromJson('frame', json));
@@ -86,7 +80,7 @@ class CustomFronts extends Collection<CustomFrontData> {
     final collection =
         await getCollection<CustomFrontData>('v1/customFronts/${uid ?? API().auth().getUid()}', '', type, since: since, bForceOffline: bForceOffline);
 
-    List<Document<CustomFrontData>> cfs = collection.data
+    final List<Document<CustomFrontData>> cfs = collection.data
         .map<Document<CustomFrontData>>((e) => Document(e['exists'], e['id'], CustomFrontData()..constructFromJson(e['content']), type))
         .toList();
     if (!collection.useOffline) {

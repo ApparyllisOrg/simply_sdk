@@ -12,8 +12,6 @@ class GroupData implements DocumentData, PrivacyBucketInterface {
   String? parent;
   String? name;
   String? color;
-  bool? private;
-  bool? preventTrusted;
   String? desc;
   String? emoji;
   List<String>? members;
@@ -27,9 +25,7 @@ class GroupData implements DocumentData, PrivacyBucketInterface {
     insertData('parent', parent, payload);
     insertData('name', name, payload);
     insertData('color', color, payload);
-    insertData('private', private, payload);
     insertData('desc', desc, payload);
-    insertData('preventTrusted', preventTrusted, payload);
     insertData('emoji', emoji, payload);
     insertData('supportDescMarkdown', supportDescMarkdown, payload);
     insertData('buckets', buckets, payload);
@@ -43,8 +39,6 @@ class GroupData implements DocumentData, PrivacyBucketInterface {
     parent = readDataFromJson('parent', json);
     name = readDataFromJson('name', json);
     color = readDataFromJson('color', json);
-    private = readDataFromJson('private', json);
-    preventTrusted = readDataFromJson('preventTrusted', json);
     desc = readDataFromJson('desc', json);
     emoji = readDataFromJson('emoji', json);
     supportDescMarkdown = readDataFromJson('supportDescMarkdown', json);
