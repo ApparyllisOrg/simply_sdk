@@ -15,43 +15,55 @@ class GenerateUserReportDataFh implements DocumentData {
   int? end;
   bool? includesMembers;
   bool? includesCfs;
-  int? privacyLevel;
+  bool? includeMembersBucketless;
+  bool? includeCustomFrontsBucketless;
+  List<String>? memberBuckets;
+  List<String>? customFrontBuckets;
 
   @override
-  constructFromJson(Map<String, dynamic> json) {
+  void constructFromJson(Map<String, dynamic> json) {
     start = readDataFromJson('start', json);
     end = readDataFromJson('end', json);
     includesMembers = readDataFromJson('includesMembers', json);
     includesCfs = readDataFromJson('includesCfs', json);
-    privacyLevel = readDataFromJson('privacyLevel', json);
+    includeMembersBucketless = readDataFromJson('includeMembersBucketless', json);
+    includeCustomFrontsBucketless = readDataFromJson('includeCustomFrontsBucketless', json);
+    memberBuckets = readDataArrayFromJson('memberBuckets', json);
+    customFrontBuckets = readDataArrayFromJson('customFrontBuckets', json);
   }
 
   @override
   Map<String, dynamic> toJson() {
-    Map<String, dynamic> payload = {};
+    final Map<String, dynamic> payload = {};
 
     insertData('start', start, payload);
     insertData('end', end, payload);
     insertData('includeMembers', includesMembers, payload);
     insertData('includeCustomFronts', includesCfs, payload);
-    insertData('privacyLevel', privacyLevel, payload);
+    insertData('includeMembersBucketless', includeMembersBucketless, payload);
+    insertData('includeCustomFrontsBucketless', includeCustomFrontsBucketless, payload);
+    insertDataArray('memberBuckets', memberBuckets, payload);
+    insertDataArray('customFrontBuckets', customFrontBuckets, payload);
 
     return payload;
   }
 }
 
 class GenerateUserReportDataCf implements DocumentData {
-  int? privacyLevel;
+  bool? includeBucketless;
+  List<String>? buckets;
 
   @override
-  constructFromJson(Map<String, dynamic> json) {
-    privacyLevel = readDataFromJson('privacyLevel', json);
+  void constructFromJson(Map<String, dynamic> json) {
+    includeBucketless = readDataFromJson('includeBucketless', json);
+    buckets = readDataArrayFromJson('buckets', json);
   }
 
   @override
   Map<String, dynamic> toJson() {
-    Map<String, dynamic> payload = {};
-    insertData('privacyLevel', privacyLevel, payload);
+    final Map<String, dynamic> payload = {};
+    insertData('includeBucketless', includeBucketless, payload);
+    insertDataArray('buckets', buckets, payload);
 
     return payload;
   }
@@ -59,20 +71,23 @@ class GenerateUserReportDataCf implements DocumentData {
 
 class GenerateUserReportDataFMem implements DocumentData {
   bool? includeCustomFields;
-  int? privacyLevel;
+   bool? includeBucketless;
+  List<String>? buckets;
 
   @override
-  constructFromJson(Map<String, dynamic> json) {
+  void constructFromJson(Map<String, dynamic> json) {
     includeCustomFields = readDataFromJson('includeCustomFields', json);
-    privacyLevel = readDataFromJson('privacyLevel', json);
+    includeBucketless = readDataFromJson('includeBucketless', json);
+    buckets = readDataArrayFromJson('buckets', json);
   }
 
   @override
   Map<String, dynamic> toJson() {
-    Map<String, dynamic> payload = {};
+    final Map<String, dynamic> payload = {};
 
     insertData('includeCustomFields', includeCustomFields, payload);
-    insertData('privacyLevel', privacyLevel, payload);
+    insertData('includeBucketless', includeBucketless, payload);
+    insertDataArray('buckets', buckets, payload);
 
     return payload;
   }
@@ -244,7 +259,7 @@ class Users extends Collection<UserData> {
     }
     try {
       final response = await SimplyHttpClient()
-          .post(Uri.parse(API().connection().getRequestUrl('v1/user/generateReport', '')), body: jsonEncode(data.toJson()))
+          .post(Uri.parse(API().connection().getRequestUrl('v2/user/generateReport', '')), body: jsonEncode(data.toJson()))
           .catchError((e) => generateFailedResponse(e));
       return createResponseObject(response);
     } catch (e) {}
