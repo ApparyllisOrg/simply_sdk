@@ -63,7 +63,7 @@ class Groups extends Collection<GroupData> {
 
   @override
   Document<GroupData> add(DocumentData values) {
-    return addSimpleDocument(type, 'v1/group', values, propertiesToDelete: ['buckets']);
+    return addSimpleDocument(type, 'v2/group', values, propertiesToDelete: ['buckets']);
   }
 
   @override
@@ -96,7 +96,7 @@ class Groups extends Collection<GroupData> {
 
   @override
   void update(String documentId, DocumentData values) {
-    updateSimpleDocument(type, 'v1/group', documentId, values);
+    updateSimpleDocument(type, 'v1/group', documentId, values, propertiesToDelete: ['buckets']);
   }
 
   void recursiveDeleteGroup(String groupId) {

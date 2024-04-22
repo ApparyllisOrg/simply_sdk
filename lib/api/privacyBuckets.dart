@@ -117,13 +117,14 @@ class PrivacyBuckets extends Collection<PrivacyBucketData> {
     API().network().request(NetworkRequest(HttpRequestMethod.Patch, 'v1/privacyBucket/assignFriends', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
   }
 
-  void setBuckets(String id, String type, List<String> buckets)
+  void setBuckets(String id, String type, List<String> buckets, { bool recursive = false })
   {
     final Map<String, dynamic> jsonPayload = {};
 
     jsonPayload['id'] = id;
     jsonPayload['type'] = type;
     jsonPayload['buckets'] = buckets;
+    jsonPayload['recursive'] = recursive;
 
     API().network().request(NetworkRequest(HttpRequestMethod.Patch, 'v1/privacyBucket/setbuckets', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
   }
