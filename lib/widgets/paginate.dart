@@ -14,6 +14,7 @@ class Paginate<T extends DocumentData> extends StatefulWidget {
       {Key? key,
       required this.itemBuilder,
       this.stepSize = 10,
+      this.extraParams,
       this.onBatchReceived,
       required this.getLoader,
       required this.emptyView,
@@ -34,6 +35,7 @@ class Paginate<T extends DocumentData> extends StatefulWidget {
   final int sortOrder;
   // Ex: v1/fronters
   final String url;
+  final String? extraParams;
   final List<Widget> prefixWidgets;
   final DocumentConstructor<T> documentConstructor;
   final String loadMoreText;
@@ -102,7 +104,7 @@ class PaginateState<T extends DocumentData> extends State<Paginate<T>> {
       setState(() {});
     }
 
-    final response = await getNextPage(widget.url, widget.sortBy, widget.sortOrder, widget.stepSize, currentOffset);
+    final response = await getNextPage(widget.url, widget.sortBy, widget.sortOrder, widget.stepSize, currentOffset, additionalQuery: widget.extraParams ?? '');
     if (response.statusCode == 200 && response.body.isNotEmpty) {
       List<Map<String, dynamic>> responseDocs = (jsonDecode(response.body) as List<dynamic>).cast<Map<String, dynamic>>();
 

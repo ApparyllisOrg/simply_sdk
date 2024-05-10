@@ -23,6 +23,9 @@ class PrivateData implements DocumentData {
   String? location;
   bool? termsOfServiceAccepted;
   int? whatsNew;
+  bool? auditContentChanges;
+  bool? hideAudits;
+  int? auditRetention;
   int? generationsLeft;
   List<Notification>? notifications;
   List<String>? categories;
@@ -35,6 +38,11 @@ class PrivateData implements DocumentData {
     insertData('latestVersion', latestVersion, payload);
     insertData('location', location, payload);
     insertData('termsOfServiceAccepted', termsOfServiceAccepted, payload);
+    
+    insertData('auditContentChanges', auditContentChanges, payload);
+    insertData('hideAudits', hideAudits, payload);
+    insertData('auditRetention', auditRetention, payload);
+    
     insertData('whatsNew', whatsNew, payload);
     insertDataArray('categories', categories, payload);
     return payload;
@@ -46,6 +54,11 @@ class PrivateData implements DocumentData {
     latestVersion = readDataFromJson('latestVersion', json);
     location = readDataFromJson('location', json);
     termsOfServiceAccepted = readDataFromJson('termsOfServiceAccepted', json);
+
+    auditContentChanges = readDataFromJson('auditContentChanges', json);
+    hideAudits = readDataFromJson('hideAudits', json);
+    auditRetention = readDataFromJson('auditRetention', json);
+
     whatsNew = readDataFromJson('whatsNew', json);
     generationsLeft = readDataFromJson('generationsLeft', json);
 
