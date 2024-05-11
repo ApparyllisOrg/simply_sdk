@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/api/privacyBuckets.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
+import 'package:simply_sdk/modules/network.dart';
 import 'package:simply_sdk/types/document.dart';
 import 'package:simply_sdk/types/frame.dart';
 
@@ -133,5 +136,18 @@ class Members extends Collection<MemberData> {
   @override
   void update(String documentId, DocumentData values) {
     updateSimpleDocument(type, 'v1/member', documentId, values, propertiesToDelete: ['buckets']);
+  }
+
+
+  void updateFields(String documentId, Map<String, String> values) {
+    final Map<String, dynamic> data = { 'info' : values };
+
+    API()
+        .network()
+        .request(NetworkRequest(HttpRequestMethod.Patch, 'v1/member/fields/$documentId', DateTime.now().millisecondsSinceEpoch, payload: data));
+
+    API().cache().updateDocument(type, documentId, data);
+
+    propogateChanges(type, documentId, MemberData()..info = values, EChangeType.Update, true);
   }
 }
