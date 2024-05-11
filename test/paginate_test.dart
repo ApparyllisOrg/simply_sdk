@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 
 void runTests(userId) {
   test('get first page', () async {
-    Response response = await PaginateState.getNextPage('v1/frontHistory', 'startTime', -1, 10, 0);
+    final Response response = await PaginateState.getNextPage('v1/frontHistory', 'startTime', -1, 10, 0);
     if (response.statusCode != 200) {
       print(response.body);
     }
@@ -16,7 +16,7 @@ void runTests(userId) {
   });
 
   test('get second page', () async {
-    Response response = await PaginateState.getNextPage('v1/frontHistory', 'startTime', -1, 10, 10);
+    final Response response = await PaginateState.getNextPage('v1/frontHistory', 'startTime', -1, 10, 10);
     if (response.statusCode != 200) {
       print(response.body);
     }

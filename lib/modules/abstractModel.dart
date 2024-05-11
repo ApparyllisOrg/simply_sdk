@@ -36,9 +36,9 @@ abstract class AbstractModel extends ChangeNotifier {
 
   Future<void> load() async {
     if (kIsWeb) {
-      bool dbExists = html.window.localStorage.containsKey(getFileName());
+      final bool dbExists = html.window.localStorage.containsKey(getFileName());
       if (dbExists) {
-        dynamic storedData = dbExists ? (html.window.localStorage[getFileName()] ?? '{}') : '{}';
+        final dynamic storedData = dbExists ? (html.window.localStorage[getFileName()] ?? '{}') : '{}';
         if (storedData is String) {
           copyFromJson(jsonDecode(storedData));
         } else {
@@ -46,12 +46,12 @@ abstract class AbstractModel extends ChangeNotifier {
         }
       }
     } else {
-      String filePath = await getFilePath();
-      File file = File(filePath);
-      bool bExists = await file.exists();
+      final String filePath = await getFilePath();
+      final File file = File(filePath);
+      final bool bExists = await file.exists();
 
       if (bExists) {
-        String string = await file.readAsString().catchError((e, s) {
+        final String string = await file.readAsString().catchError((e, s) {
           return '{}';
         });
 
@@ -74,8 +74,8 @@ abstract class AbstractModel extends ChangeNotifier {
         print(e);
       }
     } else {
-      String filePath = await getFilePath();
-      File file = File(filePath);
+      final String filePath = await getFilePath();
+      final File file = File(filePath);
       file.writeAsStringSync(jsonEncode(toJson()));
     }
   }

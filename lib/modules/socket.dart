@@ -106,8 +106,8 @@ class Socket {
     gotHello = false;
     isDisconnected = false;
     try {
-      String overrideIp = const String.fromEnvironment('WSSIP');
-      String socketUrl = overrideIp.isNotEmpty ? overrideIp : 'wss://v2.apparyllis.com';
+      const String overrideIp = String.fromEnvironment('WSSIP');
+      final String socketUrl = overrideIp.isNotEmpty ? overrideIp : 'wss://v2.apparyllis.com';
 
       if (kIsWeb) {
         _WebSocket = WebSocketChannel.connect(Uri.parse(socketUrl));
@@ -188,7 +188,7 @@ class Socket {
     if (msg == null) return;
 
     if (msg == 'update') {
-      bool initial = data['initial'] == true;
+      final bool initial = data['initial'] == true;
 
       if (initial) {
         // Clear the cache, we may have deleted things while on another phone

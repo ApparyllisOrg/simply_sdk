@@ -64,7 +64,7 @@ class Debug {
   Future<void> load() async {
     await Future(() async {
       if (kIsWeb) {
-        bool dbExists = html.window.localStorage.containsKey('logs');
+        final bool dbExists = html.window.localStorage.containsKey('logs');
         _logs = dbExists
             ? (jsonDecode(
                 html.window.localStorage['logs'] ?? '',
@@ -77,11 +77,11 @@ class Debug {
           await dir.create(recursive: true);
           final dbPath = '${dir.path}/logs.db';
 
-          File file = File(dbPath);
-          bool exists = await file.exists();
+          final File file = File(dbPath);
+          final bool exists = await file.exists();
 
           if (exists) {
-            String jsonObjectString = await file.readAsString();
+            final String jsonObjectString = await file.readAsString();
             if (jsonObjectString.isNotEmpty) {
               _logs = (((jsonDecode(jsonObjectString)) ?? []) as List<dynamic>).cast<String>();
             }
@@ -120,7 +120,7 @@ class Debug {
         await dir.create(recursive: true);
         final dbPath = '${dir.path}/logs.db';
 
-        File file = File(dbPath);
+        final File file = File(dbPath);
         file.writeAsStringSync(jsonEncode(_logs));
       } catch (e) {
         print(e);

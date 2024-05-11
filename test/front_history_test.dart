@@ -6,8 +6,8 @@ import 'package:simply_sdk/types/document.dart';
 import 'simply_sdk_test.dart';
 
 void runTests(userId) {
-  int now = DateTime.now().millisecondsSinceEpoch;
-  int end = now + (60 * 1000);
+  final int now = DateTime.now().millisecondsSinceEpoch;
+  final int end = now + (60 * 1000);
   test('Remove everyone from front', () async {
     List<Document<FrontHistoryData>> fronters = API().store().getFronters();
     for (int i = fronters.length - 1; i >= 0; --i) {
@@ -31,7 +31,7 @@ void runTests(userId) {
   test('Update front', () async {
     Document<FrontHistoryData> fhDoc = API().store().getFronters()[0];
 
-    String randomMember = getRandString(10);
+    final String randomMember = getRandString(10);
 
     API().frontHistory().update(
         fhDoc.id,

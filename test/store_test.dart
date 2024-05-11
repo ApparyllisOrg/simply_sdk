@@ -10,13 +10,13 @@ void runTests(userId) {
   });
 
   test('Ensure members are filled', () async {
-    int length = API().store().getAllMembers().length;
+    final int length = API().store().getAllMembers().length;
     print(length);
     expect(length != 0, true);
   });
 
   test('Add member and check store updated', () async {
-    int previousLength = API().store().getAllMembers().length;
+    final int previousLength = API().store().getAllMembers().length;
 
     Document<MemberData> member = API().members().add(MemberData()..name = '');
     await Future.delayed(const Duration(seconds: 1));

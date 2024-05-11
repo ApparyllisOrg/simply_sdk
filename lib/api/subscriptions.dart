@@ -59,7 +59,7 @@ class CheckoutResult {
 
 class Subscriptions {
   Future<CheckoutResult> createCheckoutSessions(String price) async {
-    Response response = await SimplyHttpClient()
+    final Response response = await SimplyHttpClient()
         .post(
             Uri.parse(
                 API().connection().getRequestUrl('v1/subscription/create', '')),
@@ -70,12 +70,12 @@ class Subscriptions {
     if (response.statusCode == 200) {
       Map<String, dynamic> json =
           jsonDecode(response.body) as Map<String, dynamic>;
-      CheckoutResult session = CheckoutResult()..constructFromJson(json);
+      final CheckoutResult session = CheckoutResult()..constructFromJson(json);
       session.bSuccess = true;
       return session;
     }
 
-    CheckoutResult result = CheckoutResult();
+    final CheckoutResult result = CheckoutResult();
     result.bSuccess = false;
     result.error = response.body;
 
@@ -83,7 +83,7 @@ class Subscriptions {
   }
 
   Future<RequestResponse> changeSubscription(String price) async {
-    Response response = await SimplyHttpClient()
+    final Response response = await SimplyHttpClient()
         .post(
             Uri.parse(
                 API().connection().getRequestUrl('v1/subscription/change', '')),
@@ -102,7 +102,7 @@ class Subscriptions {
       body["comment"] = comment;
     }
 
-    Response response = await SimplyHttpClient()
+    final Response response = await SimplyHttpClient()
         .post(
             Uri.parse(
                 API().connection().getRequestUrl('v1/subscription/refund', '')),
@@ -121,7 +121,7 @@ class Subscriptions {
       body["comment"] = comment;
     }
 
-    Response response = await SimplyHttpClient()
+    final Response response = await SimplyHttpClient()
         .post(
             Uri.parse(
               API().connection().getRequestUrl('v1/subscription/cancel', ''),
@@ -134,7 +134,7 @@ class Subscriptions {
   }
 
   Future<RequestResponse> reactivateSubscription() async {
-    Response response = await SimplyHttpClient()
+    final Response response = await SimplyHttpClient()
         .post(Uri.parse(
             API().connection().getRequestUrl('v1/subscription/reactivate', '')))
         .catchError(((e) => generateFailedResponse(e)))
@@ -144,13 +144,13 @@ class Subscriptions {
   }
 
   Future<Document<SubscriptionData>?> getActiveSubscription() async {
-    Response response = await SimplyHttpClient()
+    final Response response = await SimplyHttpClient()
         .get(Uri.parse(
             API().connection().getRequestUrl('v1/subscription/get', '')))
         .catchError(((e) => generateFailedResponse(e)));
     if (response.statusCode == 200) {
-      DocumentResponse docResponse = DocumentResponse.fromString(response.body);
-      SubscriptionData data = SubscriptionData()
+      final DocumentResponse docResponse = DocumentResponse.fromString(response.body);
+      final SubscriptionData data = SubscriptionData()
         ..constructFromJson(docResponse.content);
       return Document(true, docResponse.id, data, "subscriptions");
     }
@@ -158,7 +158,7 @@ class Subscriptions {
   }
 
   Future<RequestResponse> getManagementPage() async {
-    Response response = await SimplyHttpClient()
+    final Response response = await SimplyHttpClient()
         .get(
           Uri.parse(API()
               .connection()

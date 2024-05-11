@@ -15,13 +15,13 @@ class Connection {
   String _currentHost = '';
 
   String getCurrentHost() {
-    String overrideIp = const String.fromEnvironment('IP');
+    const String overrideIp = String.fromEnvironment('IP');
     return overrideIp.isNotEmpty ? overrideIp : _currentHost;
   }
 
   String getRequestUrl(String path, String query) {
-    String overrideIp = const String.fromEnvironment('IP');
-    String useIp = overrideIp.isNotEmpty ? overrideIp : _currentHost;
+    const String overrideIp = String.fromEnvironment('IP');
+    final String useIp = overrideIp.isNotEmpty ? overrideIp : _currentHost;
     return '$useIp/$path?$query';
   }
 

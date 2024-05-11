@@ -17,10 +17,10 @@ class RemoteConfig {
   Future<void> _initialize() async {
     _sharedPrefs = await SharedPreferences.getInstance();
     if (_sharedPrefs.containsKey(_configSync)) {
-      int lastSync = _sharedPrefs.getInt(_configSync) ?? 0;
-      int now = DateTime.now().millisecondsSinceEpoch;
+      final int lastSync = _sharedPrefs.getInt(_configSync) ?? 0;
+      final int now = DateTime.now().millisecondsSinceEpoch;
 
-      int diff = now - lastSync;
+      final int diff = now - lastSync;
 
       // Check every 12 hours
       if (diff > 1000 * 60 * 60 * 12) {
@@ -34,11 +34,11 @@ class RemoteConfig {
   }
 
   Future<void> fetchConfig() async {
-    int now = DateTime.now().millisecondsSinceEpoch;
+    final int now = DateTime.now().millisecondsSinceEpoch;
 
     _loadConfig();
 
-    Uri url = Uri.parse(API().connection().configGet());
+    final Uri url = Uri.parse(API().connection().configGet());
     Response response;
     try {
       response = await get(url);

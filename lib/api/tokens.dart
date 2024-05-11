@@ -28,7 +28,7 @@ class TokenData implements DocumentData {
   @override
   constructFromJson(Map<String, dynamic> json) {
     token = readDataFromJson('token', json);
-    int permission = readDataFromJson('permission', json);
+    final int permission = readDataFromJson('permission', json);
     read = (permission & 0x01) != 0;
     write = (permission & 0x02) != 0;
     delete = (permission & 0x04) != 0;

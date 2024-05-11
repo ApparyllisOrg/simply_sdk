@@ -113,7 +113,7 @@ class FrontHistory extends Collection<FrontHistoryData> {
       int start, int end) async {
     return API().cache().getDocumentsWhere<FrontHistoryData>(type,
         (Document<FrontHistoryData> data) {
-      int entryStart = data.dataObject.startTime ?? 0;
+      final int entryStart = data.dataObject.startTime ?? 0;
       int? entryEnd = data.dataObject.endTime;
       if (entryEnd == null) return false;
 

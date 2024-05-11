@@ -13,14 +13,14 @@ void runTests(userId) {
   });
 
   test('set username', () async {
-    String randomUsername = getRandString(64);
+    final String randomUsername = getRandString(64);
     await API().users().setUsername(randomUsername, userId);
     Document<UserData> user = await API().users().get(userId);
     expect(randomUsername, user.dataObject.username);
   });
 
   test('update user', () async {
-    String randomDesc = getRandString(64);
+    final String randomDesc = getRandString(64);
     API().users().update(
         userId,
         UserData()
@@ -40,7 +40,7 @@ void runTests(userId) {
   });
 
   test('update private', () async {
-    String randomToken = getRandString(64);
+    final String randomToken = getRandString(64);
     API().privates().update(
         userId,
         PrivateData()

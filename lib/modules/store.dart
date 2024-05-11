@@ -118,7 +118,7 @@ class Store {
   }
 
   void frontHistoryChanged(Document<FrontHistoryData> data, EChangeType changeType, bool bLocalEvent) {
-    int index = _fronters.indexWhere((element) => element.id == data.id);
+    final int index = _fronters.indexWhere((element) => element.id == data.id);
 
     Document<FrontHistoryData>? previousFhDoc = index >= 0 ? _fronters[index] : null;
 
@@ -135,8 +135,8 @@ class Store {
 
     if (previousFhDoc != null) {
       // If we're no longer a live fronter, notify of front change
-      bool wasLive = (previousFhDoc.dataObject.live ?? false) == true;
-      bool isLive = (fhDoc.dataObject.live ?? false) == true;
+      final bool wasLive = (previousFhDoc.dataObject.live ?? false) == true;
+      final bool isLive = (fhDoc.dataObject.live ?? false) == true;
 
       if (wasLive && !isLive) {
         _notifyFrontChange(fhDoc, bLocalEvent);
@@ -171,37 +171,37 @@ class Store {
   }
 
   Document<MemberData>? getMemberById(String id) {
-    int index = _members.indexWhere((element) => element.id == id);
+    final int index = _members.indexWhere((element) => element.id == id);
     if (index >= 0) return _members[index];
     return null;
   }
 
   Document<CustomFrontData>? getCustomFrontById(String id) {
-    int index = _customFronts.indexWhere((element) => element.id == id);
+    final int index = _customFronts.indexWhere((element) => element.id == id);
     if (index >= 0) return _customFronts[index];
     return null;
   }
 
   Document<GroupData>? getGroupById(String id) {
-    int index = _groups.indexWhere((element) => element.id == id);
+    final int index = _groups.indexWhere((element) => element.id == id);
     if (index >= 0) return _groups[index];
     return null;
   }
 
   Document<ChannelData>? getChannelById(String id) {
-    int index = _channels.indexWhere((element) => element.id == id);
+    final int index = _channels.indexWhere((element) => element.id == id);
     if (index >= 0) return _channels[index];
     return null;
   }
 
   bool isDocumentFronting(String id) {
-    int index = _fronters.indexWhere((element) => element.id == id);
+    final int index = _fronters.indexWhere((element) => element.id == id);
     if (index >= 0) return true;
     return false;
   }
 
   Document<FrontHistoryData>? getFronterById(String id) {
-    int index = _fronters.indexWhere((element) => element.dataObject.member == id);
+    final int index = _fronters.indexWhere((element) => element.dataObject.member == id);
     if (index >= 0) return _fronters[index];
     return null;
   }

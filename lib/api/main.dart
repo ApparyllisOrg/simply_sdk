@@ -261,7 +261,7 @@ void updateDocumentInList<ObjectType>(List<Document> documents, Document<ObjectT
   if (changeType == EChangeType.Delete) {
     documents.removeWhere((element) => element.id == updatedDocument.id);
   } else {
-    int index = documents.indexWhere((element) => element.id == updatedDocument.id);
+    final int index = documents.indexWhere((element) => element.id == updatedDocument.id);
     if (index >= 0) {
       documents[index].data.addAll(updatedDocument.data);
       documents[index].dataObject.constructFromJson(documents[index].data);
@@ -282,7 +282,7 @@ Future<Document<DataType>> getSimpleDocument<DataType>(
       ? Response('', 503)
       : await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('$url/$id', ''))).catchError(((e) => generateFailedResponse(e)));
   if (response.statusCode == 200) {
-    DataType data = createDoc(DocumentResponse.fromString(response.body));
+    final DataType data = createDoc(DocumentResponse.fromString(response.body));
 
     Document<DataType> doc = Document<DataType>(true, id, data, type);
 
@@ -294,7 +294,7 @@ Future<Document<DataType>> getSimpleDocument<DataType>(
   Map<String, dynamic>? maybeData = API().cache().getDocument(type, id);
 
   if (maybeData != null) {
-    DocumentResponse fakeResponse = DocumentResponse();
+    final DocumentResponse fakeResponse = DocumentResponse();
     fakeResponse.id = id;
     fakeResponse.content = maybeData;
     fakeResponse.exists = true;

@@ -22,7 +22,7 @@ class ChatModel extends AbstractModel {
       Document<ChatMessageData> msg = doc as Document<ChatMessageData>;
       if (msg.dataObject.channel == channelId) {
         if (changeType == EChangeType.Add) {
-          int msgIndex = _recentMessages.indexWhere((element) => element.id == msg.id);
+          final int msgIndex = _recentMessages.indexWhere((element) => element.id == msg.id);
 
           if (msgIndex != -1) {
             return;
@@ -64,7 +64,7 @@ class ChatModel extends AbstractModel {
         .catchError(((e) => generateFailedResponse(e)));
     if (response.statusCode == 200) {
       final decoded = jsonDecode(response.body) as Map<String, dynamic>;
-      ChatMessageData data = ChatMessageData()..constructFromJson(decoded['content']);
+      final ChatMessageData data = ChatMessageData()..constructFromJson(decoded['content']);
 
       Document<ChatMessageData> doc = Document<ChatMessageData>(true, msgId, data, 'chatMessages');
       return doc;
@@ -74,7 +74,7 @@ class ChatModel extends AbstractModel {
   }
 
   Future<List<Document<ChatMessageData>>> getMessages(int start, int amount, String? skipTo, bool bOlder, bool bFallbackToCache) async {
-    String order = bOlder ? '-1' : '1';
+    final String order = bOlder ? '-1' : '1';
 
     String query = 'limit=$amount&sortBy=writtenAt&sortOrder=$order';
 
@@ -102,7 +102,7 @@ class ChatModel extends AbstractModel {
   }
 
   Document<ChatMessageData> writeMessage(ChatMessageData data) {
-    String generatedId = ObjectId(clientMode: true).toHexString();
+    final String generatedId = ObjectId(clientMode: true).toHexString();
 
     Map<String, dynamic> jsonPayload = data.toJson();
     API().network().request(
@@ -151,13 +151,13 @@ class ChatModel extends AbstractModel {
   }
 
   void _insertMessageToCache(ChatMessageData data, String id, bool bUpdateOnly) {
-    int previouslyCachedMessageIndex = _recentMessages.indexWhere((element) => element.id == id);
+    final int previouslyCachedMessageIndex = _recentMessages.indexWhere((element) => element.id == id);
     if (previouslyCachedMessageIndex >= 0) {
-      ChatMessageData oldData = _recentMessages[previouslyCachedMessageIndex];
+      final ChatMessageData oldData = _recentMessages[previouslyCachedMessageIndex];
 
       // Copy old data such as channel, written at, reply to and writer as those can't change and we don't
       // want to accidentally write an empty message
-      ChatMessageData newData = ChatMessageData()
+      final ChatMessageData newData = ChatMessageData()
         ..channel = oldData.channel
         ..writtenAt = oldData.writtenAt
         ..replyTo = oldData.replyTo

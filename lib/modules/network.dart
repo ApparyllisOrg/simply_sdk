@@ -114,7 +114,7 @@ class Network {
         final dir = await getApplicationDocumentsDirectory();
         await dir.create(recursive: true);
         final dbPath = '${dir.path}/pendingRequests.db';
-        File file = File(dbPath);
+        final File file = File(dbPath);
         file.writeAsStringSync(jsonEncode(convertedData));
       }
     } catch (e) {
@@ -124,7 +124,7 @@ class Network {
 
   Future<void> loadPendingNetworkRequests() async {
     if (kIsWeb) {
-      bool syncExists = html.window.localStorage.containsKey('pendingRequests');
+      final bool syncExists = html.window.localStorage.containsKey('pendingRequests');
       List<String> savedRequestsCasted = syncExists ? getJsonPendingRequestsFromString(html.window.localStorage['pendingRequests'] ?? '') : [];
       loadPendingRequestsFromJson(savedRequestsCasted);
       print('Loaded pending requests');
@@ -134,11 +134,11 @@ class Network {
         await dir.create(recursive: true);
         final dbPath = '${dir.path}/pendingRequests.db';
 
-        File file = File(dbPath);
-        bool exists = await file.exists();
+        final File file = File(dbPath);
+        final bool exists = await file.exists();
 
         if (exists) {
-          String jsonObjectString = (await file.readAsString()).trim();
+          final String jsonObjectString = (await file.readAsString()).trim();
           if (jsonObjectString.isNotEmpty) {
             loadPendingRequestsFromJson(getJsonPendingRequestsFromString(jsonObjectString));
           } else {
@@ -181,14 +181,14 @@ class Network {
   Future<void> tick() async {
     try {
       List<Future> requestsToSend = [];
-      int numPendingRequests = _pendingRequests.length;
+      final int numPendingRequests = _pendingRequests.length;
       for (int i = 0; i < min(1, _pendingRequests.length) && API().auth().canSendHttpRequests(); i++) {
-        NetworkRequest request = _pendingRequests[i];
+        final NetworkRequest request = _pendingRequests[i];
 
         requestsToSend.add(Future(() async {
-          String url = API().connection().getRequestUrl(request.path, request.query ?? '');
+          final String url = API().connection().getRequestUrl(request.path, request.query ?? '');
 
-          Uri uri = Uri.parse(url);
+          final Uri uri = Uri.parse(url);
 
           http.Response? response;
 
@@ -222,7 +222,7 @@ class Network {
                 }
             }
 
-            int responseCode = response?.statusCode ?? 0;
+            final int responseCode = response?.statusCode ?? 0;
 
             if (responseCode == 401) {
               if (API().auth().isAuthenticated()) {
@@ -230,7 +230,7 @@ class Network {
               }
             }
 
-            String error = "[$responseCode] during ${request.method} => ${request.path}. Response is ${response?.body ?? ""}";
+            final String error = "[$responseCode] during ${request.method} => ${request.path}. Response is ${response?.body ?? ""}";
 
             if (acceptedResponseCodes.contains(responseCode)) {
               if (responseCode != 200) {

@@ -121,7 +121,7 @@ class Cache {
         final dbPath = '${dir.path}/simply.db';
 
         // Save cache
-        File file = File(dbPath);
+        final File file = File(dbPath);
         file.writeAsStringSync(jsonEncode(_cache, toEncodable: customEncode));
 
         print('Saved cache');
@@ -144,7 +144,7 @@ class Cache {
 
     await Future(() async {
       if (kIsWeb) {
-        bool dbExists = html.window.localStorage.containsKey('db');
+        final bool dbExists = html.window.localStorage.containsKey('db');
         _cache = dbExists ? jsonDecode(html.window.localStorage['db'] ?? '', reviver: customDecode) as Map<String, dynamic> : Map<String, dynamic>();
       } else {
         try {
@@ -152,11 +152,11 @@ class Cache {
           await dir.create(recursive: true);
           final dbPath = '${dir.path}/simply.db';
 
-          File file = File(dbPath);
-          bool exists = await file.exists();
+          final File file = File(dbPath);
+          final bool exists = await file.exists();
 
           if (exists) {
-            String jsonObjectString = await file.readAsString();
+            final String jsonObjectString = await file.readAsString();
             if (jsonObjectString.isNotEmpty) {
               _cache = ((jsonDecode(jsonObjectString, reviver: customDecode)) ?? Map<String, dynamic>()) as Map<String, dynamic>;
             }
@@ -222,7 +222,7 @@ class Cache {
     Map<String, dynamic> collection = getTypeCache(type);
 
     collection.forEach((key, value) {
-      ObjectType dataType = toDocumentData(value as Map<String, dynamic>);
+      final ObjectType dataType = toDocumentData(value as Map<String, dynamic>);
       Document<ObjectType> tempDoc = Document<ObjectType>(true, key, dataType, type);
       if (where(tempDoc)) {
         docs.add(tempDoc);

@@ -17,7 +17,7 @@ void runTests(userId) {
     List<Document<MemberData>> members = await API().members().getAll();
     Document<MemberData> member = members[0];
 
-    String randomDesc = getRandString(20);
+    final String randomDesc = getRandString(20);
 
     API().members().update(member.id, MemberData()..desc = randomDesc);
     await Future.delayed(const Duration(seconds: 1));
