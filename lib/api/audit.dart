@@ -2,18 +2,18 @@ import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/api/privacyBuckets.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
+import 'package:simply_sdk/modules/network.dart';
 import 'package:simply_sdk/types/document.dart';
 import 'package:simply_sdk/types/frame.dart';
 
 import '../simply_sdk.dart';
 
-class AuditEntry implements DocumentData
-{
+class AuditEntry implements DocumentData {
   String? property;
   String? oldValue;
   String? newValue;
   bool? customName;
-  
+
   @override
   void constructFromJson(Map<String, dynamic> json) {
     property = readDataFromJson('p', json);
@@ -21,7 +21,7 @@ class AuditEntry implements DocumentData
     newValue = readDataFromJson('n', json);
     customName = readDataFromJson('cn', json);
   }
-  
+
   @override
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> payload = {};
@@ -31,6 +31,7 @@ class AuditEntry implements DocumentData
 
 class AuditData implements DocumentData {
   int? timestamp;
+  int? exp;
   List<AuditEntry>? changes;
   String? name;
   String? coll;
@@ -51,6 +52,7 @@ class AuditData implements DocumentData {
     coll = readDataFromJson('coll', json);
     id = readDataFromJson('id', json);
     timestamp = readDataFromJson('t', json);
+    exp = readDataFromJson('exp', json);
 
     changes = [];
 
@@ -75,12 +77,16 @@ class Audit extends Collection<AuditData> {
 
   @override
   void delete(String documentId, Document originalDocument) {
-    throw UnimplementedError();
+    deleteSimpleDocument(type, 'v1/audit', documentId, originalDocument.dataObject);
+  }
+
+  void deleteExpired(Function onDone) {
+    API().network().request(NetworkRequest(HttpRequestMethod.Delete, 'v1/audits', DateTime.now().millisecondsSinceEpoch, onDone: onDone));
   }
 
   @override
   Future<Document<AuditData>> get(String id) async {
-     throw UnimplementedError();
+    throw UnimplementedError();
   }
 
   @override

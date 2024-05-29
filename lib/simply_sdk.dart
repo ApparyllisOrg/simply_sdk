@@ -3,6 +3,7 @@ library simply_sdk;
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:simply_sdk/api/analytics.dart';
+import 'package:simply_sdk/api/audit.dart';
 import 'package:simply_sdk/api/automatedTimers.dart';
 import 'package:simply_sdk/api/board_messages.dart';
 import 'package:simply_sdk/api/chats.dart';
@@ -102,6 +103,7 @@ class API {
   final BoardMessages _boardMessages = BoardMessages();
   final PrivacyBuckets _privacyBuckets = PrivacyBuckets();
   final CustomFields _customFields = CustomFields();
+  final Audit _audit = Audit();
 
   // Declare global getters
   Auth auth() => _auth;
@@ -141,6 +143,7 @@ class API {
   BoardMessages boardMessages() => _boardMessages;
   PrivacyBuckets privacyBuckets() => _privacyBuckets;
   CustomFields customFields() => _customFields;
+  Audit audit() => _audit;
 
   void reportError(e, StackTrace? trace) {
     try {

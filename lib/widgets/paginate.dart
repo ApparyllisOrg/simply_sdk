@@ -10,22 +10,7 @@ import 'package:simply_sdk/simply_sdk.dart';
 import '../types/document.dart';
 
 class Paginate<T extends DocumentData> extends StatefulWidget {
-  const Paginate(
-      {Key? key,
-      required this.itemBuilder,
-      this.stepSize = 10,
-      this.extraParams,
-      this.onBatchReceived,
-      required this.getLoader,
-      required this.emptyView,
-      required this.sortBy,
-      required this.sortOrder,
-      required this.url,
-      required this.documentConstructor,
-      required this.prefixWidgets,
-      required this.loadMoreText,
-      this.spacingHeight = 10})
-      : super(key: key);
+  const Paginate({Key? key, required this.itemBuilder, this.stepSize = 10, this.extraParams, this.onBatchReceived, required this.getLoader, required this.emptyView, required this.sortBy, required this.sortOrder, required this.url, required this.documentConstructor, required this.prefixWidgets, required this.loadMoreText, this.spacingHeight = 10}) : super(key: key);
   final Widget Function(BuildContext, int, Document<T>) itemBuilder;
   final Function getLoader;
   final Function emptyView;
@@ -75,11 +60,14 @@ class PaginateState<T extends DocumentData> extends State<Paginate<T>> {
       await API().auth().waitForAbilityToSendRequests();
     }
 
-    return SimplyHttpClient()
-        .get(Uri.parse(API()
-            .connection()
-            .getRequestUrl('$url', 'sortBy=$sortBy&sortOrder=$sortOrder&limit=$stepSize&start=$currentOffset&sortUp=true&${additionalQuery ?? ""}')))
-        .catchError((e) => generateFailedResponse(e));
+    return SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('$url', 'sortBy=$sortBy&sortOrder=$sortOrder&limit=$stepSize&start=$currentOffset&sortUp=true&${additionalQuery ?? ""}'))).catchError((e) => generateFailedResponse(e));
+  }
+
+  void clear() {
+    docs.clear();
+    reachedEnd = false;
+    currentOffset = 0;
+    setState(() {});
   }
 
   void insertDocument(Document<T> doc) {
