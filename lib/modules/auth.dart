@@ -96,6 +96,8 @@ class Auth {
       bInitialized = true;
 
       if (result == null) {
+        fetchSubData();
+
         return true;
       }
 
@@ -121,7 +123,11 @@ class Auth {
     return false;
   }
 
-  void _notifyAuthChange() {
+  void _onAuthChanged() {
+    if (credentials.isAuthed()) {
+      fetchSubData();
+    }
+
     onAuthChange.forEach((element) {
       if (element != null) {
         element(credentials);
@@ -157,7 +163,7 @@ class Auth {
     credentials = AuthCredentials(_lastToken, _lastRefreshToken, _lastUid);
 
     if (credentials.isAuthed() != previousAuthed) {
-      _notifyAuthChange();
+      _onAuthChanged();
     }
 
     final SharedPreferences pref = await SharedPreferences.getInstance();
@@ -183,7 +189,7 @@ class Auth {
     credentials = AuthCredentials(null, null, null);
 
     if (credentials.isAuthed() != previousAuthed && bNotify) {
-      _notifyAuthChange();
+      _onAuthChanged();
     }
   }
 
@@ -459,6 +465,8 @@ class Auth {
   Future<void> fetchSubData() async {
     _subData = await API().subscriptions().getActiveSubscription();
   }
+
+  Document<SubscriptionData>? subData() => _subData;
 
   String? getToken() => credentials._lastToken;
   String? getUid() => credentials._lastUid;

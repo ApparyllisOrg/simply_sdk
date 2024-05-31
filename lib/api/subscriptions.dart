@@ -131,7 +131,7 @@ class Subscriptions {
   Future<Document<SubscriptionData>?> getActiveSubscription() async {
     return getSimpleDocument(
         '',
-        'v1/subscription/get',
+        'v1/subscription',
         'subscriptions',
         (data) => SubscriptionData()..constructFromJson(data.content),
         () => SubscriptionData());
