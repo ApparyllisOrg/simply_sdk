@@ -10,36 +10,21 @@ import 'package:simply_sdk/types/document.dart';
 import 'package:simply_sdk/types/request.dart';
 
 class SubscriptionData implements DocumentData {
-  String? currency;
   int? periodEnd;
-  int? periodStart;
-  int? subscriptionStart;
-  int? price;
-  bool? cancelled;
-  String? priceId;
+  String? product;
 
   @override
-  constructFromJson(Map<String, dynamic> json) {
-    currency = readDataFromJson('currency', json);
+  void constructFromJson(Map<String, dynamic> json) {
     periodEnd = readDataFromJson('periodEnd', json);
-    periodStart = readDataFromJson('periodStart', json);
-    subscriptionStart = readDataFromJson('subscriptionStart', json);
-    price = readDataFromJson('price', json);
-    cancelled = readDataFromJson('cancelled', json);
-    priceId = readDataFromJson('priceId', json);
+    product = readDataFromJson('product', json);
   }
 
   @override
   Map<String, dynamic> toJson() {
-    Map<String, dynamic> payload = {};
+    final Map<String, dynamic> payload = {};
 
-    insertData('currency', currency, payload);
     insertData('periodEnd', periodEnd, payload);
-    insertData('periodStart', periodStart, payload);
-    insertData('subscriptionStart', subscriptionStart, payload);
-    insertData('price', price, payload);
-    insertData('cancelled', cancelled, payload);
-    insertData('priceId', priceId, payload);
+    insertData('product', product, payload);
 
     return payload;
   }
@@ -51,7 +36,7 @@ class CheckoutResult {
   String url = "";
   String id = "";
 
-  constructFromJson(Map<String, dynamic> json) {
+  void constructFromJson(Map<String, dynamic> json) {
     url = readDataFromJson('url', json);
     id = readDataFromJson('id', json);
   }
@@ -144,17 +129,12 @@ class Subscriptions {
   }
 
   Future<Document<SubscriptionData>?> getActiveSubscription() async {
-    final Response response = await SimplyHttpClient()
-        .get(Uri.parse(
-            API().connection().getRequestUrl('v1/subscription/get', '')))
-        .catchError(((e) => generateFailedResponse(e)));
-    if (response.statusCode == 200) {
-      final DocumentResponse docResponse = DocumentResponse.fromString(response.body);
-      final SubscriptionData data = SubscriptionData()
-        ..constructFromJson(docResponse.content);
-      return Document(true, docResponse.id, data, "subscriptions");
-    }
-    return null;
+    return getSimpleDocument(
+        '',
+        'v1/subscription/get',
+        'subscriptions',
+        (data) => SubscriptionData()..constructFromJson(data.content),
+        () => SubscriptionData());
   }
 
   Future<RequestResponse> getManagementPage() async {
