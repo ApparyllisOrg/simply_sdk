@@ -73,7 +73,9 @@ class FriendSettingsData implements DocumentData, PrivacyBucketInterface {
 class Friends {
   Future<RequestResponse> sendFriendRequest(String userId, FriendSettingsData settings) async {
     try {
-      final response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl('v1/friends/request/add/$userId', '')), body: jsonEncode({'settings': settings.toJson()})).catchError(((e) => generateFailedResponse(e)));
+      final response = await SimplyHttpClient()
+          .post(Uri.parse(API().connection().getRequestUrl('v2/friends/request/add/$userId', '')), body: jsonEncode({'settings': settings.toJson()}))
+          .catchError(((e) => generateFailedResponse(e)));
 
       return createResponseObject(response);
     } catch (e) {
@@ -85,7 +87,10 @@ class Friends {
   Future<RequestResponse> respondToFriendRequest(FriendSettingsData settings, bool accepted, String userId) {
     return Future(() async {
       try {
-        final response = await SimplyHttpClient().post(Uri.parse(API().connection().getRequestUrl('v1/friends/request/respond/$userId', "accepted=${accepted ? 'true' : 'false'}")), body: jsonEncode({'settings': settings.toJson()})).catchError(((e) => generateFailedResponse(e)));
+        final response = await SimplyHttpClient()
+            .post(Uri.parse(API().connection().getRequestUrl('v1/friends/request/respond/$userId', "accepted=${accepted ? 'true' : 'false'}")),
+                body: jsonEncode({'settings': settings.toJson()}))
+            .catchError(((e) => generateFailedResponse(e)));
 
         return createResponseObject(response);
       } catch (e) {
@@ -98,7 +103,9 @@ class Friends {
   Future<RequestResponse> cancelFriendRequest(String userId) {
     return Future(() async {
       try {
-        final response = await SimplyHttpClient().delete(Uri.parse(API().connection().getRequestUrl('v1/friends/request/$userId', ''))).catchError(((e) => generateFailedResponse(e)));
+        final response = await SimplyHttpClient()
+            .delete(Uri.parse(API().connection().getRequestUrl('v1/friends/request/$userId', '')))
+            .catchError(((e) => generateFailedResponse(e)));
 
         return createResponseObject(response);
       } catch (e) {
@@ -111,7 +118,9 @@ class Friends {
   Future<RequestResponse> removeFriend(String userId) {
     return Future(() async {
       try {
-        final response = await SimplyHttpClient().delete(Uri.parse(API().connection().getRequestUrl('v1/friends/remove/$userId', ''))).catchError(((e) => generateFailedResponse(e)));
+        final response = await SimplyHttpClient()
+            .delete(Uri.parse(API().connection().getRequestUrl('v1/friends/remove/$userId', '')))
+            .catchError(((e) => generateFailedResponse(e)));
 
         return createResponseObject(response);
       } catch (e) {
@@ -129,7 +138,9 @@ class Friends {
           await API().auth().waitForAbilityToSendRequests();
         }
 
-        final response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/friends/getFrontValues', ''))).catchError(((e) => generateFailedResponse(e)));
+        final response = await SimplyHttpClient()
+            .get(Uri.parse(API().connection().getRequestUrl('v1/friends/getFrontValues', '')))
+            .catchError(((e) => generateFailedResponse(e)));
 
         final jsonResponse = jsonDecode(response.body);
         if (response.statusCode == 200) {
@@ -161,7 +172,9 @@ class Friends {
           await API().auth().waitForAbilityToSendRequests();
         }
 
-        final response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/friend/$uid/getFrontValue', ''))).catchError(((e) => generateFailedResponse(e)));
+        final response = await SimplyHttpClient()
+            .get(Uri.parse(API().connection().getRequestUrl('v1/friend/$uid/getFrontValue', '')))
+            .catchError(((e) => generateFailedResponse(e)));
         final jsonResponse = jsonDecode(response.body);
         if (response.statusCode == 200) {
           return FriendsFrontData(uid, jsonResponse['frontString'] ?? '', jsonResponse['customFrontString'] ?? '');
@@ -183,10 +196,14 @@ class Friends {
           await API().auth().waitForAbilityToSendRequests();
         }
 
-        final response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/friend/$userId/getFront', ''))).catchError(((e) => generateFailedResponse(e)));
+        final response = await SimplyHttpClient()
+            .get(Uri.parse(API().connection().getRequestUrl('v1/friend/$userId/getFront', '')))
+            .catchError(((e) => generateFailedResponse(e)));
         if (response.statusCode == 200) {
           Map<String, dynamic> body = jsonDecode(response.body) as Map<String, dynamic>;
-          return FriendFronters(frontStatuses: (body['statuses'] as Map<String, dynamic>).cast<String, String>(), fronters: (body['fronters'] as List<dynamic>).cast<String>());
+          return FriendFronters(
+              frontStatuses: (body['statuses'] as Map<String, dynamic>).cast<String, String>(),
+              fronters: (body['fronters'] as List<dynamic>).cast<String>());
         } else {
           return null;
         }
@@ -203,7 +220,9 @@ class Friends {
       await API().auth().waitForAbilityToSendRequests();
     }
 
-    final response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/friend/${API().auth().getUid()}/$uid/', ''))).catchError(((e) => generateFailedResponse(e)));
+    final response = await SimplyHttpClient()
+        .get(Uri.parse(API().connection().getRequestUrl('v1/friend/${API().auth().getUid()}/$uid/', '')))
+        .catchError(((e) => generateFailedResponse(e)));
     final jsonResponse = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
@@ -219,7 +238,9 @@ class Friends {
       await API().auth().waitForAbilityToSendRequests();
     }
 
-    final response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/friend/$uid/${API().auth().getUid()}', ''))).catchError(((e) => generateFailedResponse(e)));
+    final response = await SimplyHttpClient()
+        .get(Uri.parse(API().connection().getRequestUrl('v1/friend/$uid/${API().auth().getUid()}', '')))
+        .catchError(((e) => generateFailedResponse(e)));
     final jsonResponse = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
@@ -231,7 +252,9 @@ class Friends {
 
   // Update the settings for a friend
   Future<void> updateFriend(String uid, FriendSettingsData settings) async {
-    API().network().request(NetworkRequest(HttpRequestMethod.Patch, 'v1/friend/$uid', DateTime.now().millisecondsSinceEpoch, payload: settings.toJson()));
+    API()
+        .network()
+        .request(NetworkRequest(HttpRequestMethod.Patch, 'v1/friend/$uid', DateTime.now().millisecondsSinceEpoch, payload: settings.toJson()));
   }
 
   // Return a list of all friends and their user data
@@ -239,7 +262,10 @@ class Friends {
     return Future(() async {
       final collection = await getCollection<UserData>('v1/friends/settings', '', 'FriendsSettings', skipCache: false);
 
-      final List<Document<FriendSettingsData>> friends = collection.data.map<Document<FriendSettingsData>>((e) => Document(e['exists'], e['id'], FriendSettingsData()..constructFromJson(e['content']), 'friendsSettings')).toList();
+      final List<Document<FriendSettingsData>> friends = collection.data
+          .map<Document<FriendSettingsData>>(
+              (e) => Document(e['exists'], e['id'], FriendSettingsData()..constructFromJson(e['content']), 'friendsSettings'))
+          .toList();
 
       if (!collection.useOffline) {
         API().cache().clearTypeCache('FriendsSettings');
@@ -255,7 +281,9 @@ class Friends {
     return Future(() async {
       final collection = await getCollection<UserData>('v1/friends', '', 'Friends', skipCache: false);
 
-      List<Document<UserData>> friends = collection.data.map<Document<UserData>>((e) => Document(e['exists'], e['id'], UserData()..constructFromJson(e['content']), 'friends')).toList();
+      List<Document<UserData>> friends = collection.data
+          .map<Document<UserData>>((e) => Document(e['exists'], e['id'], UserData()..constructFromJson(e['content']), 'friends'))
+          .toList();
 
       if (!collection.useOffline) {
         API().cache().clearTypeCache('Friends');
