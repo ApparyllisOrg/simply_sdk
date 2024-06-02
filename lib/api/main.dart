@@ -89,6 +89,9 @@ DocumentData jsonDataToDocumentData(String type, Map<String, dynamic> data) {
     case 'boardMessages':
     case 'BoardMessages':
       return BoardMessageData()..constructFromJson(data);
+    case 'customFields':
+    case 'CustomFields':
+      return CustomFieldData()..constructFromJson(data);
   }
 
   return EmptyDocumentData();
@@ -170,9 +173,9 @@ Document<T> addSimpleDocument<T>(String type, String path, DocumentData data, {S
 
   final Map<String, dynamic> jsonPayload = data.toJson();
 
-  propertiesToDelete.forEach((element) => 
-    jsonPayload.remove(element)
-  ,);
+  propertiesToDelete.forEach(
+    (element) => jsonPayload.remove(element),
+  );
 
   API().network().request(new NetworkRequest(HttpRequestMethod.Post, '$path/$usedId', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
 
@@ -186,9 +189,9 @@ Document<T> addSimpleDocument<T>(String type, String path, DocumentData data, {S
 void updateSimpleDocument(String type, String path, String documentId, DocumentData data, {List<String> propertiesToDelete = const []}) {
   final Map<String, dynamic> jsonPayload = data.toJson();
 
-  propertiesToDelete.forEach((element) => 
-    jsonPayload.remove(element)
-  ,);
+  propertiesToDelete.forEach(
+    (element) => jsonPayload.remove(element),
+  );
 
   API()
       .network()
@@ -225,7 +228,7 @@ Future<CollectionResponse<ObjectType>> getCollection<ObjectType>(String path, St
           .timeout(const Duration(seconds: 10))
           .catchError(((e) => generateFailedResponse(e)));
   if (response.statusCode == 200) {
-    CollectionResponse<ObjectType> res = CollectionResponse<ObjectType>();
+    final CollectionResponse<ObjectType> res = CollectionResponse<ObjectType>();
     res.useOffline = false;
     res.data = convertServerResponseToList(response);
     return res;

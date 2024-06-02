@@ -68,6 +68,9 @@ class Auth {
       final String refreshKey = pref.getString('refresh_key')!;
       Map<String, dynamic> jwtPayload = Jwt.parseJwt(accessKey);
       credentials = AuthCredentials(accessKey, refreshKey, jwtPayload['sub']);
+
+      fetchSubData();
+
       return credentials.isAuthed();
     }
 

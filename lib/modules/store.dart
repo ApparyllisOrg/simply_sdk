@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:http/http.dart';
 import 'package:simply_sdk/api/chats.dart';
 import 'package:simply_sdk/api/customFields.dart';
 import 'package:simply_sdk/api/customFronts.dart';
@@ -6,6 +9,7 @@ import 'package:simply_sdk/api/groups.dart';
 import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/api/members.dart';
 import 'package:simply_sdk/modules/collection.dart';
+import 'package:simply_sdk/modules/http.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
 
@@ -27,24 +31,53 @@ class Store {
   List<void Function(Document<FrontHistoryData>, bool)> _frontChanges = [];
   final List<Function?> _onInitialized = [];
 
+  Future<void> fetchStartupValues(bool bForceOffline) async {
+    if (!API().auth().canSendHttpRequests()) {
+      await API().auth().waitForAbilityToSendRequests();
+    }
+
+    bool fetchCache = bForceOffline;
+
+    if (!bForceOffline) {
+      final Response response = await SimplyHttpClient()
+          .get(Uri.parse(API().connection().getRequestUrl('v1/startup', '')))
+          .timeout(const Duration(seconds: 10))
+          .catchError((e) => generateFailedResponse(e));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> result = jsonDecode(response.body) as Map<String, dynamic>;
+
+        _members = _initializeDataType(result, 'members', (data) => MemberData()..constructFromJson(data));
+        _customFronts = _initializeDataType(result, 'customFronts', (data) => CustomFrontData()..constructFromJson(data));
+        _groups = _initializeDataType(result, 'groups', (data) => GroupData()..constructFromJson(data));
+        _fronters = _initializeDataType(result, 'fronters', (data) => FrontHistoryData()..constructFromJson(data));
+        _channels = _initializeDataType(result, 'channels', (data) => ChannelData()..constructFromJson(data));
+      } else {
+        fetchCache = true;
+      }
+    }
+
+    if (fetchCache) {
+      _members = API().cache().getDocuments('Members', (data) => MemberData()..constructFromJson(data));
+      _customFronts = API().cache().getDocuments('FrontStatuses', (data) => CustomFrontData()..constructFromJson(data));
+      _groups = API().cache().getDocuments('Groups', (data) => GroupData()..constructFromJson(data));
+      _fronters = API().cache().getDocumentsWhere<FrontHistoryData>(
+          'FrontHistory', (doc) => doc.dataObject.live ?? false, (data) => FrontHistoryData()..constructFromJson(data));
+      _channels = API().cache().getDocuments('Members', (data) => ChannelData()..constructFromJson(data));
+    }
+  }
+
+  List<Document<T>> _initializeDataType<T>(final Map<String, dynamic> data, String type, T Function(Map<String, dynamic> json) constructFromJson) {
+    final List<dynamic> contentList = data[type] as List<dynamic>;
+    final List<Map<String, dynamic>> contentListValues = contentList.map((e) => e as Map<String, dynamic>).toList();
+
+    return contentListValues.map<Document<T>>((e) => Document(e['exists'], e['id'], constructFromJson(e['content']), type)).toList();
+  }
+
   Future<void> initializeStore({bool bForceOffline = false}) async {
     clearStore();
 
-    final List<Future<List<dynamic>>> getDataFutures = [
-      API().members().getAll(bForceOffline: bForceOffline),
-      API().customFronts().getAll(bForceOffline: bForceOffline),
-      API().groups().getAll(bForceOffline: bForceOffline),
-      API().frontHistory().getCurrentFronters(bForceOffline: bForceOffline),
-      API().channels().getAll(),
-    ];
-
-    final List<List<dynamic>> responses = await Future.wait(getDataFutures);
-
-    _members = responses[0] as List<Document<MemberData>>;
-    _customFronts = responses[1] as List<Document<CustomFrontData>>;
-    _groups = responses[2] as List<Document<GroupData>>;
-    _fronters = responses[3] as List<Document<FrontHistoryData>>;
-    _channels = responses[4] as List<Document<ChannelData>>;
+    await fetchStartupValues(bForceOffline);
 
     // Emit initial changes
     if (_members.isNotEmpty) API().members().propogateChanges(_members.first, EChangeType.Update, false);
@@ -68,21 +101,7 @@ class Store {
 
   // Edit this so that in the future we can use "since", in a way that takes in account deletions since
   Future<void> updateStore(int since) async {
-    final Iterable<Future<dynamic>> getCollectionList = [
-      API().members().getAll(),
-      API().customFronts().getAll(),
-      API().groups().getAll(),
-      API().frontHistory().getCurrentFronters(),
-      API().channels().getAll()
-    ];
-
-    List<dynamic> results = await Future.wait<dynamic>(getCollectionList);
-
-    _members = results[0];
-    _customFronts = results[1];
-    _groups = results[2];
-    _fronters = results[3];
-    _channels = results[4];
+    await fetchStartupValues(false);
 
     _fronters.forEach((element) {
       _notifyFrontChange(element, false);

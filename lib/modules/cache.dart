@@ -21,10 +21,10 @@ class Cache {
   }
 
   void updateToCache(String type, String id, Map<String, dynamic> _data) {
-    Map<String, dynamic>? coll = _cache[type];
+    final Map<String, dynamic>? coll = _cache[type];
     if (coll != null) {
       if (coll.containsKey(id)) {
-        Map<String, dynamic> dat = _cache[type][id];
+        final Map<String, dynamic> dat = _cache[type][id];
         dat.addAll(_data);
         _cache[type][id] = dat;
       } else {
@@ -39,9 +39,9 @@ class Cache {
   }
 
   Map<String, dynamic>? getItemFromType(String type, String id) {
-    Map<String, dynamic>? data = _cache[type] as Map<String, dynamic>?;
+    final Map<String, dynamic>? data = _cache[type] as Map<String, dynamic>?;
     if (data != null) {
-      Map<String, dynamic>? docData = data[id] as Map<String, dynamic>?;
+      final Map<String, dynamic>? docData = data[id] as Map<String, dynamic>?;
       if (docData != null) {
         docData.remove('id');
         return docData;
@@ -177,7 +177,7 @@ class Cache {
   }
 
   String insertDocument(String type, String id, Map<String, dynamic> data) {
-    Map<String, dynamic> dataCopy = Map.from(data);
+    final Map<String, dynamic> dataCopy = Map.from(data);
     dataCopy['type'] = type;
     dataCopy['id'] = id;
     updateToCache(type, id, dataCopy);
@@ -185,7 +185,7 @@ class Cache {
   }
 
   Future<void> updateDocument(String type, String id, Map<String, dynamic> data) async {
-    Map<String, dynamic> dataCopy = Map.from(data);
+    final Map<String, dynamic> dataCopy = Map.from(data);
     updateToCache(type, id, dataCopy);
   }
 
@@ -195,13 +195,13 @@ class Cache {
 
   Map<String, dynamic>? getDocument(String type, String id) {
     try {
-      Map<String, dynamic> docData = getItemFromType(type, id) ?? {};
+      final Map<String, dynamic> docData = getItemFromType(type, id) ?? {};
 
       if (docData.isEmpty) {
         return null;
       }
 
-      Map<String, dynamic> sendData = Map<String, dynamic>();
+      final Map<String, dynamic> sendData = Map<String, dynamic>();
       docData.forEach((key, value) {
         if (key != 'id' && key != 'type') {
           sendData[key] = value;
@@ -216,17 +216,33 @@ class Cache {
     return null;
   }
 
-  List<Document<ObjectType>> getDocumentsWhere<ObjectType>(String type, bool Function(Document<ObjectType>) where, ObjectType Function(Map<String, dynamic>) toDocumentData) {
-    List<Document<ObjectType>> docs = [];
+  List<Document<ObjectType>> getDocumentsWhere<ObjectType>(
+      String type, bool Function(Document<ObjectType>) where, ObjectType Function(Map<String, dynamic>) toDocumentData) {
+    final List<Document<ObjectType>> docs = [];
 
-    Map<String, dynamic> collection = getTypeCache(type);
+    final Map<String, dynamic> collection = getTypeCache(type);
 
     collection.forEach((key, value) {
       final ObjectType dataType = toDocumentData(value as Map<String, dynamic>);
-      Document<ObjectType> tempDoc = Document<ObjectType>(true, key, dataType, type);
+      final Document<ObjectType> tempDoc = Document<ObjectType>(true, key, dataType, type);
       if (where(tempDoc)) {
         docs.add(tempDoc);
       }
+    });
+
+    return docs;
+  }
+
+  List<Document<ObjectType>> getDocuments<ObjectType>(String type, ObjectType Function(Map<String, dynamic>) toDocumentData) {
+    final List<Document<ObjectType>> docs = [];
+
+    final Map<String, dynamic> collection = getTypeCache(type);
+
+    collection.forEach((key, value) {
+      final ObjectType dataType = toDocumentData(value as Map<String, dynamic>);
+      final Document<ObjectType> tempDoc = Document<ObjectType>(true, key, dataType, type);
+
+      docs.add(tempDoc);
     });
 
     return docs;

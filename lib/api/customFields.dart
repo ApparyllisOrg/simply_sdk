@@ -22,7 +22,7 @@ class CustomFieldData implements DocumentData, PrivacyBucketInterface {
     insertData('type', type, payload);
     insertData('supportMarkdown', supportMarkdown, payload);
     insertDataArray('buckets', buckets, payload);
-  
+
     return payload;
   }
 
@@ -34,12 +34,12 @@ class CustomFieldData implements DocumentData, PrivacyBucketInterface {
     supportMarkdown = readDataFromJson('supportMarkdown', json);
     buckets = readDataArrayFromJson('buckets', json);
   }
-  
+
   @override
   List<String> getBuckets() {
     return buckets ?? [];
   }
-  
+
   @override
   void setBuckets(List<String> inBuckets) {
     buckets = inBuckets;
@@ -58,7 +58,6 @@ class CustomFields extends Collection<CustomFieldData> {
   @override
   void delete(String documentId, Document originalDocument) {
     deleteSimpleDocument(type, 'v1/customField', documentId, originalDocument.dataObject);
-    API().store().getFronters().removeWhere((element) => element.dataObject.member == documentId);
   }
 
   @override
