@@ -45,9 +45,13 @@ class SimplyHttpClient extends http.BaseClient {
       request.headers.addAll({'Authorization': API().auth().getToken() ?? ''});
     }
 
-    return _httpClient.send(request).then((http.StreamedResponse resoponse) {
-      _lastResponse = DateTime.now().millisecondsSinceEpoch;
-      return resoponse;
+    return _httpClient.send(request).then((http.StreamedResponse response) {
+      if (response is HttpResponse) {
+        if (response.statusCode < 500 || response.statusCode > 500) {
+          _lastResponse = DateTime.now().millisecondsSinceEpoch;
+        }
+      }
+      return response;
     });
   }
 }
