@@ -88,7 +88,7 @@ class MemberData implements DocumentData, PrivacyBucketInterface {
   List<String> getBuckets() {
     return buckets ?? [];
   }
-  
+
   @override
   void setBuckets(List<String> inBuckets) {
     buckets = inBuckets;
@@ -138,9 +138,8 @@ class Members extends Collection<MemberData> {
     updateSimpleDocument(type, 'v1/member', documentId, values, propertiesToDelete: ['buckets']);
   }
 
-
   void updateFields(String documentId, Map<String, String> values) {
-    final Map<String, dynamic> data = { 'info' : values };
+    final Map<String, dynamic> data = {'info': values};
 
     API()
         .network()

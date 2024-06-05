@@ -34,7 +34,7 @@ class SimplyHttpClient extends http.BaseClient {
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) {
     if (nonLoggableRequests.indexWhere((element) => request.url.path.endsWith(element)) < 0) {
-      API().debug().logFine('HTTP => ${request.method} => ${request.url}');
+      API().debug().logFine('[SEND] HTTP => ${request.method} => ${request.url} => ${request.hashCode}');
     }
 
     request.headers.addAll({'accept-encoding': 'gzip'});

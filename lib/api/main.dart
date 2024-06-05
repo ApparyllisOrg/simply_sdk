@@ -92,6 +92,9 @@ DocumentData jsonDataToDocumentData(String type, Map<String, dynamic> data) {
     case 'customFields':
     case 'CustomFields':
       return CustomFieldData()..constructFromJson(data);
+    case 'privacyBuckets':
+    case 'PrivacyBuckets':
+      return PrivacyBucketData()..constructFromJson(data);
   }
 
   return EmptyDocumentData();

@@ -17,6 +17,33 @@ class Notification {
   String message;
 }
 
+class DefaultPrivacyData implements DocumentData {
+  List<String>? members;
+  List<String>? groups;
+  List<String>? customFronts;
+  List<String>? customFields;
+
+  @override
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> payload = {};
+
+    insertDataArray('members', members, payload);
+    insertDataArray('groups', groups, payload);
+    insertDataArray('customFronts', customFronts, payload);
+    insertDataArray('customFields', customFields, payload);
+
+    return payload;
+  }
+
+  @override
+  void constructFromJson(Map<String, dynamic> json) {
+    members = readDataArrayFromJson('members', json);
+    groups = readDataArrayFromJson('groups', json);
+    customFronts = readDataArrayFromJson('customFronts', json);
+    customFields = readDataArrayFromJson('customFields', json);
+  }
+}
+
 class PrivateData implements DocumentData {
   List<String>? notificationToken;
   int? latestVersion;
@@ -29,27 +56,30 @@ class PrivateData implements DocumentData {
   int? generationsLeft;
   List<Notification>? notifications;
   List<String>? categories;
+  DefaultPrivacyData? defaultPrivacy;
 
   @override
   Map<String, dynamic> toJson() {
-    Map<String, dynamic> payload = {};
+    final Map<String, dynamic> payload = {};
 
     insertData('notificationToken', notificationToken, payload);
     insertData('latestVersion', latestVersion, payload);
     insertData('location', location, payload);
     insertData('termsOfServiceAccepted', termsOfServiceAccepted, payload);
-    
+
     insertData('auditContentChanges', auditContentChanges, payload);
     insertData('hideAudits', hideAudits, payload);
     insertData('auditRetention', auditRetention, payload);
-    
+
     insertData('whatsNew', whatsNew, payload);
     insertDataArray('categories', categories, payload);
+
+    insertData('defaultPrivacy', defaultPrivacy?.toJson(), payload);
     return payload;
   }
 
   @override
-  constructFromJson(Map<String, dynamic> json) {
+  void constructFromJson(Map<String, dynamic> json) {
     notificationToken = readDataArrayFromJson<String>('notificationToken', json);
     latestVersion = readDataFromJson('latestVersion', json);
     location = readDataFromJson('location', json);
@@ -66,6 +96,8 @@ class PrivateData implements DocumentData {
     notifications = (notifs ?? []).map((e) => Notification(timestamp: e['timestamp'], title: e['title'], message: e['message'])).toList();
 
     categories = readDataArrayFromJson<String>('categories', json);
+
+    defaultPrivacy = DefaultPrivacyData()..constructFromJson(json['defaultPrivacy'] ?? {});
   }
 }
 
