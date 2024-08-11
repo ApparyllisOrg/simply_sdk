@@ -141,10 +141,8 @@ class Auth {
   Future<void> checkJwtValidity(Timer? timer) async {
     if (credentials.isAuthed() && !bIsRefreshingToken) {
       try {
-        Map<String, dynamic> jwtPayload =
-            Jwt.parseJwt(credentials._lastToken ?? '');
-        final DateTime expiry =
-            DateTime.fromMillisecondsSinceEpoch(jwtPayload['exp'] * 1000);
+        Map<String, dynamic> jwtPayload = Jwt.parseJwt(credentials._lastToken ?? '');
+        final DateTime expiry = DateTime.fromMillisecondsSinceEpoch(jwtPayload['exp'] * 1000);
         if (expiry.difference(DateTime.now()).inMinutes < 5) {
           API().debug().logFine('JWT about to expire, refreshing token');
           await refreshToken(null);
@@ -183,9 +181,7 @@ class Auth {
   void _invalidateAuth({bool bNotify = true}) {
     final String stack = StackTrace.current.toString();
 
-    API()
-        .debug()
-        .logInfo('Invalidating auth with following callstack: ${stack}');
+    API().debug().logInfo('Invalidating auth with following callstack: ${stack}');
 
     final bool previousAuthed = credentials.isAuthed();
 
@@ -196,11 +192,10 @@ class Auth {
     }
   }
 
-  Future<String?> registerEmailPassword(String email, String password) async {
+  Future<String?> registerEmailPassword(String email, String password, int version) async {
     final Response response = await SimplyHttpClient()
-        .post(
-            Uri.parse(API().connection().getRequestUrl('v1/auth/register', '')),
-            body: jsonEncode({'email': email, 'password': password}))
+        .post(Uri.parse(API().connection().getRequestUrl('v1/auth/register', '')),
+            body: jsonEncode({'email': email, 'password': password, 'version': version}))
         .catchError(((e) => generateFailedResponse(e)))
         .timeout(const Duration(seconds: 10));
     ;
@@ -220,8 +215,7 @@ class Auth {
 
   Future<String?> loginEmailPassword(String email, String password) async {
     final Response response = await SimplyHttpClient()
-        .post(Uri.parse(API().connection().getRequestUrl('v1/auth/login', '')),
-            body: jsonEncode({'email': email, 'password': password}))
+        .post(Uri.parse(API().connection().getRequestUrl('v1/auth/login', '')), body: jsonEncode({'email': email, 'password': password}))
         .catchError(((e) => generateFailedResponse(e)))
         .timeout(const Duration(seconds: 10));
     ;
@@ -249,13 +243,10 @@ class Auth {
     _invalidateAuth();
   }
 
-  Future<String?> loginGoogle(String credential) async {
+  Future<String?> loginGoogle(String credential, int version) async {
     final Response response = await SimplyHttpClient()
-        .post(
-            Uri.parse(API()
-                .connection()
-                .getRequestUrl('v1/auth/login/oauth/google', '')),
-            body: jsonEncode({'credential': credential}))
+        .post(Uri.parse(API().connection().getRequestUrl('v1/auth/login/oauth/google', '')),
+            body: jsonEncode({'credential': credential, 'version': version}))
         .catchError(((e) => generateFailedResponse(e)))
         .timeout(const Duration(seconds: 10));
 
@@ -269,13 +260,10 @@ class Auth {
     return response.body;
   }
 
-  Future<String?> loginApple(String credential) async {
+  Future<String?> loginApple(String credential, int version) async {
     final Response response = await SimplyHttpClient()
-        .post(
-            Uri.parse(API()
-                .connection()
-                .getRequestUrl('v1/auth/login/oauth/apple', '')),
-            body: jsonEncode({'credential': credential}))
+        .post(Uri.parse(API().connection().getRequestUrl('v1/auth/login/oauth/apple', '')),
+            body: jsonEncode({'credential': credential, 'version': version}))
         .catchError(((e) => generateFailedResponse(e)))
         .timeout(const Duration(seconds: 10));
 
@@ -289,17 +277,10 @@ class Auth {
     return response.body;
   }
 
-  Future<String?> changeEmail(
-      String currentEmail, String newEmail, String password) async {
+  Future<String?> changeEmail(String currentEmail, String newEmail, String password) async {
     final Response response = await SimplyHttpClient()
-        .post(
-            Uri.parse(
-                API().connection().getRequestUrl('v1/auth/email/change', '')),
-            body: jsonEncode({
-              'oldEmail': currentEmail,
-              'password': password,
-              'newEmail': newEmail
-            }))
+        .post(Uri.parse(API().connection().getRequestUrl('v1/auth/email/change', '')),
+            body: jsonEncode({'oldEmail': currentEmail, 'password': password, 'newEmail': newEmail}))
         .catchError(((e) => generateFailedResponse(e)))
         .timeout(const Duration(seconds: 10));
 
@@ -317,15 +298,8 @@ class Auth {
 
   Future<String?> changePassword(String oldPassword, String newPassword) async {
     final Response response = await SimplyHttpClient()
-        .post(
-            Uri.parse(API()
-                .connection()
-                .getRequestUrl('v1/auth/password/change', '')),
-            body: jsonEncode({
-              'oldPassword': oldPassword,
-              'newPassword': newPassword,
-              'uid': credentials._lastUid
-            }))
+        .post(Uri.parse(API().connection().getRequestUrl('v1/auth/password/change', '')),
+            body: jsonEncode({'oldPassword': oldPassword, 'newPassword': newPassword, 'uid': credentials._lastUid}))
         .catchError(((e) => generateFailedResponse(e)))
         .timeout(const Duration(seconds: 10));
 
@@ -339,9 +313,7 @@ class Auth {
 
   Future<String?> requestResetPassword(String email) async {
     final Response response = await SimplyHttpClient()
-        .get(Uri.parse(API()
-            .connection()
-            .getRequestUrl('v1/auth/password/reset', 'email=$email')))
+        .get(Uri.parse(API().connection().getRequestUrl('v1/auth/password/reset', 'email=$email')))
         .catchError(((e) => generateFailedResponse(e)))
         .timeout(const Duration(seconds: 10));
 
@@ -354,9 +326,7 @@ class Auth {
 
   Future<String?> requestVerify() async {
     final Response response = await SimplyHttpClient()
-        .post(Uri.parse(API()
-            .connection()
-            .getRequestUrl('v1/auth/verification/request', '')))
+        .post(Uri.parse(API().connection().getRequestUrl('v1/auth/verification/request', '')))
         .catchError(((e) => generateFailedResponse(e)))
         .timeout(const Duration(seconds: 10));
     if (response.statusCode == 200) {
@@ -368,10 +338,7 @@ class Auth {
 
   Future<RequestResponse> forgotEmail(String username) async {
     final Response response = await SimplyHttpClient()
-        .post(
-            Uri.parse(
-                API().connection().getRequestUrl('v1/auth/forgotemail', '')),
-            body: jsonEncode({'username': username}))
+        .post(Uri.parse(API().connection().getRequestUrl('v1/auth/forgotemail', '')), body: jsonEncode({'username': username}))
         .catchError(((e) => generateFailedResponse(e)))
         .timeout(const Duration(seconds: 10));
 
@@ -382,8 +349,7 @@ class Auth {
     return RequestResponse(false, getResponseText(response));
   }
 
-  Future<String?> refreshToken(String? forceRefreshToken,
-      {bool bNotify = true}) async {
+  Future<String?> refreshToken(String? forceRefreshToken, {bool bNotify = true}) async {
     if (!credentials.isAuthed()) {
       return 'Not authenticated';
     }
@@ -394,10 +360,7 @@ class Auth {
 
     final Response response = await SimplyHttpClient()
         .get(Uri.parse(API().connection().getRequestUrl('v1/auth/refresh', '')),
-            headers: {
-              'Authorization':
-                  forceRefreshToken ?? (credentials._lastRefreshToken ?? '')
-            })
+            headers: {'Authorization': forceRefreshToken ?? (credentials._lastRefreshToken ?? '')})
         .timeout(const Duration(seconds: 10))
         .catchError(((e) => generateFailedResponse(e)));
 
@@ -416,15 +379,9 @@ class Auth {
     return response.body;
   }
 
-  Future<String?> remoteCheckIsRefreshTokenValid(
-      String? forceRefreshToken) async {
-    final Response response = await SimplyHttpClient().get(
-        Uri.parse(
-            API().connection().getRequestUrl('v1/auth/refresh/valid', '')),
-        headers: {
-          'Authorization':
-              forceRefreshToken ?? (credentials._lastRefreshToken ?? '')
-        }).catchError(((e) => generateFailedResponse(e)));
+  Future<String?> remoteCheckIsRefreshTokenValid(String? forceRefreshToken) async {
+    final Response response = await SimplyHttpClient().get(Uri.parse(API().connection().getRequestUrl('v1/auth/refresh/valid', '')),
+        headers: {'Authorization': forceRefreshToken ?? (credentials._lastRefreshToken ?? '')}).catchError(((e) => generateFailedResponse(e)));
 
     if (response.statusCode == 200) {
       return null;
@@ -460,8 +417,7 @@ class Auth {
   void resumeTokenRefreshing() {
     suspendTokenRefreshing(false);
     checkJwtValidity(null);
-    _tokenRefreshTimer =
-        Timer.periodic(const Duration(seconds: 5), checkJwtValidity);
+    _tokenRefreshTimer = Timer.periodic(const Duration(seconds: 5), checkJwtValidity);
     API().debug().logFine('Resuming token refresh');
   }
 
@@ -483,8 +439,7 @@ class Auth {
 
   bool isVerified() {
     if (isAuthenticated()) {
-      Map<String, dynamic> jwtPayload =
-          Jwt.parseJwt(credentials._lastToken ?? '');
+      Map<String, dynamic> jwtPayload = Jwt.parseJwt(credentials._lastToken ?? '');
       return jwtPayload['verified'] != false;
     }
     return true;
@@ -492,8 +447,7 @@ class Auth {
 
   bool isSubscriber() {
     if (isAuthenticated()) {
-      Map<String, dynamic> jwtPayload =
-          Jwt.parseJwt(credentials._lastToken ?? '');
+      Map<String, dynamic> jwtPayload = Jwt.parseJwt(credentials._lastToken ?? '');
       return jwtPayload['subscriber'] == true;
     }
     return false;
@@ -501,8 +455,7 @@ class Auth {
 
   bool isPatron() {
     if (isAuthenticated()) {
-      Map<String, dynamic> jwtPayload =
-          Jwt.parseJwt(credentials._lastToken ?? '');
+      Map<String, dynamic> jwtPayload = Jwt.parseJwt(credentials._lastToken ?? '');
       return jwtPayload['patron'] == true;
     }
     return false;
@@ -510,8 +463,7 @@ class Auth {
 
   bool isOauth2() {
     if (isAuthenticated()) {
-      Map<String, dynamic> jwtPayload =
-          Jwt.parseJwt(credentials._lastToken ?? '');
+      Map<String, dynamic> jwtPayload = Jwt.parseJwt(credentials._lastToken ?? '');
       return jwtPayload['oAuth2'] == true;
     }
     return true;
@@ -519,8 +471,7 @@ class Auth {
 
   String getEmail() {
     if (isAuthenticated()) {
-      Map<String, dynamic> jwtPayload =
-          Jwt.parseJwt(credentials._lastToken ?? '');
+      Map<String, dynamic> jwtPayload = Jwt.parseJwt(credentials._lastToken ?? '');
       return jwtPayload['email']!;
     }
     return '';
