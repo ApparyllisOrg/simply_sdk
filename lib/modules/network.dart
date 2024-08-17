@@ -16,7 +16,7 @@ import '../simply_sdk.dart';
 enum HttpRequestMethod { Post, Patch, Delete, Get }
 
 List<int> acceptedResponseCodes = [0, 200, 409, 500, 501, 403, 404, 406, 405, 204, 400];
-List<int> ignoreResponseCodes = [502, 503, 504];
+List<int> ignoreResponseCodes = [502, 503, 504, 404, 403, 205, 409, 405, 406, 204];
 
 class NetworkFailRequestException implements Exception {
   NetworkFailRequestException({required this.path, required this.responseBody, required this.responseCode});

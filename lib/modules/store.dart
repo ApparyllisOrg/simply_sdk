@@ -52,6 +52,12 @@ class Store {
         _groups = _initializeDataType(result, 'groups', (data) => GroupData()..constructFromJson(data));
         _fronters = _initializeDataType(result, 'fronters', (data) => FrontHistoryData()..constructFromJson(data));
         _channels = _initializeDataType(result, 'channels', (data) => ChannelData()..constructFromJson(data));
+
+        API().cache().cacheListOfDocuments(_members);
+        API().cache().cacheListOfDocuments(_customFronts);
+        API().cache().cacheListOfDocuments(_groups);
+        API().cache().cacheListOfDocuments(_fronters);
+        API().cache().cacheListOfDocuments(_channels);
       } else {
         fetchCache = true;
       }

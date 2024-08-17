@@ -14,32 +14,32 @@ class Cache {
   Map<String, dynamic> _cache = Map<String, dynamic>();
 
   void removeFromCache(String type, String id) {
-    if (_cache[type] != null) {
-      _cache[type].remove(id);
+    if (_cache[type.toLowerCase()] != null) {
+      _cache[type.toLowerCase()].remove(id);
     }
     markDirty();
   }
 
   void updateToCache(String type, String id, Map<String, dynamic> _data) {
-    final Map<String, dynamic>? coll = _cache[type];
+    final Map<String, dynamic>? coll = _cache[type.toLowerCase()];
     if (coll != null) {
       if (coll.containsKey(id)) {
-        final Map<String, dynamic> dat = _cache[type][id];
+        final Map<String, dynamic> dat = _cache[type.toLowerCase()][id];
         dat.addAll(_data);
-        _cache[type][id] = dat;
+        _cache[type.toLowerCase()][id] = dat;
       } else {
-        _cache[type][id] = _data;
+        _cache[type.toLowerCase()][id] = _data;
       }
     } else {
-      _cache[type] = Map<String, dynamic>();
-      _cache[type][id] = _data;
+      _cache[type.toLowerCase()] = Map<String, dynamic>();
+      _cache[type.toLowerCase()][id] = _data;
     }
 
     markDirty();
   }
 
   Map<String, dynamic>? getItemFromType(String type, String id) {
-    final Map<String, dynamic>? data = _cache[type] as Map<String, dynamic>?;
+    final Map<String, dynamic>? data = _cache[type.toLowerCase()] as Map<String, dynamic>?;
     if (data != null) {
       final Map<String, dynamic>? docData = data[id] as Map<String, dynamic>?;
       if (docData != null) {
@@ -51,25 +51,25 @@ class Cache {
   }
 
   Map<String, dynamic> getTypeCache(String type) {
-    if (_cache.containsKey(type)) {
-      Map<String, dynamic> data = _cache[type];
+    if (_cache.containsKey(type.toLowerCase())) {
+      Map<String, dynamic> data = _cache[type.toLowerCase()];
       return data.cast<String, dynamic>();
     }
     return Map<String, dynamic>();
   }
 
   void clearTypeCache(String type) {
-    _cache.remove(type);
+    _cache.remove(type.toLowerCase());
     markDirty();
   }
 
   bool hasDataInCacheForType(String type) {
-    return _cache.containsKey(type) && (_cache[type] as Map<String, dynamic>).isNotEmpty;
+    return _cache.containsKey(type.toLowerCase()) && (_cache[type.toLowerCase()] as Map<String, dynamic>).isNotEmpty;
   }
 
   void cacheListOfDocuments(List<Document<dynamic>> docs) {
     docs.forEach((element) {
-      updateToCache(element.type, element.id, (element.dataObject as DocumentData).toJson());
+      updateToCache(element.type.toLowerCase(), element.id, (element.dataObject as DocumentData).toJson());
     });
     markDirty();
   }
@@ -178,19 +178,19 @@ class Cache {
 
   String insertDocument(String type, String id, Map<String, dynamic> data) {
     final Map<String, dynamic> dataCopy = Map.from(data);
-    dataCopy['type'] = type;
+    dataCopy['type'] = type.toLowerCase();
     dataCopy['id'] = id;
-    updateToCache(type, id, dataCopy);
+    updateToCache(type.toLowerCase(), id, dataCopy);
     return id;
   }
 
   Future<void> updateDocument(String type, String id, Map<String, dynamic> data) async {
     final Map<String, dynamic> dataCopy = Map.from(data);
-    updateToCache(type, id, dataCopy);
+    updateToCache(type.toLowerCase(), id, dataCopy);
   }
 
   Future<void> removeDocument(String type, String id) async {
-    removeFromCache(type, id);
+    removeFromCache(type.toLowerCase(), id);
   }
 
   Map<String, dynamic>? getDocument(String type, String id) {
