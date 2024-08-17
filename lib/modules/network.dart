@@ -18,19 +18,6 @@ enum HttpRequestMethod { Post, Patch, Delete, Get }
 List<int> acceptedResponseCodes = [0, 200, 409, 500, 501, 403, 404, 406, 405, 204, 400];
 List<int> ignoreResponseCodes = [502, 503, 504, 404, 403, 205, 409, 405, 406, 204];
 
-class NetworkFailRequestException implements Exception {
-  NetworkFailRequestException({required this.path, required this.responseBody, required this.responseCode});
-
-  final String path;
-  final String responseBody;
-  final int responseCode;
-
-  @override
-  String toString() {
-    return 'NetworkRequestFailed: [$responseCode] on [$path] with body: [$responseBody]';
-  }
-}
-
 class NetworkRequest {
   NetworkRequest(this.method, this.path, this.timestamp, {this.query, this.payload, this.onDone});
   final HttpRequestMethod method;
@@ -249,10 +236,6 @@ class Network {
             if (acceptedResponseCodes.contains(responseCode)) {
               if (responseCode != 200) {
                 API().debug().logError(error);
-                if (API().onErrorReported != null) {
-                  API().onErrorReported!(
-                      NetworkFailRequestException(path: request.path, responseCode: responseCode, responseBody: response?.body ?? ''), null);
-                }
               }
               _pendingRequests.remove(request);
 
