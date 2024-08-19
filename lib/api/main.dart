@@ -172,7 +172,7 @@ void propogateChanges(String type, String id, dynamic data, EChangeType changeTy
 }
 
 Document<T> addSimpleDocument<T>(String type, String path, DocumentData data, {String? overrideId, List<String> propertiesToDelete = const []}) {
-  final String usedId = overrideId ?? ObjectId(clientMode: true).toHexString();
+  final String usedId = overrideId ?? ObjectId().oid;
 
   final Map<String, dynamic> jsonPayload = data.toJson();
 

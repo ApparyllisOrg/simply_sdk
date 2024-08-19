@@ -102,7 +102,7 @@ class ChatModel extends AbstractModel {
   }
 
   Document<ChatMessageData> writeMessage(ChatMessageData data) {
-    final String generatedId = ObjectId(clientMode: true).toHexString();
+    final String generatedId = ObjectId().oid;
 
     Map<String, dynamic> jsonPayload = data.toJson();
     API().network().request(

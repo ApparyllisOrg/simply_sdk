@@ -151,5 +151,5 @@ class API {
     } catch (e) {}
   }
 
-  void Function(Object, StackTrace?)? onErrorReported;
+  void Function(Object, StackTrace?, )? onErrorReported;
 }
