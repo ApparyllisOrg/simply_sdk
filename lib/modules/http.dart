@@ -25,6 +25,17 @@ class SimplyHttpClient extends http.BaseClient {
 
   final http.Client _httpClient = new http.Client();
 
+  String appVersion = 'Undetermined';
+  String appVersionNumber = 'Undetermined';
+
+  void setAppVersion(String version) {
+    appVersion = version;
+  }
+
+  void setAppVersionNumber(String versionNumber) {
+    appVersionNumber = versionNumber;
+  }
+
   double getSecondsSinceLastResponse() {
     return (DateTime.now().millisecondsSinceEpoch * .001) - (_lastResponse * .001);
   }
@@ -40,6 +51,8 @@ class SimplyHttpClient extends http.BaseClient {
     request.headers.addAll({'accept-encoding': 'gzip'});
     request.headers.addAll({'connection': 'keep-alive'});
     request.headers.addAll({'content-type': 'application/json; charset=UTF-8'});
+    request.headers.addAll({'SP-App-Version': appVersion});
+    request.headers.addAll({'SP-App-Version-Number': appVersionNumber});
 
     if (!request.headers.containsKey('Authorization')) {
       request.headers.addAll({'Authorization': API().auth().getToken() ?? ''});
