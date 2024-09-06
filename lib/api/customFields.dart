@@ -2,6 +2,7 @@ import 'package:simply_sdk/api/main.dart';
 import 'package:simply_sdk/api/privacyBuckets.dart';
 import 'package:simply_sdk/helpers.dart';
 import 'package:simply_sdk/modules/collection.dart';
+import 'package:simply_sdk/modules/network.dart';
 import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
 import 'package:simply_sdk/types/frame.dart';
@@ -86,5 +87,18 @@ class CustomFields extends Collection<CustomFieldData> {
   @override
   void update(String documentId, DocumentData values) {
     updateSimpleDocument(type, 'v1/customField', documentId, values, propertiesToDelete: ['buckets']);
+  }
+
+  void setOrder(Map<String, String> newOrders) {
+    final Map<String, dynamic> jsonPayload = {};
+    final List<Map<String, String>> orders = [];
+
+    newOrders.forEach((key, value) => orders.add({'id': key, 'order': value}));
+
+    jsonPayload['fields'] = orders;
+
+    API()
+        .network()
+        .request(NetworkRequest(HttpRequestMethod.Patch, 'v1/customField/order', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
   }
 }

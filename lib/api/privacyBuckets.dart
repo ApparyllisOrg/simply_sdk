@@ -6,8 +6,7 @@ import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
 import 'package:simply_sdk/types/frame.dart';
 
-abstract class PrivacyBucketInterface 
-{
+abstract class PrivacyBucketInterface {
   List<String> getBuckets();
   void setBuckets(List<String> inBuckets);
 }
@@ -58,14 +57,13 @@ class PrivacyBuckets extends Collection<PrivacyBucketData> {
 
   @override
   Future<Document<PrivacyBucketData>> get(String id) async {
-    return getSimpleDocument(
-        id, 'v1/privacyBucket/${API().auth().getUid()}', type, (data) => PrivacyBucketData()..constructFromJson(data.content), () => PrivacyBucketData());
+    return getSimpleDocument(id, 'v1/privacyBucket/${API().auth().getUid()}', type, (data) => PrivacyBucketData()..constructFromJson(data.content),
+        () => PrivacyBucketData());
   }
 
   @override
   Future<List<Document<PrivacyBucketData>>> getAll({int? since, bool bForceOffline = false}) async {
-    final collection =
-        await getCollection<PrivacyBucketData>('v1/privacyBuckets', '', type, since: since, bForceOffline: bForceOffline);
+    final collection = await getCollection<PrivacyBucketData>('v1/privacyBuckets', '', type, since: since, bForceOffline: bForceOffline);
 
     final List<Document<PrivacyBucketData>> buckets = collection.data
         .map<Document<PrivacyBucketData>>((e) => Document(e['exists'], e['id'], PrivacyBucketData()..constructFromJson(e['content']), type))
@@ -82,43 +80,40 @@ class PrivacyBuckets extends Collection<PrivacyBucketData> {
     updateSimpleDocument(type, 'v1/privacyBucket', documentId, values);
   }
 
-  void updateOrders(Map<String, String> newOrders)
-  {
+  void updateOrders(Map<String, String> newOrders) {
     final Map<String, dynamic> jsonPayload = {};
     final List<Map<String, String>> orders = [];
 
-    newOrders.forEach((key, value) => orders.add({
-      'id': key,
-      'rank': value
-    }));
+    newOrders.forEach((key, value) => orders.add({'id': key, 'rank': value}));
 
     jsonPayload['buckets'] = orders;
 
-    API().network().request(NetworkRequest(HttpRequestMethod.Patch, 'v1/privacyBucket/order', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
+    API()
+        .network()
+        .request(NetworkRequest(HttpRequestMethod.Patch, 'v1/privacyBucket/order', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
   }
 
-  void assignBucketsToFriend(String friendUuid, List<String> buckets)
-  {
+  void assignBucketsToFriend(String friendUuid, List<String> buckets) {
     final Map<String, dynamic> jsonPayload = {};
 
     jsonPayload['friendUid'] = friendUuid;
     jsonPayload['buckets'] = buckets;
 
-    API().network().request(NetworkRequest(HttpRequestMethod.Patch, 'v1/privacyBucket/assignBuckets', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
+    API().network().request(
+        NetworkRequest(HttpRequestMethod.Patch, 'v1/privacyBucket/assignBuckets', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
   }
 
-  void assignFriendsToBucket(String bucket, List<String> friends)
-  {
+  void assignFriendsToBucket(String bucket, List<String> friends) {
     final Map<String, dynamic> jsonPayload = {};
 
     jsonPayload['bucket'] = bucket;
     jsonPayload['friends'] = friends;
 
-    API().network().request(NetworkRequest(HttpRequestMethod.Patch, 'v1/privacyBucket/assignFriends', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
+    API().network().request(
+        NetworkRequest(HttpRequestMethod.Patch, 'v1/privacyBucket/assignFriends', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
   }
 
-  void setBuckets(String id, String type, List<String> buckets, { bool recursive = false })
-  {
+  void setBuckets(String id, String type, List<String> buckets, {bool recursive = false}) {
     final Map<String, dynamic> jsonPayload = {};
 
     jsonPayload['id'] = id;
@@ -126,6 +121,8 @@ class PrivacyBuckets extends Collection<PrivacyBucketData> {
     jsonPayload['buckets'] = buckets;
     jsonPayload['recursive'] = recursive;
 
-    API().network().request(NetworkRequest(HttpRequestMethod.Patch, 'v1/privacyBucket/setbuckets', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
+    API()
+        .network()
+        .request(NetworkRequest(HttpRequestMethod.Patch, 'v1/privacyBucket/setbuckets', DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
   }
 }

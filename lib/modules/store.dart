@@ -65,7 +65,7 @@ class Store {
 
     if (fetchCache) {
       _members = API().cache().getDocuments('Members', (data) => MemberData()..constructFromJson(data));
-      _customFronts = API().cache().getDocuments('FrontStatuses', (data) => CustomFrontData()..constructFromJson(data));
+      _customFronts = API().cache().getDocuments('CustomFronts', (data) => CustomFrontData()..constructFromJson(data));
       _groups = API().cache().getDocuments('Groups', (data) => GroupData()..constructFromJson(data));
       _fronters = API().cache().getDocumentsWhere<FrontHistoryData>(
           'FrontHistory', (doc) => doc.dataObject.live ?? false, (data) => FrontHistoryData()..constructFromJson(data));
