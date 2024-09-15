@@ -50,11 +50,13 @@ class FriendSettingsData implements DocumentData, PrivacyBucketInterface {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> payload = {};
 
+    insertData('frienduid', frienduid, payload);
     insertData('seeFront', seeFront, payload);
     insertData('seeMembers', seeMembers, payload);
     insertData('getFrontNotif', getFrontNotif, payload);
     insertData('getTheirFrontNotif', getTheirFrontNotif, payload);
     insertData('message', message, payload);
+    insertDataArray('buckets', buckets, payload);
 
     return payload;
   }
@@ -252,15 +254,13 @@ class Friends {
 
   // Update the settings for a friend
   Future<void> updateFriend(String uid, FriendSettingsData settings) async {
-    API()
-        .network()
-        .request(NetworkRequest(HttpRequestMethod.Patch, 'v1/friend/$uid', DateTime.now().millisecondsSinceEpoch, payload: settings.toJson()));
+    simplePatch('friendsSettings', 'v1/friend/$uid', settings, propertiesToDelete: ['frienduid', 'buckets']);
   }
 
   // Return a list of all friends and their user data
   Future<List<Document<FriendSettingsData>>> getFriendsSettings() {
     return Future(() async {
-      final collection = await getCollection<UserData>('v1/friends/settings', '', 'FriendsSettings', skipCache: false);
+      final collection = await getCollection<FriendSettingsData>('v1/friends/settings', '', 'FriendsSettings', skipCache: false);
 
       final List<Document<FriendSettingsData>> friends = collection.data
           .map<Document<FriendSettingsData>>(

@@ -8,6 +8,7 @@ import 'package:simply_sdk/api/chats.dart';
 import 'package:simply_sdk/api/comments.dart';
 import 'package:simply_sdk/api/customFields.dart';
 import 'package:simply_sdk/api/customFronts.dart';
+import 'package:simply_sdk/api/friends.dart';
 import 'package:simply_sdk/api/frontHistory.dart';
 import 'package:simply_sdk/api/groups.dart';
 import 'package:simply_sdk/api/members.dart';
@@ -53,8 +54,8 @@ DocumentData jsonDataToDocumentData(String type, Map<String, dynamic> data) {
     case 'Members':
     case 'members':
       return MemberData()..constructFromJson(data);
-    case 'CustomFronts':
     case 'frontStatuses':
+    case 'FrontStatuses':
       return CustomFrontData()..constructFromJson(data);
     case 'Groups':
     case 'groups':
@@ -95,6 +96,9 @@ DocumentData jsonDataToDocumentData(String type, Map<String, dynamic> data) {
     case 'privacyBuckets':
     case 'PrivacyBuckets':
       return PrivacyBucketData()..constructFromJson(data);
+    case 'friendSettings':
+    case 'FriendsSettings':
+      return FriendSettingsData()..constructFromJson(data);
   }
 
   return EmptyDocumentData();
@@ -106,9 +110,9 @@ void propogateChanges(String type, String id, dynamic data, EChangeType changeTy
     case 'members':
       API().members().propogateChanges(Document(true, id, data, 'Members'), changeType, bLocalEvent);
       break;
-    case 'CustomFronts':
     case 'frontStatuses':
-      API().customFronts().propogateChanges(Document(true, id, data, 'CustomFronts'), changeType, bLocalEvent);
+    case 'FrontStatuses':
+      API().customFronts().propogateChanges(Document(true, id, data, 'FrontStatuses'), changeType, bLocalEvent);
       break;
     case 'Groups':
     case 'groups':
@@ -203,6 +207,18 @@ void updateSimpleDocument(String type, String path, String documentId, DocumentD
   API().cache().updateDocument(type, documentId, jsonPayload);
 
   propogateChanges(type, documentId, data, EChangeType.Update, true);
+}
+
+void simplePatch(String type, String path, DocumentData data, {List<String> propertiesToDelete = const []}) {
+  final Map<String, dynamic> jsonPayload = data.toJson();
+
+  propertiesToDelete.forEach(
+    (element) => jsonPayload.remove(element),
+  );
+
+  API()
+      .network()
+      .request(new NetworkRequest(HttpRequestMethod.Patch, path, DateTime.now().millisecondsSinceEpoch, payload: jsonPayload));
 }
 
 void deleteSimpleDocument(String type, String path, String id, DocumentData data) {

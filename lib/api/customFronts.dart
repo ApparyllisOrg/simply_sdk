@@ -56,7 +56,7 @@ class CustomFrontData implements DocumentData, PrivacyBucketInterface {
 
 class CustomFronts extends Collection<CustomFrontData> {
   @override
-  String get type => 'CustomFronts';
+  String get type => 'FrontStatuses';
 
   @override
   Document<CustomFrontData> add(DocumentData values) {
