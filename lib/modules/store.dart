@@ -48,11 +48,20 @@ class Store {
         final Map<String, dynamic> result = jsonDecode(response.body) as Map<String, dynamic>;
 
         _members = _initializeDataType(result, 'members', (data) => MemberData()..constructFromJson(data));
-        _customFronts = _initializeDataType(result, 'customFronts', (data) => CustomFrontData()..constructFromJson(data), overrideLocalType: 'FrontStatuses');
+        _customFronts =
+            _initializeDataType(result, 'customFronts', (data) => CustomFrontData()..constructFromJson(data), overrideLocalType: 'FrontStatuses');
         _groups = _initializeDataType(result, 'groups', (data) => GroupData()..constructFromJson(data));
         _fronters = _initializeDataType(result, 'fronters', (data) => FrontHistoryData()..constructFromJson(data));
         _channels = _initializeDataType(result, 'channels', (data) => ChannelData()..constructFromJson(data));
 
+        // Clear cache types
+        API().cache().clearTypeCache('members');
+        API().cache().clearTypeCache('customFronts');
+        API().cache().clearTypeCache('groups');
+        API().cache().clearTypeCache('fronters');
+        API().cache().clearTypeCache('channels');
+
+        // Cache cache types
         API().cache().cacheListOfDocuments(_members);
         API().cache().cacheListOfDocuments(_customFronts);
         API().cache().cacheListOfDocuments(_groups);
@@ -73,11 +82,14 @@ class Store {
     }
   }
 
-  List<Document<T>> _initializeDataType<T>(final Map<String, dynamic> data, String type, T Function(Map<String, dynamic> json) constructFromJson, { String? overrideLocalType } ) {
+  List<Document<T>> _initializeDataType<T>(final Map<String, dynamic> data, String type, T Function(Map<String, dynamic> json) constructFromJson,
+      {String? overrideLocalType}) {
     final List<dynamic> contentList = data[type] as List<dynamic>;
     final List<Map<String, dynamic>> contentListValues = contentList.map((e) => e as Map<String, dynamic>).toList();
 
-    return contentListValues.map<Document<T>>((e) => Document(e['exists'], e['id'], constructFromJson(e['content']), overrideLocalType ?? type)).toList();
+    return contentListValues
+        .map<Document<T>>((e) => Document(e['exists'], e['id'], constructFromJson(e['content']), overrideLocalType ?? type))
+        .toList();
   }
 
   Future<void> initializeStore({bool bForceOffline = false}) async {
