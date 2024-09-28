@@ -38,6 +38,17 @@ class Cache {
     markDirty();
   }
 
+  void removeFromCacheWhere(String type, bool Function(String, dynamic) test) {
+    final Map<String, dynamic>? collection = _cache[type.toLowerCase()];
+    if (collection != null) {
+      collection.removeWhere((String id, dynamic entry) {
+        return test(id, entry);
+      });
+
+      markDirty();
+    }
+  }
+
   Map<String, dynamic>? getItemFromType(String type, String id) {
     final Map<String, dynamic>? data = _cache[type.toLowerCase()] as Map<String, dynamic>?;
     if (data != null) {
@@ -67,9 +78,9 @@ class Cache {
     return _cache.containsKey(type.toLowerCase()) && (_cache[type.toLowerCase()] as Map<String, dynamic>).isNotEmpty;
   }
 
-  void cacheListOfDocuments(List<Document<dynamic>> docs) {
+  void cacheListOfDocuments(List<Document<dynamic>> docs, {String? overrideType}) {
     docs.forEach((element) {
-      updateToCache(element.type.toLowerCase(), element.id, (element.dataObject as DocumentData).toJson());
+      updateToCache(overrideType ?? element.type.toLowerCase(), element.id, (element.dataObject as DocumentData).toJson());
     });
     markDirty();
   }

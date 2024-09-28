@@ -56,16 +56,22 @@ class Store {
 
         // Clear cache types
         API().cache().clearTypeCache('members');
-        API().cache().clearTypeCache('customFronts');
+        API().cache().clearTypeCache('FrontStatuses');
         API().cache().clearTypeCache('groups');
-        API().cache().clearTypeCache('fronters');
+
+        // Remove live front history entries as we're getting an up-to-date view
+        API().cache().removeFromCacheWhere('frontHistory', (String id, dynamic entry) {
+          final FrontHistoryData frontHistoryEntry = FrontHistoryData()..constructFromJson(entry);
+          return frontHistoryEntry.live == true;
+        });
+
         API().cache().clearTypeCache('channels');
 
         // Cache cache types
         API().cache().cacheListOfDocuments(_members);
         API().cache().cacheListOfDocuments(_customFronts);
         API().cache().cacheListOfDocuments(_groups);
-        API().cache().cacheListOfDocuments(_fronters);
+        API().cache().cacheListOfDocuments(_fronters, overrideType: 'frontHistory');
         API().cache().cacheListOfDocuments(_channels);
       } else {
         fetchCache = true;
@@ -74,7 +80,7 @@ class Store {
 
     if (fetchCache) {
       _members = API().cache().getDocuments('Members', (data) => MemberData()..constructFromJson(data));
-      _customFronts = API().cache().getDocuments('CustomFronts', (data) => CustomFrontData()..constructFromJson(data));
+      _customFronts = API().cache().getDocuments('FrontStatuses', (data) => CustomFrontData()..constructFromJson(data));
       _groups = API().cache().getDocuments('Groups', (data) => GroupData()..constructFromJson(data));
       _fronters = API().cache().getDocumentsWhere<FrontHistoryData>(
           'FrontHistory', (doc) => doc.dataObject.live ?? false, (data) => FrontHistoryData()..constructFromJson(data));
