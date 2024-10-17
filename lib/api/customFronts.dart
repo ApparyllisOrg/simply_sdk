@@ -12,6 +12,7 @@ class CustomFrontData implements DocumentData, PrivacyBucketInterface {
   String? avatarUuid;
   String? desc;
   String? color;
+  bool? preventsFrontNotifs;
   bool? supportDescMarkdown;
   FrameData? frame;
   List<String>? buckets;
@@ -25,6 +26,7 @@ class CustomFrontData implements DocumentData, PrivacyBucketInterface {
     insertData('color', color, payload);
     insertData('avatarUuid', avatarUuid, payload);
     insertData('avatarUrl', avatarUrl, payload);
+    insertData('preventsFrontNotifs', preventsFrontNotifs, payload);
     insertData('supportDescMarkdown', supportDescMarkdown, payload);
     insertData('frame', frame?.toJson(), payload);
     insertData('buckets', buckets, payload);
@@ -38,16 +40,17 @@ class CustomFrontData implements DocumentData, PrivacyBucketInterface {
     avatarUuid = readDataFromJson('avatarUuid', json);
     avatarUrl = readDataFromJson('avatarUrl', json);
     color = readDataFromJson('color', json);
+    preventsFrontNotifs = readDataFromJson('preventsFrontNotifs', json);
     supportDescMarkdown = readDataFromJson('supportDescMarkdown', json);
     frame = FrameData()..constructFromOptionalJson(readDataFromJson('frame', json));
     buckets = readDataArrayFromJson('buckets', json);
   }
-  
+
   @override
   List<String> getBuckets() {
     return buckets ?? [];
   }
-  
+
   @override
   void setBuckets(List<String> inBuckets) {
     buckets = inBuckets;

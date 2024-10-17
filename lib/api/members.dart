@@ -18,7 +18,7 @@ class MemberData implements DocumentData, PrivacyBucketInterface {
   String? desc;
   String? pkId;
   String? color;
-  bool? preventFrontNotifs;
+  bool? preventsFrontNotifs;
   bool? receiveMessageBoardNotifs;
   Map<String, String>? info;
   bool? supportDescMarkdown;
@@ -38,7 +38,7 @@ class MemberData implements DocumentData, PrivacyBucketInterface {
     insertData('color', color, payload);
     insertData('avatarUuid', avatarUuid, payload);
     insertData('avatarUrl', avatarUrl, payload);
-    insertData('preventsFrontNotifs', preventFrontNotifs, payload);
+    insertData('preventsFrontNotifs', preventsFrontNotifs, payload);
     insertData('receiveMessageBoardNotifs', receiveMessageBoardNotifs, payload);
     insertData('info', info, payload);
     insertData('supportDescMarkdown', supportDescMarkdown, payload);
@@ -61,7 +61,7 @@ class MemberData implements DocumentData, PrivacyBucketInterface {
     color = readDataFromJson('color', json);
     avatarUuid = readDataFromJson('avatarUuid', json);
     avatarUrl = readDataFromJson('avatarUrl', json);
-    preventFrontNotifs = readDataFromJson('preventsFrontNotifs', json);
+    preventsFrontNotifs = readDataFromJson('preventsFrontNotifs', json);
     receiveMessageBoardNotifs = readDataFromJson('receiveMessageBoardNotifs', json);
     supportDescMarkdown = readDataFromJson('supportDescMarkdown', json);
     archived = readDataFromJson('archived', json);
