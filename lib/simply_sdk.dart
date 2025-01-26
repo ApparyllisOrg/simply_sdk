@@ -22,6 +22,7 @@ import 'package:simply_sdk/api/polls.dart';
 import 'package:simply_sdk/api/privacyBuckets.dart';
 import 'package:simply_sdk/api/privates.dart';
 import 'package:simply_sdk/api/repeatedTimers.dart';
+import 'package:simply_sdk/api/search_query.dart';
 import 'package:simply_sdk/api/storage.dart';
 import 'package:simply_sdk/api/subscriptions.dart';
 import 'package:simply_sdk/api/users.dart';
@@ -103,6 +104,7 @@ class API {
   final BoardMessages _boardMessages = BoardMessages();
   final PrivacyBuckets _privacyBuckets = PrivacyBuckets();
   final CustomFields _customFields = CustomFields();
+  final SearchQueries _searchQueries = SearchQueries();
   final Audit _audit = Audit();
 
   // Declare global getters
@@ -143,6 +145,7 @@ class API {
   BoardMessages boardMessages() => _boardMessages;
   PrivacyBuckets privacyBuckets() => _privacyBuckets;
   CustomFields customFields() => _customFields;
+  SearchQueries searchQueries() => _searchQueries;
   Audit audit() => _audit;
 
   void reportError(e, StackTrace? trace) {
@@ -151,5 +154,8 @@ class API {
     } catch (e) {}
   }
 
-  void Function(Object, StackTrace?, )? onErrorReported;
+  void Function(
+    Object,
+    StackTrace?,
+  )? onErrorReported;
 }
