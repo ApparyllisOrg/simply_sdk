@@ -138,7 +138,7 @@ class Socket {
         pingTimer!.cancel();
       }
 
-      pingTimer = Timer.periodic(const Duration(seconds: 10), ping);
+      pingTimer = Timer.periodic(const Duration(seconds: 30), ping);
     } catch (e) {
       disconnected();
     }
