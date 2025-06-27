@@ -7,7 +7,7 @@ import 'package:simply_sdk/simply_sdk.dart';
 import 'package:simply_sdk/types/document.dart';
 import 'package:simply_sdk/types/frame.dart';
 
-class SearchQueryDataEntry implements DocumentData {
+class FilterDataEntry implements DocumentData {
   String? type;
   Map<String, String>? payload;
 
@@ -25,24 +25,29 @@ class SearchQueryDataEntry implements DocumentData {
   void constructFromJson(Map<String, dynamic> json) {
     type = readDataFromJson('type', json);
     payload = readDataFromJson('payload', json);
-    type = readDataFromJson('type', json);
   }
 }
 
-class SearchQueryData implements DocumentData {
+class FilterData implements DocumentData {
   String? name;
+  String? desc;
+  String? color;
+  String? icon;
   String? op;
   String? order;
-  List<SearchQueryDataEntry>? entries;
+  List<FilterDataEntry>? entries;
 
   @override
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> payload = {};
 
     insertData('name', name, payload);
+    insertData('desc', desc, payload);
+    insertData('color', color, payload);
+    insertData('icon', icon, payload);
     insertData('op', op, payload);
     insertData('order', order, payload);
-    insertDataArray('order', entries, payload);
+    insertDataArray('entries', entries, payload);
 
     return payload;
   }
@@ -50,51 +55,54 @@ class SearchQueryData implements DocumentData {
   @override
   void constructFromJson(Map<String, dynamic> json) {
     name = readDataFromJson('name', json);
+    desc = readDataFromJson('desc', json);
+    color = readDataFromJson('color', json);
+    icon = readDataFromJson('icon', json);
     op = readDataFromJson('op', json);
     order = readDataFromJson('order', json);
     entries = readDataArrayFromJson('entries', json);
   }
 }
 
-class SearchQueries extends Collection<SearchQueryData> {
+class Filters extends Collection<FilterData> {
   @override
-  String get type => 'SearchQueries';
+  String get type => 'Filters';
 
   @override
-  Document<SearchQueryData> add(DocumentData values) {
-    return addSimpleDocument(type, 'v1/searchQuery', values);
+  Document<FilterData> add(DocumentData values) {
+    return addSimpleDocument(type, 'v1/filter', values);
   }
 
   @override
   void update(String documentId, DocumentData values) {
-    updateSimpleDocument(type, 'v1/searchQuery', documentId, values, propertiesToDelete: ['buckets']);
+    updateSimpleDocument(type, 'v1/filter', documentId, values, propertiesToDelete: ['buckets']);
   }
 
   @override
   void delete(String documentId, Document originalDocument) {
-    deleteSimpleDocument(type, 'v1/searchQuery', documentId, originalDocument.dataObject);
+    deleteSimpleDocument(type, 'v1/filter', documentId, originalDocument.dataObject);
   }
 
   @override
-  Future<Document<SearchQueryData>> get(String id) async {
+  Future<Document<FilterData>> get(String id) async {
     return getSimpleDocument(
-        id, 'v1/searchQuery/${API().auth().getUid()}', type, (data) => SearchQueryData()..constructFromJson(data.content), () => SearchQueryData());
+        id, 'v1/filter/${API().auth().getUid()}', type, (data) => FilterData()..constructFromJson(data.content), () => FilterData());
   }
 
   @override
-  Future<List<Document<SearchQueryData>>> getAll({String? uid, int? since, bool bForceOffline = false}) async {
-    final collection = await getCollection<SearchQueryData>('v1/searchQueries/${uid ?? API().auth().getUid()}', '', type,
-        since: since, bForceOffline: bForceOffline);
+  Future<List<Document<FilterData>>> getAll({String? uid, int? since, bool bForceOffline = false}) async {
+    final collection =
+        await getCollection<FilterData>('v1/filters/${uid ?? API().auth().getUid()}', '', type, since: since, bForceOffline: bForceOffline);
 
-    final List<Document<SearchQueryData>> searchQueries = collection.data
-        .map<Document<SearchQueryData>>((e) => Document(e['exists'], e['id'], SearchQueryData()..constructFromJson(e['content']), type))
+    final List<Document<FilterData>> filterQueries = collection.data
+        .map<Document<FilterData>>((e) => Document(e['exists'], e['id'], FilterData()..constructFromJson(e['content']), type))
         .toList();
     if (!collection.useOffline) {
       if ((uid ?? API().auth().getUid()) == API().auth().getUid()) {
         API().cache().clearTypeCache(type);
-        API().cache().cacheListOfDocuments(searchQueries);
+        API().cache().cacheListOfDocuments(filterQueries);
       }
     }
-    return searchQueries;
+    return filterQueries;
   }
 }

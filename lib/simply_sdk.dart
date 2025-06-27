@@ -1,6 +1,5 @@
 library simply_sdk;
 
-import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:simply_sdk/api/analytics.dart';
 import 'package:simply_sdk/api/audit.dart';
@@ -10,6 +9,7 @@ import 'package:simply_sdk/api/chats.dart';
 import 'package:simply_sdk/api/comments.dart';
 import 'package:simply_sdk/api/customFields.dart';
 import 'package:simply_sdk/api/customFronts.dart';
+import 'package:simply_sdk/api/filter.dart';
 import 'package:simply_sdk/api/friends.dart';
 import 'package:simply_sdk/api/frontHistory.dart';
 import 'package:simply_sdk/api/groups.dart';
@@ -22,7 +22,6 @@ import 'package:simply_sdk/api/polls.dart';
 import 'package:simply_sdk/api/privacyBuckets.dart';
 import 'package:simply_sdk/api/privates.dart';
 import 'package:simply_sdk/api/repeatedTimers.dart';
-import 'package:simply_sdk/api/search_query.dart';
 import 'package:simply_sdk/api/storage.dart';
 import 'package:simply_sdk/api/subscriptions.dart';
 import 'package:simply_sdk/api/users.dart';
@@ -104,7 +103,7 @@ class API {
   final BoardMessages _boardMessages = BoardMessages();
   final PrivacyBuckets _privacyBuckets = PrivacyBuckets();
   final CustomFields _customFields = CustomFields();
-  final SearchQueries _searchQueries = SearchQueries();
+  final Filters _filters = Filters();
   final Audit _audit = Audit();
 
   // Declare global getters
@@ -145,7 +144,7 @@ class API {
   BoardMessages boardMessages() => _boardMessages;
   PrivacyBuckets privacyBuckets() => _privacyBuckets;
   CustomFields customFields() => _customFields;
-  SearchQueries searchQueries() => _searchQueries;
+  Filters filters() => _filters;
   Audit audit() => _audit;
 
   void reportError(e, StackTrace? trace) {
